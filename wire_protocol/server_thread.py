@@ -26,9 +26,11 @@ class ServerThread(Thread):
         
 
     def create(self,username):
+        print("CREATING USER", username)
         ServerMemory.create_user(username)
 
     def login(self,username):
+        print("LOGGING IN USER", username)
         if username in ServerMemory.users:
             self.username = username
             self.client_socket.send(b'LOGIN:SUCCESS:EOM')
@@ -36,6 +38,7 @@ class ServerThread(Thread):
             self.client_socket.send(b'LOGIN:FAILURE:EOM')
 
     def send(self, to, message):
+        print("SENDING MESSAGE", message, "TO", to)
         if to in ServerMemory.users:
             ServerMemory.users[to].add_message(message)
             self.client_socket.send(b'SEND:SUCCESS:EOM')
@@ -43,6 +46,7 @@ class ServerThread(Thread):
             self.client_socket.send(b'SEND:FAILURE:EOM')
 
     def list_users(self, wildcard):
+        print("LISTING USERS", wildcard)
         matches = ", ".join(ServerMemory.list_users(wildcard))
         self.client_socket.send(bytes(matches,"utf-8"))
 
@@ -53,6 +57,7 @@ class ServerThread(Thread):
         self.client_socket.send(bytes(msg,"utf-8"))
 
     def delete(self,username):
+        print("DELETING USER", username)
         if username != "":
             ServerMemory.delete_user(username)
 
@@ -84,4 +89,3 @@ class ServerThread(Thread):
                 print("Username: ", self.username)
             print("test", "\n" in client_msg)
             print("Client:", client_msg)
-            self.client_socket.send(b'Hi Adele')
