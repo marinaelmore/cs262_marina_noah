@@ -1,6 +1,7 @@
 import socket
 import sys
 import re
+from receiver_thread import ReceiverThread
 
 def get_alphanumeric_input(prompt):
     alphanumeric = re.compile("[a-zA-Z0-9]+")
@@ -19,7 +20,11 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
     host = "0.0.0.0"
     port = int(sys.argv[1])
     client_socket.connect((host, port))
+    
+    # start listening for incoming messages on a seperate non-blocking thread
+    ReceiverThread(client_socket)
 
+    # collect input
     while True:
         
         command = ""
@@ -65,8 +70,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
 
         
         client_socket.send(command.encode())
-        data = client_socket.recv(1024).decode()
-        print(data)
+
+
 
 
 

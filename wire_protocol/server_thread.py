@@ -1,6 +1,7 @@
 from threading import *
 import re
 from memory_manager import MemoryManager
+import select
 
 ServerMemory = MemoryManager()
 
@@ -68,26 +69,25 @@ class ServerThread(Thread):
 
         while True:
             self.read_messages()
-            client_msg = self.client_socket.recv(1024).decode()
-            
-            buffer += client_msg
-            
-            for protocol in protocol_list:
-                if protocol.fullmatch(buffer):
-                    if protocol == create_protocol:
-                        self.create(buffer.split(":")[1])
-                    elif protocol == login_protocol:
-                        self.login(buffer.split(":")[1])
-                    elif  protocol == list_protocol:
-                        self.list_users(buffer.split(":")[1])
-                    elif protocol == send_protocol:
-                        self.send(buffer.split(":")[1], buffer.split(":")[2])
-                    elif protocol == delete_protocol:
-                        self.delete(buffer.split(":")[1])
-                    buffer = ""
 
-    
-            if self.username != "":
-                print("Username: ", self.username)
-            print("test", "\n" in client_msg)
-            print("Client:", client_msg)
+            client_sockets, _, _ = select.select([self.client_socket], [],[], 0.1)
+
+            for socket in client_sockets:
+                client_msg = self.client_socket.recv(1024).decode()
+                buffer += client_msg
+                
+                for protocol in protocol_list:
+                    if protocol.fullmatch(buffer):
+                        if protocol == create_protocol:
+                            self.create(buffer.split(":")[1])
+                        elif protocol == login_protocol:
+                            self.login(buffer.split(":")[1])
+                        elif  protocol == list_protocol:
+                            self.list_users(buffer.split(":")[1])
+                        elif protocol == send_protocol:
+                            self.send(buffer.split(":")[1], buffer.split(":")[2])
+                        elif protocol == delete_protocol:
+                            self.delete(buffer.split(":")[1])
+                        buffer = ""
+
+
