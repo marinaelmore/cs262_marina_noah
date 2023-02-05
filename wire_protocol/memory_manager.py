@@ -19,9 +19,17 @@ class MemoryManager:
         self.users[username] = User(username)
         print(self.users)
 
+    def send_message(self,to,message):
+        if to in self.users:
+            self.users[to].add_message(message)
+            return True
+        else:
+            return False
+
     def get_message(self,username):
-        if len(message) > 0:
-            message = self.users[username].messages.pop(0)
+        user_messages = self.users[username].messages
+        if len(user_messages) > 0:
+            message = user_messages.pop(0)
             return message
         return ""
 
