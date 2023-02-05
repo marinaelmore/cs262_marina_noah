@@ -32,7 +32,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
         # TODO how not to block here if someone is waiting in the command area
         while command not in ["CREATE", "LOGIN", "LIST", "SEND", "DELETE"]:
             
-            command = input("Select a Command \n CREATE, LOGIN, LIST, SEND, DELETE:  ")
+            command = input("Select a Command \n CREATE, LOGIN, LIST, SEND, DELETE:  ").upper()
         
 
         if command == "CREATE":

@@ -50,7 +50,8 @@ class ServerThread(Thread):
     def list_users(self, wildcard):
         print("LISTING USERS", wildcard)
         matches = ", ".join(ServerMemory.list_users(wildcard))
-        self.client_socket.send(bytes(matches,"utf-8"))
+        return_msg = "LIST:{}:EOM".format(matches)
+        self.client_socket.send(bytes(return_msg,"utf-8"))
 
     def read_messages(self):
         if self.username == "":
