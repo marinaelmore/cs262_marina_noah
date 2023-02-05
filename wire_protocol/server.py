@@ -5,10 +5,7 @@ from server_thread import ServerThread
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as serversocket:
     host = "0.0.0.0"
     port = 8000
-    print(host)
-    print(port)
     serversocket.bind((host, port))
-
     serversocket.listen(5)
     print('server started and listening')
     while True:
@@ -16,6 +13,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as serversocket:
             clientsocket, address = serversocket.accept()
             ServerThread(clientsocket)
         # catch all errors
-        except Exception as error:
+        except KeyboardInterrupt as error:
             print("Server closed unexpectedly: ", error)
             break

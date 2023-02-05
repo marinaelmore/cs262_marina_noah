@@ -7,7 +7,10 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
     client_socket.connect((host, port))
 
     while True:
-        r = input('Waiting for input')
+        r = input('Waiting for input: ')
         client_socket.send(r.encode())
         data = client_socket.recv(1024).decode()
         print(data)
+
+
+
