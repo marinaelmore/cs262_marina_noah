@@ -32,6 +32,13 @@ class MemoryManager:
         except Exception:
             print("Poorly formatted search regex. Please try again")        
 
-
         return matches
+
+
+    def delete_user(self, username):
+
+        self.users.pop(username)
+
+        print("Deleted user: {}").format(username)
+
 
