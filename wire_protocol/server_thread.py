@@ -17,12 +17,13 @@ protocol_list = [create_protocol, login_protocol, send_protocol, list_protocol, 
 
 
 class ServerThread(Thread):
+    
     def __init__(self, socket):
         Thread.__init__(self)
         self.client_socket = socket
-        self.start()
         self.username = ""
-
+        self.start()
+        
 
     def create(self,username):
         print("inhere")
@@ -52,7 +53,8 @@ class ServerThread(Thread):
             self.client_socket.send(bytes(my_messages,"utf-8"))
 
     def delete(self,username):
-        ServerMemory.delete_user(username)
+        if username != "":
+            ServerMemory.delete_user(username)
 
     def run(self):
         buffer = ""
@@ -74,7 +76,7 @@ class ServerThread(Thread):
                     elif protocol == send_protocol:
                         self.send(buffer.split(":")[1], buffer.split(":")[2])
                     elif protocol == delete_protocol:
-                        print("PLACEHOLDER")
+                        self.delete(buffer.split(":")[1])
                     buffer = ""
 
     

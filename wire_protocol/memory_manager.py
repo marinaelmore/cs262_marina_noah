@@ -35,10 +35,12 @@ class MemoryManager:
         return matches
     
     def delete_user(self, username):
+        
+        print("Deleting user {}".format(username))
+
         if username in self.users:
-            
             self.users.pop(username)
-            print("Deleted user: {}").format(username)
+            print("Deleted user: {}".format(username))
 
         else:
             print("User does not exist")
