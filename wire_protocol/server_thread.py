@@ -27,6 +27,7 @@ class ServerThread(Thread):
 
     def create(self,username):
         ServerMemory.create_user(username)
+        self.client_socket.send(b'CREATE:SUCCESS:EOM')
 
     def login(self,username):
         if username in ServerMemory.users:
@@ -55,6 +56,7 @@ class ServerThread(Thread):
     def delete(self,username):
         if username != "":
             ServerMemory.delete_user(username)
+            self.client_socket.send(b'DELETE:SUCCESS:EOM')
 
     def run(self):
         buffer = ""
@@ -84,4 +86,3 @@ class ServerThread(Thread):
                 print("Username: ", self.username)
             print("test", "\n" in client_msg)
             print("Client:", client_msg)
-            self.client_socket.send(b'Hi Adele')
