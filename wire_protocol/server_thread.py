@@ -10,4 +10,4 @@ class ServerThread(Thread):
     def run(self):
         while True:
             print('Client sent:', self.client_socket.recv(1024).decode())
-            self.client_socket.send(b'Oi you sent something to me')
+            self.client_socket.send(b'Hi Adele')
