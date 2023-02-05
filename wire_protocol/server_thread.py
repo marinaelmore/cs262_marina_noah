@@ -56,7 +56,8 @@ class ServerThread(Thread):
         if self.username == "":
             return
         msg = ServerMemory.get_message(self.username)
-        self.client_socket.send(bytes(msg,"utf-8"))
+        if msg:
+            self.client_socket.send(bytes(msg,"utf-8"))
 
     def delete(self,username):
         print("DELETING USER", username)

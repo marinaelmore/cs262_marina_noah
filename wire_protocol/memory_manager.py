@@ -28,11 +28,11 @@ class MemoryManager:
             return False
 
     def get_message(self,username):
-
-        if len(self.users[username].messages) > 0:
-            message = self.users[username].messages.pop(0)
-            return message
-        return ""
+        messages = self.users[username].messages
+        if len(messages) > 0:
+            msg = messages.pop(0)
+            return msg
+        return None
 
     def list_users(self, wildcard):
 
