@@ -52,10 +52,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
 
         elif command == "SEND":
 
-            # Add to queue
-
             username = get_alphanumeric_input("Destination username [a-zA-Z0-9]: ")
-            message = get_alphanumeric_input("Message content [a-zA-Z0-9]: ")
+            message = input("Type message: ")
 
 
             command = "SEND:{}:{}:EOM".format(username,message)

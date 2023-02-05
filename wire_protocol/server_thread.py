@@ -9,7 +9,7 @@ ServerMemory = MemoryManager()
 create_protocol = re.compile("^CREATE:([a-zA-Z0-9]+):EOM$", re.IGNORECASE)
 login_protocol = re.compile("^LOGIN:([a-zA-Z0-9]+):EOM$", re.IGNORECASE)
 list_protocol = re.compile("^LIST:([a-zA-Z0-9]+):EOM$", re.IGNORECASE)
-send_protocol = re.compile("^SEND:([a-zA-Z0-9]+):([a-zA-Z0-9]+):EOM$", re.IGNORECASE)
+send_protocol = re.compile("^SEND:([a-zA-Z0-9]+):(.+):EOM$", re.IGNORECASE)
 delete_protocol = re.compile("^DELETE:([a-zA-Z0-9]+):EOM$", re.IGNORECASE)
 
 
@@ -77,17 +77,18 @@ class ServerThread(Thread):
                 buffer += client_msg
                 
                 for protocol in protocol_list:
-                    if protocol.fullmatch(buffer):
+                    m = protocol.fullmatch(buffer)
+                    if m:
                         if protocol == create_protocol:
-                            self.create(buffer.split(":")[1])
+                            self.create(m[1])
                         elif protocol == login_protocol:
-                            self.login(buffer.split(":")[1])
+                            self.login(m[1])
                         elif  protocol == list_protocol:
-                            self.list_users(buffer.split(":")[1])
+                            self.list_users(m[1])
                         elif protocol == send_protocol:
-                            self.send(buffer.split(":")[1], buffer.split(":")[2])
+                            self.send(m[1], m[2])
                         elif protocol == delete_protocol:
-                            self.delete(buffer.split(":")[1])
+                            self.delete(m[1])
                         buffer = ""
 
 
