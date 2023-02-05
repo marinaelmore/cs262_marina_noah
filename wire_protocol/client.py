@@ -3,6 +3,8 @@ import sys
 import re
 
 
+alphanumeric = re.compile("[a-zA-Z0-9]+")
+
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
     host = "0.0.0.0"
     port = int(sys.argv[1])
@@ -38,7 +40,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
 
             wildcard = input("Enter search wildcard: ")
 
-            command = "LIST:wildcard:EOM"
+            command = "LIST:{}:EOM".format(wildcard)
 
         elif command == "SEND":
 

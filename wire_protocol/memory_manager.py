@@ -21,15 +21,14 @@ class MemoryManager:
     def list_users(self, wildcard):
 
         try:
+            print(wildcard)
             regex = re.compile(wildcard, re.IGNORECASE)
         
         except Exception:
             print("Poorly formatted search regex. Please try again")
             return []
 
-
-        matches = [user in self.users if re.match(regex, user.username)]
-
+        matches = [user for user in self.users if re.match(regex, user)]
 
         return matches
 
