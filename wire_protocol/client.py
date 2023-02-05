@@ -1,9 +1,10 @@
 import socket
+import sys
 
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
     host = "0.0.0.0"
-    port = 8000
+    port = int(sys.argv[1])
     client_socket.connect((host, port))
 
     while True:
