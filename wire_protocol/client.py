@@ -13,6 +13,8 @@ def get_alphanumeric_input(prompt):
 
 
 
+alphanumeric = re.compile("[a-zA-Z0-9]+")
+
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
     host = "0.0.0.0"
     port = int(sys.argv[1])

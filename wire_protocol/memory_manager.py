@@ -1,3 +1,5 @@
+import re
+
 #define memory manager class
 class User:
     def __init__(self, username):
@@ -20,15 +22,13 @@ class MemoryManager:
 
     def list_users(self, wildcard):
 
+        matches = []
+
         try:
-            regex = re.compile(wildcard, re.IGNORECASE)
+            matches = [user for user in self.users if re.match(wildcard, user)]
         
         except Exception:
-            print("Poorly formatted search regex. Please try again")
-            return []
-
-
-        matches = [user for user in self.users if re.match(regex, user)]
+            print("Poorly formatted search regex. Please try again")        
 
 
         return matches
