@@ -11,6 +11,9 @@ class ReceiverThread(Thread):
     def run(self):
         while True:
             msg = self.client_socket.recv(1024).decode()
+            if msg=="": 
+                print("\nServer closed unexpectedly")
+                break
             print()
             print("------------------------------------")
             print(msg)
