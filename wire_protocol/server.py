@@ -8,10 +8,11 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as serversocket:
     port = int(sys.argv[1])
     serversocket.bind((host, port))
     serversocket.listen(5)
-    print('server started and listening')
+    print('Server listening on port', port, '...')
     while True:
         try:
             clientsocket, address = serversocket.accept()
+            print(address, "has connected")
             ServerThread(clientsocket)
         # catch all errors
         except Exception as error:
