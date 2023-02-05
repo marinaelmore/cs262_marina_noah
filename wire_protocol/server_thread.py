@@ -51,6 +51,10 @@ class ServerThread(Thread):
             my_messages =";".join(ServerMemory.users[self.username].messages)
             self.client_socket.send(bytes(my_messages,"utf-8"))
 
+    def delete(self):
+        if self.username != "":
+            ServerMemory.delete_user(username)
+
     def run(self):
         buffer = ""
 
