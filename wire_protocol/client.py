@@ -2,7 +2,16 @@ import socket
 import sys
 import re
 
-alphanumeric = re.compile("[a-zA-Z0-9]+")
+def get_alphanumeric_input(prompt):
+    alphanumeric = re.compile("[a-zA-Z0-9]+")
+    while True:
+        user_input = input(prompt)
+        if re.fullmatch(alphanumeric, user_input):
+            return user_input
+        else:
+            print("Please only use letters and numbers")
+
+
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
     host = "0.0.0.0"
@@ -21,55 +30,38 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
 
         if command == "CREATE":
             
-            username = input("Create a username [a-zA-Z0-9]: ")
-
-            while not re.fullmatch(alphanumeric, username):
-                print("Please only use letters or numbers")
-                username = input("Create a username: ")
-
+            username = get_alphanumeric_input("Create a username [a-zA-Z0-9]: ")
             command = "CREATE:{}:EOM".format(username)
 
         elif command == "LOGIN":
 
-            username = input("Enter your username: ")
-
+            username = get_alphanumeric_input("Login with username [a-zA-Z0-9]: ")
             command = "LOGIN:{}:EOM".format(username)
 
         elif command == "LIST":
 
             wildcard = input("Enter search wildcard: ")
-
             command = "LIST:{}:EOM".format(wildcard)
 
         elif command == "SEND":
 
             # Add to queue
 
-            msg = input("Enter your message [a-zA-Z0-9]: ")
+            username = get_alphanumeric_input("Destination username [a-zA-Z0-9]: ")
+            message = get_alphanumeric_input("Message content [a-zA-Z0-9]: ")
 
-            while not re.fullmatch(alphanumeric, username):
-                
-                print("Please only use letters or numbers in your message")
-                
-                msg = input("Enter your message: ")
 
-            command = "CREATE:{}:EOM".format(msg)
+            command = "SEND:{}:{}:EOM".format(username,message)
         
         elif command == "DELETE":
             
-            username = input("Enter username to delete: ")
-
-            while not re.fullmatch(alphanumeric, username):
-                print("Please only use letters or numbers")
-                username = input("Enter username to delete: ")
-
+            username = get_alphanumeric_input("Enter username to delete [a-zA-Z0-9]: ")
             command = "DELETE:{}:EOM".format(username)
 
         else:
             print("Not a valid command")
 
         
-        print(command)
         client_socket.send(command.encode())
         data = client_socket.recv(1024).decode()
         print(data)
