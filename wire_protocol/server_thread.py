@@ -6,13 +6,13 @@ ServerMemory = MemoryManager()
 
 # create regexes for each command in the protocol
 create_protocol = re.compile("^CREATE:[a-zA-Z0-9]+:EOM$", re.IGNORECASE)
-send_protocl = re.compile("^LOGIN:[a-zA-Z0-9]+:EOM$", re.IGNORECASE)
+login_protocol = re.compile("^LOGIN:[a-zA-Z0-9]+:EOM$", re.IGNORECASE)
 list_protocol = re.compile("^LIST:[a-zA-Z0-9]+:EOM$", re.IGNORECASE)
 send_protocol = re.compile("^SEND:[a-zA-Z0-9]+:[a-zA-Z0-9]+:EOM$", re.IGNORECASE)
 delete_protocol = re.compile("^DELETE:[a-zA-Z0-9]+:EOM$", re.IGNORECASE)
 
 
-protocol_list = [create_protocol, send_protocol, list_protocol, send_protocol, delete_protocol]
+protocol_list = [create_protocol, login_protocol, send_protocol, list_protocol, send_protocol, delete_protocol]
 
 
 
@@ -29,8 +29,27 @@ class ServerThread(Thread):
         ServerMemory.create_user(username)
 
     def login(self,username):
-        self.username = username
+        if username in ServerMemory.users:
+            self.username = username
+            self.client_socket.send(b'LOGIN:SUCCESS:EOM')
+        else:
+            self.client_socket.send(b'LOGIN:FAILURE:EOM')
 
+    def send(self, to, message):
+        if to in ServerMemory.users:
+            ServerMemory.users[to].add_message(message)
+            self.client_socket.send(b'SEND:SUCCESS:EOM')
+        else:
+            self.client_socket.send(b'SEND:FAILURE:EOM')
+
+    def list(self, wildcard):
+        matches = ", ".join(ServerMemory.list_users(wildcard))
+        self.client_socket.send(bytes(matches,"utf-8"))
+
+    def read_messages(self):
+        if self.username != "":
+            my_messages =";".join(ServerMemory.users[self.username].messages)
+            self.client_socket.send(bytes(my_messages,"utf-8"))
 
     def run(self):
         buffer = ""
@@ -47,11 +66,16 @@ class ServerThread(Thread):
                     elif protocol == login_protocol:
                         self.login(buffer.split(":")[1])
                     elif  protocol == list_protocol:
+                        self.list(buffer.split(":")[1])
+                    elif protocol == send_protocol:
+                        self.send(buffer.split(":")[1], buffer.split(":")[2])
+                    elif protocol == delete_protocol:
                         print("PLACEHOLDER")
                     buffer = ""
 
-
-
+    
+            if self.username != "":
+                print("Username: ", self.username)
             print("test", "\n" in client_msg)
             print("Client:", client_msg)
             self.client_socket.send(b'Hi Adele')

@@ -28,7 +28,7 @@ class MemoryManager:
             return []
 
 
-        matches = [user in self.users if re.match(regex, user.username)]
+        matches = [user for user in self.users if re.match(regex, user)]
 
 
         return matches
