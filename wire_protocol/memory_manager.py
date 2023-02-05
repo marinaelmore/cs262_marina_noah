@@ -28,14 +28,9 @@ class MemoryManager:
             return False
 
     def get_message(self,username):
-<<<<<<< HEAD
+
         if len(self.users[username].messages) > 0:
             message = self.users[username].messages.pop(0)
-=======
-        user_messages = self.users[username].messages
-        if len(user_messages) > 0:
-            message = user_messages.pop(0)
->>>>>>> 8a06bd01e8ffcc4e99f7dc2e727a8288f430babf
             return message
         return ""
 
