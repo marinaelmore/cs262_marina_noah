@@ -16,4 +16,6 @@ class MemoryManager:
     def create_user(self, username):
         self.users[username] = User(username)
         print(self.users)
+
+    
     
