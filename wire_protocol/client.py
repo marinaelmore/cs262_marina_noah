@@ -8,6 +8,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
 
     while True:
         r = input('Waiting for input')
-        cs.send('helloeitsmeiwaswonderingifafteralltheseyearsyoudliketomeeet'.encode())
-        data = cs.recv(1024).decode()
+        client_socket.send('helloeitsmeiwaswonderingifafteralltheseyearsyoudliketomeeet'.encode())
+        data = client_socket.recv(1024).decode()
         print(data)
