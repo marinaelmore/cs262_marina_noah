@@ -6,11 +6,11 @@ import select
 ServerMemory = MemoryManager()
 
 # create regexes for each command in the protocol
-create_protocol = re.compile("^CREATE:[a-zA-Z0-9]+:EOM$", re.IGNORECASE)
-login_protocol = re.compile("^LOGIN:[a-zA-Z0-9]+:EOM$", re.IGNORECASE)
-list_protocol = re.compile("^LIST:[a-zA-Z0-9]+:EOM$", re.IGNORECASE)
-send_protocol = re.compile("^SEND:[a-zA-Z0-9]+:[a-zA-Z0-9]+:EOM$", re.IGNORECASE)
-delete_protocol = re.compile("^DELETE:[a-zA-Z0-9]+:EOM$", re.IGNORECASE)
+create_protocol = re.compile("^CREATE:([a-zA-Z0-9]+):EOM$", re.IGNORECASE)
+login_protocol = re.compile("^LOGIN:([a-zA-Z0-9]+):EOM$", re.IGNORECASE)
+list_protocol = re.compile("^LIST:([a-zA-Z0-9]+):EOM$", re.IGNORECASE)
+send_protocol = re.compile("^SEND:([a-zA-Z0-9]+):([a-zA-Z0-9]+):EOM$", re.IGNORECASE)
+delete_protocol = re.compile("^DELETE:([a-zA-Z0-9]+):EOM$", re.IGNORECASE)
 
 
 protocol_list = [create_protocol, login_protocol, send_protocol, list_protocol, send_protocol, delete_protocol]
