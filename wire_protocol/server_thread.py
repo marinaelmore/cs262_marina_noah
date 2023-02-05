@@ -42,7 +42,7 @@ class ServerThread(Thread):
         else:
             self.client_socket.send(b'SEND:FAILURE:EOM')
 
-    def list(self, wildcard):
+    def list_users(self, wildcard):
         matches = ", ".join(ServerMemory.list_users(wildcard))
         self.client_socket.send(bytes(matches,"utf-8"))
 
@@ -51,14 +51,14 @@ class ServerThread(Thread):
             my_messages =";".join(ServerMemory.get_messages(self.username))
             self.client_socket.send(bytes(my_messages,"utf-8"))
 
-    def delete(self):
-        if self.username != "":
-            ServerMemory.delete_user(username)
+    def delete(self,username):
+        ServerMemory.delete_user(username)
 
     def run(self):
         buffer = ""
 
         while True:
+            self.read_messages()
             client_msg = self.client_socket.recv(1024).decode()
             
             buffer += client_msg
@@ -70,7 +70,7 @@ class ServerThread(Thread):
                     elif protocol == login_protocol:
                         self.login(buffer.split(":")[1])
                     elif  protocol == list_protocol:
-                        self.list(buffer.split(":")[1])
+                        self.list_users(buffer.split(":")[1])
                     elif protocol == send_protocol:
                         self.send(buffer.split(":")[1], buffer.split(":")[2])
                     elif protocol == delete_protocol:
