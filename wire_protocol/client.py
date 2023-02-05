@@ -2,6 +2,7 @@ import socket
 import sys
 import re
 
+alphanumeric = re.compile("[a-zA-Z0-9]+")
 
 alphanumeric = re.compile("[a-zA-Z0-9]+")
 
