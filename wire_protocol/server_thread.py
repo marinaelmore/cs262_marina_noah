@@ -26,8 +26,10 @@ class ServerThread(Thread):
 
     def create(self,username):
         print("inhere")
-        self.username = username
         ServerMemory.create_user(username)
+
+    def login(self,username):
+        self.username = username
 
 
     def run(self):
@@ -35,13 +37,19 @@ class ServerThread(Thread):
 
         while True:
             client_msg = self.client_socket.recv(1024).decode()
+            
             buffer += client_msg
             
             for protocol in protocol_list:
                 if protocol.fullmatch(buffer):
                     if protocol == create_protocol:
                         self.create(buffer.split(":")[1])
+                    elif protocol == login_protocol:
+                        self.login(buffer.split(":")[1])
+                    elif  protocol == list_protocol:
+                        print("PLACEHOLDER")
                     buffer = ""
+
 
 
             print("test", "\n" in client_msg)
