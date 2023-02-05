@@ -19,6 +19,8 @@ class MemoryManager:
         self.users[username] = User(username)
         print(self.users)
 
+    def get_messages(self,username):
+        return self.users[username].messages
 
     def list_users(self, wildcard):
 

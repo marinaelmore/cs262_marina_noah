@@ -48,7 +48,7 @@ class ServerThread(Thread):
 
     def read_messages(self):
         if self.username != "":
-            my_messages =";".join(ServerMemory.users[self.username].messages)
+            my_messages =";".join(ServerMemory.get_messages(self.username))
             self.client_socket.send(bytes(my_messages,"utf-8"))
 
     def run(self):
