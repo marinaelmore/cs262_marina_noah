@@ -1,19 +1,6 @@
 import socket
 import sys
-
-
 import re
-
-# create regexes for each command in the protocol
-create_protocol = re.compile("^CREATE:[a-zA-Z0-9]+:EOM$", re.IGNORECASE)
-send_protocl = re.compile("^LOGIN:[a-zA-Z0-9]+:EOM$", re.IGNORECASE)
-list_protocol = re.compile("^LIST:[a-zA-Z0-9]+:EOM$", re.IGNORECASE)
-send_protocol = re.compile("^SEND:[a-zA-Z0-9]+:[a-zA-Z0-9]+:EOM$", re.IGNORECASE)
-delete_protocol = re.compile("^DELETE:[a-zA-Z0-9]+:EOM$", re.IGNORECASE)
-alphanumeric = re.compile("[a-zA-Z0-9]+", re.IGNORECASE)
-
-
-protocol_list = [create_protocol, send_protocl, list_protocol, send_protocol, delete_protocol]
 
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
@@ -25,10 +12,12 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
         
         command = ""
         
+        # TODO how not to block here if someone is waiting in the command area
         while command not in ["CREATE", "LOGIN", "LIST", "SEND", "DELETE"]:
             
             command = input("Select a Command \n CREATE, LOGIN, LIST, SEND, DELETE:  ")
         
+
         if command == "CREATE":
             
             username = input("Create a username [a-zA-Z0-9]: ")
@@ -76,11 +65,10 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
             command = "DELETE:{}:EOM".format(username)
 
         else:
-    
             print("Not a valid command")
 
-        print(command)
         
+        print(command)
         client_socket.send(command.encode())
         data = client_socket.recv(1024).decode()
         print(data)
