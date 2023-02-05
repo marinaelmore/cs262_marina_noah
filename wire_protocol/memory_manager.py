@@ -14,6 +14,7 @@ class User:
 class MemoryManager:
     def __init__(self):
         self.users = {}
+        print("This is happening")
         
     def create_user(self, username):
         self.users[username] = User(username)
@@ -27,15 +28,17 @@ class MemoryManager:
             return False
 
     def get_message(self,username):
-        user_messages = self.users[username].messages
-        if len(user_messages) > 0:
-            message = user_messages.pop(0)
+
+        if len(self.users[username].messages) > 0:
+            message = self.users[username].messages.pop(0)
             return message
         return ""
 
     def list_users(self, wildcard):
 
         matches = []
+        print(self.users)
+        print(wildcard)
 
         try:
             matches = [user for user in self.users if re.match(wildcard, user)]

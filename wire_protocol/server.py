@@ -3,7 +3,6 @@ from server_thread import ServerThread
 from memory_manager import MemoryManager
 import sys
 
-ServerMemory = MemoryManager()
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as serversocket:
     host = "0.0.0.0"
