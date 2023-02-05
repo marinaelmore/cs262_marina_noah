@@ -25,7 +25,6 @@ class ServerThread(Thread):
 
 
     def create(self,username):
-        print("inhere")
         ServerMemory.create_user(username)
 
     def login(self,username):
@@ -47,9 +46,10 @@ class ServerThread(Thread):
         self.client_socket.send(bytes(matches,"utf-8"))
 
     def read_messages(self):
-        if self.username != "":
-            my_messages =";".join(ServerMemory.get_messages(self.username))
-            self.client_socket.send(bytes(my_messages,"utf-8"))
+        if self.username == "":
+            return
+        msg = ServerMemory.get_message(self.username)
+        self.client_socket.send(bytes(msg,"utf-8"))
 
     def delete(self,username):
         ServerMemory.delete_user(username)
