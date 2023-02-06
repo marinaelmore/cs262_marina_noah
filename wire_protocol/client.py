@@ -3,6 +3,7 @@ import sys
 import re
 from receiver_thread import ReceiverThread
 from time import sleep
+from wire_protocol import WireProtocol
 
 
 def get_alphanumeric_input(prompt):
@@ -39,19 +40,19 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
 
             username = get_alphanumeric_input(
                 "Create a username [a-zA-Z0-9]: ")
-            command = "CREATE:{}:EOM".format(username)
+            command = WireProtocol.serialize(command, username)
 
         elif command == "LOGIN":
 
             username = get_alphanumeric_input(
                 "Login with username [a-zA-Z0-9]: ")
-            command = "LOGIN:{}:EOM".format(username)
+            command = WireProtocol.serialize(command, username)
 
         elif command == "LIST":
 
             wildcard = input(
                 "Enter search prefix (or Enter for all accounts): ")
-            command = "LIST:{}:EOM".format(wildcard)
+            command = WireProtocol.serialize(command, wildcard)
 
         elif command == "SEND":
 
@@ -59,16 +60,15 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
                 "Destination username [a-zA-Z0-9]: ")
             message = input("Type message: ")
 
-            command = "SEND:{}:{}:EOM".format(username, message)
+            command = WireProtocol.serialize(command, username, message)
 
         elif command == "DELETE":
 
             username = get_alphanumeric_input(
                 "Enter username to delete [a-zA-Z0-9]: ")
-            command = "DELETE:{}:EOM".format(username)
+            command = WireProtocol.serialize(command, username)
 
         else:
             print("Not a valid command")
-
-        client_socket.send(command.encode())
+        client_socket.send(command)
         sleep(1)
