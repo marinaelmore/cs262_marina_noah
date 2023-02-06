@@ -49,7 +49,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
 
         elif command == "LIST":
 
-            wildcard = input("Enter search wildcard: ")
+            wildcard = input(
+                "Enter search prefix (or Enter for all accounts): ")
             command = "LIST:{}:EOM".format(wildcard)
 
         elif command == "SEND":

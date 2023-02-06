@@ -15,6 +15,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as serversocket:
             print(address, "has connected")
             ServerThread(clientsocket)
         # catch all errors
+        except KeyboardInterrupt as error:
+            break
         except Exception as error:
             print("Server closed unexpectedly: ", error)
             break
