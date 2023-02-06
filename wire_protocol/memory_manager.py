@@ -1,6 +1,8 @@
 import re
 
-#define memory manager class
+# define memory manager class
+
+
 class User:
     def __init__(self, username):
         self.username = username
@@ -10,24 +12,26 @@ class User:
         self.messages.append(message)
 
 
-
 class MemoryManager:
     def __init__(self):
         self.users = {}
         print("This is happening")
-        
-    def create_user(self, username):
-        self.users[username] = User(username)
-        print(self.users)
 
-    def send_message(self,to,message):
+    def create_user(self, username):
+        if username not in self.users:
+            self.users[username] = User(username)
+            return True
+        else:
+            return False
+
+    def send_message(self, to, message):
         if to in self.users:
             self.users[to].add_message(message)
             return True
         else:
             return False
 
-    def get_message(self,username):
+    def get_message(self, username):
         if username in self.users:
             messages = self.users[username].messages
             if len(messages) > 0:
@@ -43,14 +47,14 @@ class MemoryManager:
 
         try:
             matches = [user for user in self.users if re.match(wildcard, user)]
-        
+
         except Exception:
-            print("Poorly formatted search regex. Please try again")        
+            print("Poorly formatted search regex. Please try again")
 
         return matches
-    
+
     def delete_user(self, username):
-        
+
         print("Deleting user {}".format(username))
 
         if username in self.users:
@@ -59,5 +63,3 @@ class MemoryManager:
 
         else:
             print("User does not exist")
-
-
