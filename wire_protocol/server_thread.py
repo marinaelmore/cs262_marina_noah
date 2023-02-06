@@ -70,12 +70,15 @@ class ServerThread(Thread):
 
         while True:
             self.read_messages()
-
             client_sockets, _, _ = select.select(
                 [self.client_socket], [], [], 0.1)
-
+            # this code assumes only one client socket, if more in this
+            # thread, will need to use multiple buffers
             for socket in client_sockets:
                 client_msg = socket.recv(1024)
+                if client_msg == b"":
+                    print("Client closed unexpectedly")
+                    return
                 buffer += client_msg
 
                 for protocol in protocol_list:
@@ -93,3 +96,5 @@ class ServerThread(Thread):
                         elif protocol == delete_protocol:
                             self.delete(m[1])
                         buffer = b""
+                if len(buffer) > 3000:
+                    buffer = b""
