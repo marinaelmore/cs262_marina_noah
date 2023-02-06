@@ -15,7 +15,6 @@ class User:
 class MemoryManager:
     def __init__(self):
         self.users = {}
-        print("This is happening")
 
     def create_user(self, username):
         if username not in self.users:
