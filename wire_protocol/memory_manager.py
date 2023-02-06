@@ -43,7 +43,7 @@ class MemoryManager:
         matches = []
         print(self.users)
         print(wildcard)
-
+        
         try:
             matches = [user for user in self.users if re.match(wildcard, user)]
 

@@ -41,7 +41,6 @@ class WireProtocolTestCase(unittest.TestCase):
         created_users = list(self.memory_manager.users.keys())
         self.assertEqual(["marina", "noah"], created_users)
 
-
         # Test Send Message (marina -> noah)
         self.memory_manager.send_message(self.username1, self.message)
         noahs_messages = self.memory_manager.users.get(self.username1).messages
@@ -53,12 +52,19 @@ class WireProtocolTestCase(unittest.TestCase):
         self.assertIsNone(self.memory_manager.get_message(self.username))
 
         #Test List Users
-        self.assertEqual(["marina", "noah"], self.memory_manager.list_users("*"))
+        self.assertEqual(["marina", "noah"], self.memory_manager.list_users(""))
         self.assertEqual(["marina"], self.memory_manager.list_users("m"))
         self.assertEqual(["noah"], self.memory_manager.list_users("n"))
         self.assertEqual([], self.memory_manager.list_users("9"))
 
         # Test Delete User
+        self.assertEqual(2, len(self.memory_manager.users))
+        self.memory_manager.delete_user(self.username)
+        self.assertEqual(1, len(self.memory_manager.users))
+        curr_users = list(self.memory_manager.users.keys())
+        self.assertEqual(["noah"], curr_users)
+
+
 
 
 
