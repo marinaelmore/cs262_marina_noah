@@ -1,6 +1,9 @@
 import re
 
 
+# requests take the form (COMMAND, ARG0, ARG1...)
+# they are serialized as COMMAND:ARG0:ARG1:...:EOM
+# responses take the form <String>
 class WireProtocol:
 
     # create regexes for each command in the protocol
@@ -19,7 +22,7 @@ class WireProtocol:
     MAX_BYTES = 2000
     COMMANDS = ["CREATE", "LOGIN", "SEND", "LIST", "DELETE"]
 
-    def serialize(command, *body):
+    def serialize_request(command, *body):
         if command not in WireProtocol.COMMANDS:
             raise ValueError("Invalid command")
         formatted = ""
@@ -38,10 +41,12 @@ class WireProtocol:
             raise ValueError("Message too long")
         return encoded
 
-    def deserialize(self, data):
+    def deserialize_request(data):
+        test = data.decode()
+        print("TEST", test)
         for protocol in WireProtocol.protocol_list:
-            test = data.decode()
             match = protocol.match(test)
             if match:
-                return match.groups()[1:]
+                print("MATCH", match.groups())
+                return match.groups()
         return None

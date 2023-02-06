@@ -2,19 +2,9 @@ from threading import *
 import re
 from memory_manager import MemoryManager
 import select
+from wire_protocol import WireProtocol
 
 ServerMemory = MemoryManager()
-
-# create regexes for each command in the protocol
-create_protocol = re.compile("^CREATE:([a-zA-Z0-9]+):EOM$", re.IGNORECASE)
-login_protocol = re.compile("^LOGIN:([a-zA-Z0-9]+):EOM$", re.IGNORECASE)
-list_protocol = re.compile("^LIST:(.*):EOM$", re.IGNORECASE)
-send_protocol = re.compile("^SEND:([a-zA-Z0-9]+):(.+):EOM$", re.IGNORECASE)
-delete_protocol = re.compile("^DELETE:([a-zA-Z0-9]+):EOM$", re.IGNORECASE)
-
-
-protocol_list = [create_protocol, login_protocol,
-                 send_protocol, list_protocol, send_protocol, delete_protocol]
 
 
 class ServerThread(Thread):
@@ -83,20 +73,19 @@ class ServerThread(Thread):
                     return
                 buffer += client_msg
 
-                for protocol in protocol_list:
-                    test = buffer.decode()
-                    m = protocol.fullmatch(test)
-                    if m:
-                        if protocol == create_protocol:
-                            self.create(m[1])
-                        elif protocol == login_protocol:
-                            self.login(m[1])
-                        elif protocol == list_protocol:
-                            self.list_users(m[1])
-                        elif protocol == send_protocol:
-                            self.send(m[1], m[2])
-                        elif protocol == delete_protocol:
-                            self.delete(m[1])
-                        buffer = b""
-                if len(buffer) > 3000:
+                match = WireProtocol.deserialize_request(buffer)
+                if match:
+                    command, *args = match
+                    if command == "CREATE":
+                        self.create(args[0])
+                    elif command == "LOGIN":
+                        self.login(args[0])
+                    elif command == "LIST":
+                        self.list_users(args[0])
+                    elif command == "SEND":
+                        self.send(args[0], args[1])
+                    elif command == "DELETE":
+                        self.delete(args[0])
+                    buffer = b""
+                if len(buffer) > WireProtocol.MAX_BYTES:
                     buffer = b""

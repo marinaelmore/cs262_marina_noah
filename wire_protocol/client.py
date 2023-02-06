@@ -40,19 +40,19 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
 
             username = get_alphanumeric_input(
                 "Create a username [a-zA-Z0-9]: ")
-            command = WireProtocol.serialize(command, username)
+            command = WireProtocol.serialize_request(command, username)
 
         elif command == "LOGIN":
 
             username = get_alphanumeric_input(
                 "Login with username [a-zA-Z0-9]: ")
-            command = WireProtocol.serialize(command, username)
+            command = WireProtocol.serialize_request(command, username)
 
         elif command == "LIST":
 
             wildcard = input(
                 "Enter search prefix (or Enter for all accounts): ")
-            command = WireProtocol.serialize(command, wildcard)
+            command = WireProtocol.serialize_request(command, wildcard)
 
         elif command == "SEND":
 
@@ -60,13 +60,14 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
                 "Destination username [a-zA-Z0-9]: ")
             message = input("Type message: ")
 
-            command = WireProtocol.serialize(command, username, message)
+            command = WireProtocol.serialize_request(
+                command, username, message)
 
         elif command == "DELETE":
 
             username = get_alphanumeric_input(
                 "Enter username to delete [a-zA-Z0-9]: ")
-            command = WireProtocol.serialize(command, username)
+            command = WireProtocol.serialize_request(command, username)
 
         else:
             print("Not a valid command")
