@@ -33,7 +33,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
         while command not in ["CREATE", "LOGIN", "LIST", "SEND", "DELETE"]:
 
             command = input(
-                "\nSelect a Command \n CREATE, LOGIN, LIST, SEND, DELETE: ")
+                "Select a Command \n CREATE, LOGIN, LIST, SEND, DELETE:  ").upper()
 
         if command == "CREATE":
 
