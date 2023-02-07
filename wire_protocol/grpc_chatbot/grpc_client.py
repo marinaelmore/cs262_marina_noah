@@ -22,6 +22,7 @@ def run():
     with grpc.insecure_channel('localhost:50051') as channel:
 
         chatbot_stub = chatbot_pb2_grpc.MemoryManagerStub(channel)
+        response = None
 
         while True:
 
@@ -33,9 +34,7 @@ def run():
                 input_username = get_alphanumeric_input(
                     "Create a username [a-zA-Z0-9]: ")
 
-                # Call server func
                 response = chatbot_stub.create_user(chatbot_pb2.UserRequest(username=input_username))
-                #response = chatbot_stub.create_user(username)
 
             elif command == "LOGIN":
 
@@ -67,10 +66,12 @@ def run():
                 #call server func
 
             else:
-                raise ValueError("Invalid command")
+                print("Invalid command, please try again.")
+
   
-            #response = chatbot_stub.SayHello(chatbot_pb2.HelloRequest(name="marina"))
-            print("MemoryManager client received: " + response.message)
+            print("\n---------------------------------------------------------")
+            print(response.message)
+            print("---------------------------------------------------------\n")
 
 
 if __name__ == '__main__':

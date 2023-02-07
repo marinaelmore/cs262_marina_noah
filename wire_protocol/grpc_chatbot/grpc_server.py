@@ -25,9 +25,9 @@ class MemoryManager(chatbot_pb2_grpc.MemoryManager):
         username = request.username
         if username not in self.users:
             self.users[username] = User(username)
-            return chatbot_pb2.ChatbotReply(message='Success! User {} created.'.format(username)) 
+            return chatbot_pb2.ChatbotReply(message='Success! User \"{}\" created.'.format(username)) 
         else:
-            return chatbot_pb2.ChatbotReply(message='Error! Unable to create user {}.'.format(username)) 
+            return chatbot_pb2.ChatbotReply(message='Error! User \"{}\" already exists.'.format(username)) 
 
     def send_message(self, request, context):
         return None
