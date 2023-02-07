@@ -1,5 +1,4 @@
 syntax = "proto3";
-
 package chatbot;
 
 // The greeting service definition.
