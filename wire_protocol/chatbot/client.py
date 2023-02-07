@@ -20,7 +20,10 @@ alphanumeric = re.compile("[a-zA-Z0-9]+")
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
     host = "0.0.0.0"
-    port = int(sys.argv[1])
+    if len(sys.argv) > 1:
+        port = int(sys.argv[1])
+    else:
+        port = 8000
     client_socket.connect((host, port))
 
     # start listening for incoming messages on a seperate non-blocking thread
@@ -70,6 +73,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
             command = WireProtocol.serialize_request(command, username)
 
         else:
-            print("Not a valid command")
+            raise ValueError("Invalid command")
+        
         client_socket.send(command)
         sleep(1)
