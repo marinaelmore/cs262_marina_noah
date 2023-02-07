@@ -2,9 +2,15 @@ syntax = "proto3";
 package chatbot;
 
 // The greeting service definition.
-service Greeter {
+service MemoryManager{
   // Sends a greeting
   rpc SayHello (HelloRequest) returns (HelloReply) {}
+  rpc create_user (UserRequest) returns (ChatbotReply) {}
+  rpc send_message (MessageRequest) returns (ChatbotReply) {}
+  rpc get_message (MessageRequest) returns (ChatbotReply) {}
+  rpc list_users (ListRequest) returns (ChatbotReply) {}
+  rpc delete_user (UserRequest) returns (ChatbotReply) {}
+  rpc login_user (UserRequest) returns (ChatbotReply) {}
 }
 
 // The request message containing the user's name.
@@ -14,5 +20,22 @@ message HelloRequest {
 
 // The response message containing the greetings
 message HelloReply {
+  string message = 1;
+}
+
+message UserRequest {
+  string username = 1;
+}
+
+message MessageRequest {
+  string username = 1;
+  string message = 4;
+}
+
+message ListRequest {
+  string wildcard = 1;
+}
+
+message ChatbotReply {
   string message = 1;
 }

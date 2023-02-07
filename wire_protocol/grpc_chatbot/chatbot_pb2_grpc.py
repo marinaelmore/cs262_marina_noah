@@ -5,7 +5,7 @@ import grpc
 import chatbot_pb2 as chatbot__pb2
 
 
-class GreeterStub(object):
+class MemoryManagerStub(object):
     """The greeting service definition.
     """
 
@@ -16,13 +16,43 @@ class GreeterStub(object):
             channel: A grpc.Channel.
         """
         self.SayHello = channel.unary_unary(
-                '/chatbot.Greeter/SayHello',
+                '/chatbot.MemoryManager/SayHello',
                 request_serializer=chatbot__pb2.HelloRequest.SerializeToString,
                 response_deserializer=chatbot__pb2.HelloReply.FromString,
                 )
+        self.create_user = channel.unary_unary(
+                '/chatbot.MemoryManager/create_user',
+                request_serializer=chatbot__pb2.UserRequest.SerializeToString,
+                response_deserializer=chatbot__pb2.ChatbotReply.FromString,
+                )
+        self.send_message = channel.unary_unary(
+                '/chatbot.MemoryManager/send_message',
+                request_serializer=chatbot__pb2.MessageRequest.SerializeToString,
+                response_deserializer=chatbot__pb2.ChatbotReply.FromString,
+                )
+        self.get_message = channel.unary_unary(
+                '/chatbot.MemoryManager/get_message',
+                request_serializer=chatbot__pb2.MessageRequest.SerializeToString,
+                response_deserializer=chatbot__pb2.ChatbotReply.FromString,
+                )
+        self.list_users = channel.unary_unary(
+                '/chatbot.MemoryManager/list_users',
+                request_serializer=chatbot__pb2.ListRequest.SerializeToString,
+                response_deserializer=chatbot__pb2.ChatbotReply.FromString,
+                )
+        self.delete_user = channel.unary_unary(
+                '/chatbot.MemoryManager/delete_user',
+                request_serializer=chatbot__pb2.UserRequest.SerializeToString,
+                response_deserializer=chatbot__pb2.ChatbotReply.FromString,
+                )
+        self.login_user = channel.unary_unary(
+                '/chatbot.MemoryManager/login_user',
+                request_serializer=chatbot__pb2.UserRequest.SerializeToString,
+                response_deserializer=chatbot__pb2.ChatbotReply.FromString,
+                )
 
 
-class GreeterServicer(object):
+class MemoryManagerServicer(object):
     """The greeting service definition.
     """
 
@@ -33,22 +63,88 @@ class GreeterServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def create_user(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
 
-def add_GreeterServicer_to_server(servicer, server):
+    def send_message(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def get_message(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def list_users(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def delete_user(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def login_user(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+
+def add_MemoryManagerServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'SayHello': grpc.unary_unary_rpc_method_handler(
                     servicer.SayHello,
                     request_deserializer=chatbot__pb2.HelloRequest.FromString,
                     response_serializer=chatbot__pb2.HelloReply.SerializeToString,
             ),
+            'create_user': grpc.unary_unary_rpc_method_handler(
+                    servicer.create_user,
+                    request_deserializer=chatbot__pb2.UserRequest.FromString,
+                    response_serializer=chatbot__pb2.ChatbotReply.SerializeToString,
+            ),
+            'send_message': grpc.unary_unary_rpc_method_handler(
+                    servicer.send_message,
+                    request_deserializer=chatbot__pb2.MessageRequest.FromString,
+                    response_serializer=chatbot__pb2.ChatbotReply.SerializeToString,
+            ),
+            'get_message': grpc.unary_unary_rpc_method_handler(
+                    servicer.get_message,
+                    request_deserializer=chatbot__pb2.MessageRequest.FromString,
+                    response_serializer=chatbot__pb2.ChatbotReply.SerializeToString,
+            ),
+            'list_users': grpc.unary_unary_rpc_method_handler(
+                    servicer.list_users,
+                    request_deserializer=chatbot__pb2.ListRequest.FromString,
+                    response_serializer=chatbot__pb2.ChatbotReply.SerializeToString,
+            ),
+            'delete_user': grpc.unary_unary_rpc_method_handler(
+                    servicer.delete_user,
+                    request_deserializer=chatbot__pb2.UserRequest.FromString,
+                    response_serializer=chatbot__pb2.ChatbotReply.SerializeToString,
+            ),
+            'login_user': grpc.unary_unary_rpc_method_handler(
+                    servicer.login_user,
+                    request_deserializer=chatbot__pb2.UserRequest.FromString,
+                    response_serializer=chatbot__pb2.ChatbotReply.SerializeToString,
+            ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'chatbot.Greeter', rpc_method_handlers)
+            'chatbot.MemoryManager', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
 
  # This class is part of an EXPERIMENTAL API.
-class Greeter(object):
+class MemoryManager(object):
     """The greeting service definition.
     """
 
@@ -63,8 +159,110 @@ class Greeter(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/chatbot.Greeter/SayHello',
+        return grpc.experimental.unary_unary(request, target, '/chatbot.MemoryManager/SayHello',
             chatbot__pb2.HelloRequest.SerializeToString,
             chatbot__pb2.HelloReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def create_user(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/chatbot.MemoryManager/create_user',
+            chatbot__pb2.UserRequest.SerializeToString,
+            chatbot__pb2.ChatbotReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def send_message(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/chatbot.MemoryManager/send_message',
+            chatbot__pb2.MessageRequest.SerializeToString,
+            chatbot__pb2.ChatbotReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def get_message(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/chatbot.MemoryManager/get_message',
+            chatbot__pb2.MessageRequest.SerializeToString,
+            chatbot__pb2.ChatbotReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def list_users(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/chatbot.MemoryManager/list_users',
+            chatbot__pb2.ListRequest.SerializeToString,
+            chatbot__pb2.ChatbotReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def delete_user(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/chatbot.MemoryManager/delete_user',
+            chatbot__pb2.UserRequest.SerializeToString,
+            chatbot__pb2.ChatbotReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def login_user(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/chatbot.MemoryManager/login_user',
+            chatbot__pb2.UserRequest.SerializeToString,
+            chatbot__pb2.ChatbotReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

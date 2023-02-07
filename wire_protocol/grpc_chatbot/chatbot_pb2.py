@@ -13,7 +13,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rchatbot.proto\x12\x07\x63hatbot\"\x1c\n\x0cHelloRequest\x12\x0c\n\x04name\x18\x01 \x01(\t\"\x1d\n\nHelloReply\x12\x0f\n\x07message\x18\x01 \x01(\t2C\n\x07Greeter\x12\x38\n\x08SayHello\x12\x15.chatbot.HelloRequest\x1a\x13.chatbot.HelloReply\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rchatbot.proto\x12\x07\x63hatbot\"\x1c\n\x0cHelloRequest\x12\x0c\n\x04name\x18\x01 \x01(\t\"\x1d\n\nHelloReply\x12\x0f\n\x07message\x18\x01 \x01(\t\"\x1f\n\x0bUserRequest\x12\x10\n\x08username\x18\x01 \x01(\t\"3\n\x0eMessageRequest\x12\x10\n\x08username\x18\x01 \x01(\t\x12\x0f\n\x07message\x18\x04 \x01(\t\"\x1f\n\x0bListRequest\x12\x10\n\x08wildcard\x18\x01 \x01(\t\"\x1f\n\x0c\x43hatbotReply\x12\x0f\n\x07message\x18\x01 \x01(\t2\xc2\x03\n\rMemoryManager\x12\x38\n\x08SayHello\x12\x15.chatbot.HelloRequest\x1a\x13.chatbot.HelloReply\"\x00\x12<\n\x0b\x63reate_user\x12\x14.chatbot.UserRequest\x1a\x15.chatbot.ChatbotReply\"\x00\x12@\n\x0csend_message\x12\x17.chatbot.MessageRequest\x1a\x15.chatbot.ChatbotReply\"\x00\x12?\n\x0bget_message\x12\x17.chatbot.MessageRequest\x1a\x15.chatbot.ChatbotReply\"\x00\x12;\n\nlist_users\x12\x14.chatbot.ListRequest\x1a\x15.chatbot.ChatbotReply\"\x00\x12<\n\x0b\x64\x65lete_user\x12\x14.chatbot.UserRequest\x1a\x15.chatbot.ChatbotReply\"\x00\x12;\n\nlogin_user\x12\x14.chatbot.UserRequest\x1a\x15.chatbot.ChatbotReply\"\x00\x62\x06proto3')
 
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, globals())
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'chatbot_pb2', globals())
@@ -24,6 +24,14 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _HELLOREQUEST._serialized_end=54
   _HELLOREPLY._serialized_start=56
   _HELLOREPLY._serialized_end=85
-  _GREETER._serialized_start=87
-  _GREETER._serialized_end=154
+  _USERREQUEST._serialized_start=87
+  _USERREQUEST._serialized_end=118
+  _MESSAGEREQUEST._serialized_start=120
+  _MESSAGEREQUEST._serialized_end=171
+  _LISTREQUEST._serialized_start=173
+  _LISTREQUEST._serialized_end=204
+  _CHATBOTREPLY._serialized_start=206
+  _CHATBOTREPLY._serialized_end=237
+  _MEMORYMANAGER._serialized_start=240
+  _MEMORYMANAGER._serialized_end=690
 # @@protoc_insertion_point(module_scope)

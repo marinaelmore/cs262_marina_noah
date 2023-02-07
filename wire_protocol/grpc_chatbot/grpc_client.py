@@ -16,14 +16,12 @@ def get_alphanumeric_input(prompt):
 
 
 def run():
-    # NOTE(gRPC Python Team): .close() is possible on a channel and should be
-    # used in circumstances in which the with statement does not fit the needs
-    # of the code.
+
     print("Attempting to establish a connection...")
 
     with grpc.insecure_channel('localhost:50051') as channel:
 
-        chatbot_stub = chatbot_pb2_grpc.GreeterStub(channel)
+        chatbot_stub = chatbot_pb2_grpc.MemoryManagerStub(channel)
 
         while True:
 
@@ -32,10 +30,12 @@ def run():
 
             if command == "CREATE":
 
-                username = get_alphanumeric_input(
+                input_username = get_alphanumeric_input(
                     "Create a username [a-zA-Z0-9]: ")
 
                 # Call server func
+                response = chatbot_stub.create_user(chatbot_pb2.UserRequest(username=input_username))
+                #response = chatbot_stub.create_user(username)
 
             elif command == "LOGIN":
 
@@ -69,8 +69,8 @@ def run():
             else:
                 raise ValueError("Invalid command")
   
-            response = chatbot_stub.SayHello(chatbot_pb2.HelloRequest(name="marina"))
-            print("Greeter client received: " + response.message)
+            #response = chatbot_stub.SayHello(chatbot_pb2.HelloRequest(name="marina"))
+            print("MemoryManager client received: " + response.message)
 
 
 if __name__ == '__main__':
