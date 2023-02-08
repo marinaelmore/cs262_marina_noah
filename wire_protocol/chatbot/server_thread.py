@@ -32,7 +32,8 @@ class ServerThread(Thread):
     def send(self, to, message):
         print("SENDING MESSAGE", message, "TO", to)
         if self.logged_in_user != "":
-            call_result = ServerMemory.send_message(to, message)
+            call_result = ServerMemory.send_message(
+                self.logged_in_user, to, message)
             response = "SEND:SUCCESS:EOM" if call_result else "SEND:FAILURE:EOM"
             self.client_socket.send(response.encode())
         else:
@@ -54,8 +55,9 @@ class ServerThread(Thread):
     def delete(self, username):
         print("DELETING USER", username)
         if username != "":
-            ServerMemory.delete_user(username)
-            self.client_socket.send(b'DELETE:SUCCESS:EOM')
+            result = ServerMemory.delete_user(username)
+            response = "DELETE:SUCCESS:EOM" if result else "DELETE:FAILURE:EOM"
+            self.client_socket.send(bytes(response, "utf-8"))
 
     def run(self):
         buffer = b""

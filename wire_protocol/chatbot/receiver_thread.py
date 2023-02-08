@@ -16,6 +16,7 @@ class ReceiverThread(Thread):
                 print(f"\nServer closed unexpectedly")
                 break
             print()
-            print("------------------------------------")
+            print("*** Incoming message from server ***")
             print(msg)
-            print("------------------------------------")
+            print("*** Message Received ***")
+            print()

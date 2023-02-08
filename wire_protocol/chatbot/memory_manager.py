@@ -23,9 +23,9 @@ class MemoryManager:
         else:
             return False
 
-    def send_message(self, to, message):
-        if to in self.users:
-            self.users[to].add_message(message)
+    def send_message(self, sender, to, message):
+        if (sender in self.users) and (to in self.users):
+            self.users[to].add_message(f"{sender}: {message}")
             return True
         else:
             return False
@@ -43,7 +43,7 @@ class MemoryManager:
         matches = []
         print(self.users)
         print(wildcard)
-        
+
         try:
             matches = [user for user in self.users if re.match(wildcard, user)]
 
@@ -59,6 +59,8 @@ class MemoryManager:
         if username in self.users:
             self.users.pop(username)
             print("Deleted user: {}".format(username))
+            return True
 
         else:
             print("User does not exist")
+            return False
