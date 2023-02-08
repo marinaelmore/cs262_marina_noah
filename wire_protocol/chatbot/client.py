@@ -1,9 +1,9 @@
 import socket
 import sys
 import re
-from receiver_thread import ReceiverThread
+from .receiver_thread import ReceiverThread
 from time import sleep
-from wire_protocol import WireProtocol
+from .wire_protocol import WireProtocol
 
 
 def get_alphanumeric_input(prompt):
@@ -18,62 +18,60 @@ def get_alphanumeric_input(prompt):
 
 alphanumeric = re.compile("[a-zA-Z0-9]+")
 
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
-    host = "0.0.0.0"
-    if len(sys.argv) > 1:
-        port = int(sys.argv[1])
-    else:
-        port = 8000
-    client_socket.connect((host, port))
 
-    # start listening for incoming messages on a seperate non-blocking thread
-    ReceiverThread(client_socket)
+def run_client(port):
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
+        host = "0.0.0.0"
+        client_socket.connect((host, port))
 
-    # collect input
-    while True:
+        # start listening for incoming messages on a seperate non-blocking thread
+        ReceiverThread(client_socket)
 
-        command = ""
+        # collect input
+        while True:
 
-        while command not in ["CREATE", "LOGIN", "LIST", "SEND", "DELETE"]:
+            command = ""
 
-            command = input(
-                "Select a Command \n CREATE, LOGIN, LIST, SEND, DELETE:  ").upper()
+            while command not in ["CREATE", "LOGIN", "LIST", "SEND", "DELETE"]:
 
-        if command == "CREATE":
+                command = input(
+                    "Select a Command \n CREATE, LOGIN, LIST, SEND, DELETE:  ").upper()
 
-            username = get_alphanumeric_input(
-                "Create a username [a-zA-Z0-9]: ")
-            command = WireProtocol.serialize_request(command, username)
+            if command == "CREATE":
 
-        elif command == "LOGIN":
+                username = get_alphanumeric_input(
+                    "Create a username [a-zA-Z0-9]: ")
+                command = WireProtocol.serialize_request(command, username)
 
-            username = get_alphanumeric_input(
-                "Login with username [a-zA-Z0-9]: ")
-            command = WireProtocol.serialize_request(command, username)
+            elif command == "LOGIN":
 
-        elif command == "LIST":
+                username = get_alphanumeric_input(
+                    "Login with username [a-zA-Z0-9]: ")
+                command = WireProtocol.serialize_request(command, username)
 
-            wildcard = input(
-                "Enter search prefix (or Enter for all accounts): ")
-            command = WireProtocol.serialize_request(command, wildcard)
+            elif command == "LIST":
 
-        elif command == "SEND":
+                wildcard = input(
+                    "Enter search prefix (or Enter for all accounts): ")
+                command = WireProtocol.serialize_request(command, wildcard)
 
-            username = get_alphanumeric_input(
-                "Destination username [a-zA-Z0-9]: ")
-            message = input("Type message: ")
+            elif command == "SEND":
 
-            command = WireProtocol.serialize_request(
-                command, username, message)
+                username = get_alphanumeric_input(
+                    "Destination username [a-zA-Z0-9]: ")
+                message = input("Type message: ")
 
-        elif command == "DELETE":
+                command = WireProtocol.serialize_request(
+                    command, username, message)
 
-            username = get_alphanumeric_input(
-                "Enter username to delete [a-zA-Z0-9]: ")
-            command = WireProtocol.serialize_request(command, username)
+            elif command == "DELETE":
 
-        else:
-            raise ValueError("Invalid command")
-        
-        client_socket.send(command)
-        sleep(1)
+                username = get_alphanumeric_input(
+                    "Enter username to delete [a-zA-Z0-9]: ")
+                command = WireProtocol.serialize_request(command, username)
+
+            else:
+                raise ValueError("Invalid command")
+
+            client_socket.send(command)
+            sleep(1)

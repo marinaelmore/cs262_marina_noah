@@ -26,6 +26,7 @@ class MemoryManager:
     def send_message(self, sender, to, message):
         if (sender in self.users) and (to in self.users):
             self.users[to].add_message(f"{sender}: {message}")
+            print(f"Messages of {to}: {self.users[to].messages}")
             return True
         else:
             return False

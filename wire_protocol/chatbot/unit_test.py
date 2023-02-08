@@ -1,7 +1,7 @@
 import unittest
-from memory_manager import User, MemoryManager
-#from client import get_alphanumeric_input
-#from server import *
+from helpers.memory_manager import User, MemoryManager
+# from client import get_alphanumeric_input
+# from server import *
 from receiver_thread import ReceiverThread
 from server_thread import ServerThread
 
@@ -15,10 +15,10 @@ class WireProtocolTestCase(unittest.TestCase):
         self.user = User(self.username)
         self.memory_manager = MemoryManager()
 
-    #Memory Manager - User Class
+    # Memory Manager - User Class
     def test_User_class(self):
-        
-        #Test creation
+
+        # Test creation
         self.assertEqual(self.user.username, self.username)
         self.assertEqual([], self.user.messages)
 
@@ -28,11 +28,10 @@ class WireProtocolTestCase(unittest.TestCase):
         self.user.add_message(self.message)
         self.assertEqual(msg_list, self.user.messages)
 
-
     def test_MemoryManager_class(self):
-        
-        #Test Creation
-        self.assertEqual({},self.memory_manager.users)
+
+        # Test Creation
+        self.assertEqual({}, self.memory_manager.users)
 
         # Test Create User
         self.memory_manager.create_user(self.username)
@@ -47,12 +46,14 @@ class WireProtocolTestCase(unittest.TestCase):
         self.assertEqual(1, len(noahs_messages))
         self.assertEqual(self.message, noahs_messages[0])
 
-        #Test Get Message
-        self.assertEqual(self.message, self.memory_manager.get_message(self.username1))
+        # Test Get Message
+        self.assertEqual(
+            self.message, self.memory_manager.get_message(self.username1))
         self.assertIsNone(self.memory_manager.get_message(self.username))
 
-        #Test List Users
-        self.assertEqual(["marina", "noah"], self.memory_manager.list_users(""))
+        # Test List Users
+        self.assertEqual(["marina", "noah"],
+                         self.memory_manager.list_users(""))
         self.assertEqual(["marina"], self.memory_manager.list_users("m"))
         self.assertEqual(["noah"], self.memory_manager.list_users("n"))
         self.assertEqual([], self.memory_manager.list_users("9"))
@@ -63,9 +64,6 @@ class WireProtocolTestCase(unittest.TestCase):
         self.assertEqual(1, len(self.memory_manager.users))
         curr_users = list(self.memory_manager.users.keys())
         self.assertEqual(["noah"], curr_users)
-
-
-
 
 
 if __name__ == '__main__':

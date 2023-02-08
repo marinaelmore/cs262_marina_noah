@@ -1,8 +1,7 @@
 from threading import *
-import re
-from memory_manager import MemoryManager
+from helpers.memory_manager import MemoryManager
 import select
-from wire_protocol import WireProtocol
+from .wire_protocol import WireProtocol
 
 ServerMemory = MemoryManager()
 
