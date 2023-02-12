@@ -28,11 +28,14 @@ message UserRequest {
 }
 
 message MessageRequest {
-  string username = 1;
-  string message = 4;
+  string logged_in_user = 1;
+  string username = 2;
+  string message = 3;
 }
 
-message GetRequest {}
+message GetRequest {
+  string logged_in_user = 1;
+}
 
 message ListRequest {
   string wildcard = 1;
@@ -40,4 +43,5 @@ message ListRequest {
 
 message ChatbotReply {
   string message = 1;
+  string SET_LOGIN_USER = 2;
 }

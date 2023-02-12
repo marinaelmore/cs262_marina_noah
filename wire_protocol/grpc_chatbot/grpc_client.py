@@ -24,7 +24,8 @@ def run_client():
 
         chatbot_stub = chatbot_pb2_grpc.ChatBotStub(channel)
         response = None
-        receiver_thread.ReceiverThread(chatbot_stub)
+        receiver = receiver_thread.ReceiverThread(chatbot_stub)
+        logged_in_user = ""
 
         while True:
 
@@ -63,7 +64,7 @@ def run_client():
 
                 # Call server func
                 response = chatbot_stub.send_message(
-                    chatbot_pb2.MessageRequest(username=username, message=message))
+                    chatbot_pb2.MessageRequest(logged_in_user=logged_in_user, username=username, message=message))
 
             elif command == "DELETE":
 
@@ -77,6 +78,10 @@ def run_client():
             else:
                 print("Invalid command, please try again.")
 
-            print("\n---------------------------------------------------------")
-            print(response.message)
-            print("---------------------------------------------------------\n")
+            if response:
+                if response.SET_LOGIN_USER:
+                    logged_in_user = response.SET_LOGIN_USER
+                    receiver.login(logged_in_user)
+                print("\n---------------------------------------------------------")
+                print(response.message)
+                print("---------------------------------------------------------\n")

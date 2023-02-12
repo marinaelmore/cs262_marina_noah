@@ -14,7 +14,6 @@ if __name__ == '__main__':
                         action="store_true")
     # parse arguments
     args = parser.parse_args()
-    print(args)
     # if grpc
     if args.grpc:
         if args.mode == "server":

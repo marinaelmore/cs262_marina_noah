@@ -9,9 +9,6 @@ ServerMemory = MemoryManager()
 
 
 class ChatBot(chatbot_pb2_grpc.ChatBotServicer):
-    def __init__(self):
-        # TODO  this is getting shared across threads, need to figure out thread specific memory
-        self.logged_in_user = ""
 
     def create_user(self, request, _context):
         username = request.username
@@ -24,18 +21,18 @@ class ChatBot(chatbot_pb2_grpc.ChatBotServicer):
         username = request.username
         print("LOGGING IN USER", username)
         if username in ServerMemory.users:
-            self.logged_in_user = username
-            return chatbot_pb2.ChatbotReply(message='LOGIN:SUCCESS:EOM')
+            return chatbot_pb2.ChatbotReply(SET_LOGIN_USER=username, message='LOGIN:SUCCESS:EOM')
         else:
             return chatbot_pb2.ChatbotReply(message='LOGIN:FAILURE:EOM')
 
     def send_message(self, request, _context):
+        logged_in_user = request.logged_in_user
         to = request.username
         message = request.message
         print("SENDING MESSAGE", message, "TO", to)
-        if self.logged_in_user != "":
+        if logged_in_user != "":
             call_result = ServerMemory.send_message(
-                self.logged_in_user, to, message)
+                logged_in_user, to, message)
             response = "SEND:SUCCESS:EOM" if call_result else "SEND:FAILURE:EOM"
             return chatbot_pb2.ChatbotReply(message=response)
         else:
@@ -49,11 +46,12 @@ class ChatBot(chatbot_pb2_grpc.ChatBotServicer):
         return chatbot_pb2.ChatbotReply(message=return_msg)
 
     def get_message(self, request, _context):
-        if self.logged_in_user == "":
+        logged_in_user = request.logged_in_user
+        if logged_in_user == "":
             return chatbot_pb2.ChatbotReply(message='')
-        msg = ServerMemory.get_message(self.logged_in_user)
+        msg = ServerMemory.get_message(logged_in_user)
         if msg:
-            return chatbot_pb2.ChatbotReply(message=f"{self.logged_in_user}:{msg}")
+            return chatbot_pb2.ChatbotReply(message=msg)
         else:
             return chatbot_pb2.ChatbotReply(message='')
 
