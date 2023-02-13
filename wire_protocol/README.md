@@ -137,3 +137,15 @@ moah: Hi Narina!
 *** Message Received ***
 ```
 
+6. Delete User - Moah
+
+```
+Select a Command
+ CREATE, LOGIN, LIST, SEND, DELETE:  delete
+Enter username to delete [a-zA-Z0-9]: moah
+
+---------------------------------------------------------
+DELETE:SUCCESS:EOM
+---------------------------------------------------------
+```
+
