@@ -110,7 +110,7 @@ Select a Command
 Enter search prefix (or Enter for all accounts):
 
 ---------------------------------------------------------
-LIST:moah, narina:EOM
+LIST:moah:EOM
 ---------------------------------------------------------
 ```
 
