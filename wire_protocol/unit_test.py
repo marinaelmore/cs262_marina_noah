@@ -2,9 +2,7 @@ import unittest
 from helpers.memory_manager import User, MemoryManager
 from chatbot.receiver_thread import ReceiverThread
 from chatbot.server_thread import ServerThread
-from unittest.mock import patch
-import select
-
+from unittest.mock import patch, Mock, MagicMock
 
 class MockThread:
     def __init__(self, socket):
@@ -90,39 +88,41 @@ class WireProtocolTestCase(unittest.TestCase):
 
     def test_Chatbot_server_thread(self):
 
-        with patch('helpers.memory_manager.MemoryManager') as memory_mock:
-            mocked_socket = MockSocket()
-            mocked_thread = MockThread(mocked_socket)
-            server_thread = ServerThread(mocked_thread)
-            
-            # Create
-            self.assertEqual(None, server_thread.create(self.username))
-
-            # Login
-            server_thread.login(self.username)     
-            self.assertEqual(server_thread.logged_in_user, self.username)
-
-            # Send to non-logged in user
-            server_thread.send(self.username1, self.message)
-            self.assertEqual(mocked_thread.client_socket,b"SEND:FAILURE:EOM")
-
-            server_thread2 = ServerThread(mocked_thread)
-            server_thread2.create(self.username1)
-            server_thread2.login(self.username1)     
-            self.assertEqual(server_thread2.logged_in_user, self.username1)
-            
-            # Send to logged in user
-            server_thread.send(self.username1, self.message)
-            self.assertEqual(mocked_thread.client_socket,b"SEND:SUCCESS:EOM")
-
-            # List Users
-
-
+        mocked_socket = MockSocket()
+        mocked_thread = MockThread(mocked_socket)
+        server_thread = ServerThread(mocked_thread)
         
-        self.assertEqual("marina", "marina")
+        # Create
+        self.assertEqual(None, server_thread.create(self.username))
+
+        # Login
+        server_thread.login(self.username)     
+        self.assertEqual(server_thread.logged_in_user, self.username)
+
+        # Send to non-logged in user
+        server_thread.send(self.username1, self.message)
+        self.assertEqual(mocked_thread.client_socket,b"SEND:FAILURE:EOM")
+
+        server_thread2 = ServerThread(mocked_thread)
+        server_thread2.create(self.username1)
+        server_thread2.login(self.username1)     
+        self.assertEqual(server_thread2.logged_in_user, self.username1)
+        
+        # Send to logged in user
+        server_thread.send(self.username1, self.message)
+        self.assertEqual(mocked_thread.client_socket,b"SEND:SUCCESS:EOM")
+
+        # List Users
+        server_thread.list_users("")
+        list_string = "LIST:{}, {}:EOM".format(self.username, self.username1) 
+        self.assertEqual(mocked_thread.client_socket,list_string.encode())
+
+        # Delete User           
+        server_thread.delete(self.username)
+        delete_string = "DELETE:SUCCESS:EOM"
+        self.assertEqual(mocked_thread.client_socket,delete_string.encode())
 
 
-    
     def test_Chatbot_grpc(self):
         self.assertEqual("marina", "marina")
 

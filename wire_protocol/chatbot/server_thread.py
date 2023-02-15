@@ -48,6 +48,7 @@ class ServerThread(Thread):
         if self.logged_in_user == "":
             return
         msg = ServerMemory.get_message(self.logged_in_user)
+        print("message {}".format(msg))
         if msg:
             self.client_socket.send(bytes(msg, "utf-8"))
 
