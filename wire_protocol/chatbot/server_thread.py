@@ -72,7 +72,9 @@ class ServerThread(Thread):
         buffer = b""
 
         while True:
+            # At every iteration, checks if there are any messages to be read
             self.read_messages()
+            # check if there are any messages from the client (non-blocking)
             client_sockets, _, _ = select.select(
                 [self.client_socket], [], [], 0.1)
             # this code assumes only one client socket, if more in this

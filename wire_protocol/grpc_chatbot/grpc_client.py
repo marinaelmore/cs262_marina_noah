@@ -4,8 +4,9 @@ from . import chatbot_pb2_grpc
 from . import receiver_thread
 import re
 
+# A helper method to ensure we get alphanumeric input from the user
 
-# DUP
+
 def get_alphanumeric_input(prompt):
     alphanumeric = re.compile("[a-zA-Z0-9]+")
     while True:
@@ -19,7 +20,7 @@ def get_alphanumeric_input(prompt):
 def run_client():
 
     print("Attempting to establish a connection...")
-
+    # create RPC channel and establish connection with the server
     with grpc.insecure_channel('localhost:50051') as channel:
 
         chatbot_stub = chatbot_pb2_grpc.ChatBotStub(channel)
