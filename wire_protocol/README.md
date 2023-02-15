@@ -25,11 +25,13 @@ Our chatbot program is a Python application organized into three key directories
 ```
 
 Our chatbot is run via a python app in the parent directory:
-
+``pip install -r requirements.txt``
 ``app.py --mode {client,server} [--port PORT] [--grpc]``
 
 
-To run the Wire Protocol version:
+
+## To run the Wire Protocol version:
+
   
 1. In a terminal window, start the server. The port is an optional argument - if you do not pass a port, it will default to 8000.
     
@@ -46,7 +48,7 @@ To run the Wire Protocol version:
      ``CREATE, LOGIN, LIST, SEND, DELETE:``
  
 
-To run the gRPC version:
+## To run the gRPC version:
   
 1. In a terminal window, start the server. The port is an optional argument - if you do not pass a port, it will default to 50051.
     
@@ -65,7 +67,7 @@ To run the gRPC version:
              
              
   
-To interact with the Chatbot:
+## To interact with the Chatbot:
   
 1. The Chatbot has the following capabilities:
     
