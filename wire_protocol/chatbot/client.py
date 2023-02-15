@@ -19,9 +19,8 @@ def get_alphanumeric_input(prompt):
 
 
 # runs the client in a loop, connecting to the server and sending commands
-def run_client(port):
+def run_client(host, port):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
-        host = "0.0.0.0"
         client_socket.connect((host, port))
 
         # start listening for incoming messages on a seperate non-blocking thread so that

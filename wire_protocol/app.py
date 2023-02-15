@@ -10,10 +10,13 @@ if __name__ == '__main__':
     # add argument
     parser.add_argument("--mode", help="Client or Server mode",
                         type=str, choices=["client", "server"], required=True)
+    parser.add_argument("--host", help="host IP address",
+                        type=str, default="0.0.0.0")
     parser.add_argument("--port", help="port to run server on",
                         type=int, default=8000)
     parser.add_argument("--grpc", help="run grpc server",
                         action="store_true")
+
     # parse arguments
     args = parser.parse_args()
     # if grpc
@@ -21,9 +24,9 @@ if __name__ == '__main__':
         if args.mode == "server":
             grpc_server.run_server()
         elif args.mode == "client":
-            grpc_client.run_client()
+            grpc_client.run_client(args.host)
     else:
         if args.mode == "server":
             server.run_server(args.port)
         elif args.mode == "client":
-            client.run_client(args.port)
+            client.run_client(args.host, args.port)

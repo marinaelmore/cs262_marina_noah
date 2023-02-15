@@ -3,6 +3,7 @@ from . import chatbot_pb2
 from . import chatbot_pb2_grpc
 from . import receiver_thread
 import re
+import sys
 
 # A helper method to ensure we get alphanumeric input from the user
 
@@ -17,11 +18,11 @@ def get_alphanumeric_input(prompt):
             print("Please only use letters and numbers")
 
 
-def run_client():
+def run_client(host):
 
     print("Attempting to establish a connection...")
     # create RPC channel and establish connection with the server
-    with grpc.insecure_channel('localhost:50051') as channel:
+    with grpc.insecure_channel(f'{host}:50051') as channel:
 
         chatbot_stub = chatbot_pb2_grpc.ChatBotStub(channel)
         response = None
@@ -29,7 +30,6 @@ def run_client():
         # the main difference from the non-grpc client is that we need to keep track of thread specific state
         # on the client (server is stateless). This is akin to how HTTP operates.
         logged_in_user = ""
-
         while True:
 
             command = input(
