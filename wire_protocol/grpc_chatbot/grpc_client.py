@@ -26,6 +26,8 @@ def run_client():
         chatbot_stub = chatbot_pb2_grpc.ChatBotStub(channel)
         response = None
         receiver = receiver_thread.ReceiverThread(chatbot_stub)
+        # the main difference from the non-grpc client is that we need to keep track of thread specific state
+        # on the client (server is stateless). This is akin to how HTTP operates.
         logged_in_user = ""
 
         while True:
@@ -80,8 +82,10 @@ def run_client():
                 print("Invalid command, please try again.")
 
             if response:
+                # if the server has set the logged in user, update the client's state
                 if response.SET_LOGIN_USER:
                     logged_in_user = response.SET_LOGIN_USER
+                    # login the receiver thread to start reading messages
                     receiver.login(logged_in_user)
                 print("\n---------------------------------------------------------")
                 print(response.message)

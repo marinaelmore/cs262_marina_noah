@@ -31,6 +31,7 @@ message ListRequest {
 
 message ChatbotReply {
   string message = 1;
-  // a "HEADER "
+  // a "HEADER" set by the server that instructs the client to set a 
+  // logged in user cookie
   string SET_LOGIN_USER = 2;
 }

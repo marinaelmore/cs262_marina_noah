@@ -4,12 +4,13 @@ from . import chatbot_pb2
 from . import chatbot_pb2_grpc
 from helpers.memory_manager import MemoryManager
 
-
+# Start shared memory manager for server
 ServerMemory = MemoryManager()
 
 
 class ChatBot(chatbot_pb2_grpc.ChatBotServicer):
 
+    # helper method to create a new user
     def create_user(self, request, _context):
         username = request.username
         print("CREATING USER", username)
@@ -17,6 +18,7 @@ class ChatBot(chatbot_pb2_grpc.ChatBotServicer):
         response = "CREATE:SUCCESS:EOM" if result else "CREATE:FAILURE:EOM"
         return chatbot_pb2.ChatbotReply(message=response)
 
+    # helper method to login a new user by setting the SET_LOGIN_USER header
     def login_user(self, request, _context):
         username = request.username
         print("LOGGING IN USER", username)
@@ -25,6 +27,7 @@ class ChatBot(chatbot_pb2_grpc.ChatBotServicer):
         else:
             return chatbot_pb2.ChatbotReply(message='LOGIN:FAILURE:EOM')
 
+    # send message from one logged in user to another
     def send_message(self, request, _context):
         logged_in_user = request.logged_in_user
         to = request.username
@@ -38,6 +41,7 @@ class ChatBot(chatbot_pb2_grpc.ChatBotServicer):
         else:
             return chatbot_pb2.ChatbotReply(message='SEND:FAILURE:LOGIN_REQUIRED:EOM')
 
+# list users matching with a wildcard
     def list_users(self, request, _context):
         wildcard = request.wildcard
         print("LISTING USERS", wildcard)
@@ -45,6 +49,7 @@ class ChatBot(chatbot_pb2_grpc.ChatBotServicer):
         return_msg = "LIST:{}:EOM".format(matches)
         return chatbot_pb2.ChatbotReply(message=return_msg)
 
+# read a message that has been sent to the logged in user
     def get_message(self, request, _context):
         logged_in_user = request.logged_in_user
         if logged_in_user == "":
@@ -55,6 +60,7 @@ class ChatBot(chatbot_pb2_grpc.ChatBotServicer):
         else:
             return chatbot_pb2.ChatbotReply(message='')
 
+# delete user
     def delete_user(self, request, _context):
         username = request.username
         print("DELETING USER", username)
@@ -62,6 +68,8 @@ class ChatBot(chatbot_pb2_grpc.ChatBotServicer):
             result = ServerMemory.delete_user(username)
             response = "DELETE:SUCCESS:EOM" if result else "DELETE:FAILURE:EOM"
             return chatbot_pb2.ChatbotReply(message=response)
+
+# main server function
 
 
 def run_server():
