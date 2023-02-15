@@ -1,6 +1,7 @@
 import re
 
 
+# Class responsible for serializing and deserializing requests/responses to our wire format
 # requests take the form (COMMAND, ARG0, ARG1...)
 # they are serialized as COMMAND:ARG0:ARG1:...:EOM
 # responses take the form <String>
@@ -22,6 +23,7 @@ class WireProtocol:
     MAX_BYTES = 2000
     COMMANDS = ["CREATE", "LOGIN", "SEND", "LIST", "DELETE"]
 
+# Function responsible for serialization of requests to our wire format
     def serialize_request(command, *body):
         if command not in WireProtocol.COMMANDS:
             raise ValueError("Invalid command")
@@ -41,6 +43,7 @@ class WireProtocol:
             raise ValueError("Message too long")
         return encoded
 
+# Function responsible for deserialization of requests to our wire format
     def deserialize_request(data):
         test = data.decode()
         print("TEST", test)

@@ -3,23 +3,28 @@ from helpers.memory_manager import MemoryManager
 import select
 from .wire_protocol import WireProtocol
 
+# initialize server memory that is shared across all threads
 ServerMemory = MemoryManager()
 
 
+# create thread-level client connection handler
 class ServerThread(Thread):
 
     def __init__(self, socket):
         Thread.__init__(self)
         self.client_socket = socket
+        # a connection is "logged in" by setting logged_in_user to a valid username
         self.logged_in_user = ""
         self.start()
 
+    # Create a new user
     def create(self, username):
         print("CREATING USER", username)
         result = ServerMemory.create_user(username)
         response = "CREATE:SUCCESS:EOM" if result else "CREATE:FAILURE:EOM"
         self.client_socket.send(response.encode())
 
+   # Login a new user
     def login(self, username):
         print("LOGGING IN USER", username)
         if username in ServerMemory.users:
@@ -28,6 +33,7 @@ class ServerThread(Thread):
         else:
             self.client_socket.send(b'LOGIN:FAILURE:EOM')
 
+    # send message from a logged in user to another valid user
     def send(self, to, message):
         print("SENDING MESSAGE", message, "TO", to)
         if self.logged_in_user != "":
@@ -38,12 +44,14 @@ class ServerThread(Thread):
         else:
             self.client_socket.send(b'SEND:FAILURE:LOGIN_REQUIRED:EOM')
 
+# list all users that match a wildcard
     def list_users(self, wildcard):
         print("LISTING USERS", wildcard)
         matches = ", ".join(ServerMemory.list_users(wildcard))
         return_msg = "LIST:{}:EOM".format(matches)
         self.client_socket.send(bytes(return_msg, "utf-8"))
 
+# read any messages that have been sent to the logged in user
     def read_messages(self):
         if self.logged_in_user == "":
             return
@@ -51,6 +59,7 @@ class ServerThread(Thread):
         if msg:
             self.client_socket.send(bytes(msg, "utf-8"))
 
+# delete a user
     def delete(self, username):
         print("DELETING USER", username)
         if username != "":
@@ -58,6 +67,7 @@ class ServerThread(Thread):
             response = "DELETE:SUCCESS:EOM" if result else "DELETE:FAILURE:EOM"
             self.client_socket.send(bytes(response, "utf-8"))
 
+# main thread loop
     def run(self):
         buffer = b""
 
@@ -72,8 +82,9 @@ class ServerThread(Thread):
                 if client_msg == b"":
                     print("Client closed unexpectedly")
                     return
+                # since messages can come in over multiple packets, we need to buffer them
                 buffer += client_msg
-
+                # deserialize and check if we have a complete message
                 match = WireProtocol.deserialize_request(buffer)
                 if match:
                     command, *args = match
@@ -88,5 +99,6 @@ class ServerThread(Thread):
                     elif command == "DELETE":
                         self.delete(args[0])
                     buffer = b""
+                # if we have a message larger than our protocol, an error happened, and we clear the buffer
                 if len(buffer) > WireProtocol.MAX_BYTES:
                     buffer = b""

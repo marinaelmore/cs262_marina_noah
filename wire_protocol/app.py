@@ -1,7 +1,9 @@
 import argparse
 from chatbot import server, client
 from grpc_chatbot import grpc_server, grpc_client
-# if name is main
+
+
+# start program when run on command line
 if __name__ == '__main__':
     # create parser
     parser = argparse.ArgumentParser()

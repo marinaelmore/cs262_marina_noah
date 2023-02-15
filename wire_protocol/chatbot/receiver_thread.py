@@ -2,6 +2,7 @@ from threading import Thread
 from time import sleep
 
 
+# Class responsible for printing incoming messages from the server without blocking the input
 class ReceiverThread(Thread):
 
     def __init__(self, socket):
