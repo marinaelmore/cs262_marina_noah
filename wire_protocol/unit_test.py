@@ -3,16 +3,22 @@ from helpers.memory_manager import User, MemoryManager
 from chatbot.receiver_thread import ReceiverThread
 from chatbot.server_thread import ServerThread
 from unittest.mock import patch
+import select
 
 
 class MockThread:
-    def __init__(self, name):
-        self.name = name
+    def __init__(self, socket):
+        self.client_socket = socket
     
     def start(self):
         pass
 
-class MockClient:
+    def send(self, msg):
+        print("Sending: {}".format(msg))
+        self.client_socket = msg
+
+
+class MockSocket:
     def __init__(self) -> None:
         pass
 
@@ -83,10 +89,34 @@ class WireProtocolTestCase(unittest.TestCase):
 
 
     def test_Chatbot_server_thread(self):
-        with patch('unit_test.MockThread') as mocked_thread:
-            server_thread = ServerThread(mocked_thread)
 
-            self.assertEqual("marina", server_thread.create(self.username))
+        with patch('helpers.memory_manager.MemoryManager') as memory_mock:
+            mocked_socket = MockSocket()
+            mocked_thread = MockThread(mocked_socket)
+            server_thread = ServerThread(mocked_thread)
+            
+            # Create
+            self.assertEqual(None, server_thread.create(self.username))
+
+            # Login
+            server_thread.login(self.username)     
+            self.assertEqual(server_thread.logged_in_user, self.username)
+
+            # Send to non-logged in user
+            server_thread.send(self.username1, self.message)
+            self.assertEqual(mocked_thread.client_socket,b"SEND:FAILURE:EOM")
+
+            server_thread2 = ServerThread(mocked_thread)
+            server_thread2.create(self.username1)
+            server_thread2.login(self.username1)     
+            self.assertEqual(server_thread2.logged_in_user, self.username1)
+            
+            # Send to logged in user
+            server_thread.send(self.username1, self.message)
+            self.assertEqual(mocked_thread.client_socket,b"SEND:SUCCESS:EOM")
+
+            # List Users
+
 
         
         self.assertEqual("marina", "marina")
