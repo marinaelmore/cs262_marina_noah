@@ -154,11 +154,11 @@ DELETE:SUCCESS:EOM
 
 ## To Test The Chatbot
 
-1. In the terminal, run the unit tests from the home directory
-``coverage run unit_test.py --rcfile=setup.cfg
+1. In the terminal, run the unit tests from the home directory:
+``coverage run unit_test.py --rcfile=setup.cfg``
 
-2. Generate the code coverage report
-``coverage report
+2. Generate the code coverage report:
+``coverage report``
 
 ```
 Name                          Stmts   Miss  Cover
