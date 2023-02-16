@@ -4,6 +4,7 @@ from chatbot.receiver_thread import ReceiverThread
 from chatbot.server_thread import ServerThread
 from unittest.mock import patch, Mock, MagicMock
 from grpc_chatbot.grpc_server import ChatBot
+import socket
 
 class MockThread:
     def __init__(self, socket):
@@ -16,6 +17,10 @@ class MockThread:
         print("Sending: {}".format(msg))
         self.client_socket = msg
 
+    def recv(self, msg):
+        self.client_socket = None
+        return b""
+
 
 class MockSocket:
     def __init__(self) -> None:
@@ -24,6 +29,9 @@ class MockSocket:
     def send(self):
         print("Sending")
         pass 
+
+    def recv(self, bytes):
+        return ""
 
 class mockedChatbotPb2:
     def __init__(self) -> None:
@@ -77,6 +85,16 @@ class WireProtocolTestCase(unittest.TestCase):
         msg_list.append(self.message)
         self.user.add_message(self.message)
         self.assertEqual(msg_list, self.user.messages)
+
+    def test_Reciever_Thread(self):
+        mocked_socket = MockSocket()
+        mocked_thread = MockThread(mocked_socket)
+        reciver_thread = ReceiverThread(mocked_thread)
+
+        with patch('socket.socket.recv') as recv:
+            recv.return_value = ""
+            reciver_thread.run()
+            self.assertIsNotNone(reciver_thread.client_socket)
 
     def test_MemoryManager_class(self):
 
@@ -176,8 +194,7 @@ class WireProtocolTestCase(unittest.TestCase):
             self.assertEqual("LOGIN:FAILURE:EOM", grpc_server_thread.login_user(user_request_dn_exist, "").message)
 
 
-            # Send Message
-            ## Send to non-logged in user
+            ## Send message to non-logged in user
             message_request = MockedMessageRequest(logged_in_user=self.username, username=self.username1, message=self.message)
             self.assertEqual("SEND:FAILURE:EOM", grpc_server_thread.send_message(message_request, "").message)
 
