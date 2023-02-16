@@ -151,3 +151,25 @@ DELETE:SUCCESS:EOM
 ---------------------------------------------------------
 ```
 
+
+## To Test The Chatbot
+
+1. In the terminal, run the unit tests from the home directory
+``coverage run unit_test.py --rcfile=setup.cfg
+
+2. Generate the code coverage report
+``coverage report
+
+```
+Name                          Stmts   Miss  Cover
+-------------------------------------------------
+chatbot/receiver_thread.py       18      5    72%
+chatbot/server_thread.py         72     27    62%
+chatbot/wire_protocol.py         37     25    32%
+grpc_chatbot/grpc_server.py      59     14    76%
+helpers/memory_manager.py        45      5    89%
+-------------------------------------------------
+TOTAL                           231     76    67%
+```
+
+
