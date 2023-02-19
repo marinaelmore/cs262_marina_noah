@@ -161,9 +161,11 @@ DELETE:SUCCESS:EOM
 ## To Generate Code Coverage Report
 
 1. In the terminal, generate the coverage report:
+
 ``coverage run --rcfile=setup.cfg  unit_test.py``
 
 1. Output the coverage report:
+
 ``coverage report``
 
 ```
