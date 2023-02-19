@@ -155,9 +155,15 @@ DELETE:SUCCESS:EOM
 ## To Test The Chatbot
 
 1. In the terminal, run the unit tests from the home directory:
-``coverage run unit_test.py --rcfile=setup.cfg``
 
-2. Generate the code coverage report:
+``pytest -v unit_test.py``
+
+## To Generate Code Coverage Report
+
+1. In the terminal, generate the coverage report:
+``coverage run --rcfile=setup.cfg  unit_test.py``
+
+1. Output the coverage report:
 ``coverage report``
 
 ```
