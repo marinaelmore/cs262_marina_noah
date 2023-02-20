@@ -26,8 +26,7 @@ Our chatbot program is a Python application organized into three key directories
 
 Our chatbot is run via a python app in the parent directory:
 ``pip install -r requirements.txt``
-``app.py --mode {client,server} [--port PORT] [--grpc]``
-
+``app.py --mode {client,server} [--port PORT] [--host HOST (default 0.0.0.0)] [--grpc]``
 
 
 ## To run the Wire Protocol version:
@@ -35,14 +34,14 @@ Our chatbot is run via a python app in the parent directory:
   
 1. In a terminal window, start the server. The port is an optional argument - if you do not pass a port, it will default to 8000.
     
-    * COMMAND: ``python3 app.y —-mode server [--port 8000]``
+    * COMMAND: ``python3 app.y —-mode server [--port 8000]`
     
     * OUTPUT: ``Server listening on port 8000 ...``
    
 
-2. In separate terminal window(s), start the client(s)
+2. In separate terminal window(s), start the client(s). The host is optional - if you do not pass a host, it will default to 0.0.0.0.
     
-    *  COMMAND: ``python3 app.y —-mode client [--port 8000]``
+    *  COMMAND: ``python3 app.y —-mode client [--port 8000] [--host 0.0.0.0]``
     
     *  OUTPUT: `` Select a Command``
      ``CREATE, LOGIN, LIST, SEND, DELETE:``
@@ -57,9 +56,9 @@ Our chatbot is run via a python app in the parent directory:
     * OUTPUT: ``GRPC Server started, listening on 50051``
    
 
-2. In separate terminal window(s), start the client(s). The port is an optional argument - if you do not pass a port, it will default to 50051.
+2. In separate terminal window(s), start the client(s). The port is an optional argument - if you do not pass a port, it will default to 50051. The host is optional - if you do not pass a host, it will default to 0.0.0.0.
     
-    *  COMMAND: ``python3 app.y —-mode client [--port 50051]``
+    *  COMMAND: ``python3 app.y —-mode client [--port 50051] [--host 0.0.0.0]``
     
     *  OUTPUT: `` Attempting to establish a connection...``
             ``Select a Command``
