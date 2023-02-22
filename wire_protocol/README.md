@@ -48,7 +48,7 @@ Our chatbot is run via a python app in the parent directory:
 
 2. In separate terminal window(s), start the client(s). The host is optional - if you do not pass a host, it will default to 0.0.0.0.
     
-    *  COMMAND: ``python3 app.y —-mode client [--port 8000] [--host 0.0.0.0]``
+    *  COMMAND: ``python3 app.py —-mode client [--port 8000] [--host 0.0.0.0]``
     
     *  OUTPUT: `` Select a Command``
      ``CREATE, LOGIN, LIST, SEND, DELETE:``
