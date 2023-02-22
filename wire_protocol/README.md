@@ -25,7 +25,9 @@ Our chatbot program is a Python application organized into three key directories
 ```
 
 Our chatbot is run via a python app in the parent directory:
+
 ``pip install -r requirements.txt``
+
 ``app.py --mode {client,server} [--port PORT] [--host HOST (default 0.0.0.0)] [--grpc]``
 
 
