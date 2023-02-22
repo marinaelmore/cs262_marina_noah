@@ -31,7 +31,7 @@ Our chatbot is run via a python app in the parent directory:
 
 # Quick Start For Demo Day  #
 *Use our hosted server, just connect your clients!*
-* Normal: `python3 app.py --mode client --host 23.20.234.150``
+* Normal: `python3 app.py --mode client --host 23.20.234.150`
 * gRPC: `python3 app.py --mode client --grpc --host 23.20.234.150`
 
 ## To run the Wire Protocol version:
@@ -39,7 +39,7 @@ Our chatbot is run via a python app in the parent directory:
   
 1. In a terminal window, start the server. The port is an optional argument - if you do not pass a port, it will default to 8000.
     
-    * COMMAND: ``python3 app.y —-mode server [--port 8000]`
+    * COMMAND: ``python3 app.py —-mode server [--port 8000]``
     
     * OUTPUT: ``Server listening on port 8000 ...``
    
@@ -56,7 +56,7 @@ Our chatbot is run via a python app in the parent directory:
   
 1. In a terminal window, start the server. The port is an optional argument - if you do not pass a port, it will default to 50051.
     
-    * COMMAND: ``python3 app.y —-mode server [--port 50051] --grpc``
+    * COMMAND: ``python3 app.py —-mode server [--port 50051] --grpc``
     
     * OUTPUT: ``GRPC Server started, listening on 50051``
    
