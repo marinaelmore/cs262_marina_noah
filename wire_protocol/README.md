@@ -29,6 +29,11 @@ Our chatbot is run via a python app in the parent directory:
 ``app.py --mode {client,server} [--port PORT] [--host HOST (default 0.0.0.0)] [--grpc]``
 
 
+# Quick Start For Demo Day  #
+* Use our hosted server!
+* Normal: `python3 app.py --mode client --host 23.20.234.150`
+* gRPC: `python3 app.py --mode client --grpc --host 23.20.234.150`
+
 ## To run the Wire Protocol version:
 
   
