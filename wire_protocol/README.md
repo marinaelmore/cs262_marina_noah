@@ -30,7 +30,7 @@ Our chatbot is run via a python app in the parent directory:
 
 
 # Quick Start For Demo Day  #
-* Use our hosted server!
+*Use our hosted server, just connect your clients!*
 * Normal: `python3 app.py --mode client --host 23.20.234.150`
 * gRPC: `python3 app.py --mode client --grpc --host 23.20.234.150`
 
