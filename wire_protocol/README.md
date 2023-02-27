@@ -31,8 +31,8 @@ Our chatbot is run via a python app in the parent directory:
 ``app.py --mode {client,server} [--port PORT] [--host HOST (default 0.0.0.0)] [--grpc]``
 
 
-# WE HAVE DECOMISSIONED NOW THAT DEMO DAY IS OVER: Quick Start For Demo Day  #
-*Use our hosted server, just connect your clients!*
+# DECOMISSIONED NOW THAT DEMO DAY IS OVER: Quick Start For Demo Day  #
+*Use our hosted server, just connect your clients! DECOMISSIONED!!!*
 * Normal: `python3 app.py --mode client --host 23.20.234.150`
 * gRPC: `python3 app.py --mode client --grpc --host 23.20.234.150`
 
