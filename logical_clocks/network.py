@@ -28,15 +28,14 @@ while True:
     read, write, error = select.select(socket_list,[],[])
 
     for r in read:
-        for item in socket_list:
-            if r == item:
-                accepted_socket, adress = item.accept()
+        if r in socket_list:
+            accepted_socket, address = r.accept()
 
-                print('We have a connection with {}'.format(adress))
-                
-                data = accepted_socket.recv(buf_size)
-                
-                if data:
-                    print(data)
-                    accepted_socket.send(b'Hello, and goodbye.')
-                    accepted_socket.close()
+            print('We have a connection with {}'.format(address))
+            
+            data = accepted_socket.recv(buf_size)
+            
+            if data:
+                print(data)
+                accepted_socket.send(b'Hello, and goodbye.')
+                accepted_socket.close()
