@@ -8,22 +8,47 @@
 # Connect to other virtual machines, listen on one or more sockets for such messages
 # Open file as a log
 # Initialize logical clock
-
-class Message():
-    def __init__(self):
-        self.timestamp = None
-        self.message = ""
+import socket
 
 class VirtualMachine():
 
-    def __init__(self, clock_rate, output_log_path):
+    def __init__(self, machine_id, clock_rate, output_log_path, clientsocket, port):
+        # Initialize vars
+        self.machine_id = machine_id
         self.clock_rate = clock_rate
-        self.output_logpath = open(output_log_path, "rw")
-
+        self.output_file = open(output_log_path, "rw")
+        self.logical_clock = []
     
-    def send_message(curr_time):
-        msg = Message(curr_time, "Hello from the Other Side")
+    def connect_to_other_vms(self, machine1_id, machine2_id):
+        print("TO DO")
+
+    def send(self, destination_machine_id, message):
+        try:
+            self.queue[destination_machine_id].put(message, block=False)
+        except Exception as e:
+            return None
 
 
+    def recieve(self):
+        try:
+            self.queue[self.machine_id].get(block=False)
+        except Exception as e:
+            return None
 
+def run_vm(host, port):
+    #self.output_file.write("Starting VM")
+    #self.output_file.write("Listening for messages...")
 
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
+        client_socket.connect((host, port))
+
+        client_socket.send(b"howdy")
+
+def main():
+    run_vm("0.0.0.0", 8080)
+    run_vm("0.0.0.0", 8081)
+    run_vm("0.0.0.0", 8000)
+        
+
+if __name__ == '__main__':
+    main()
