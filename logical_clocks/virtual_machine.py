@@ -15,49 +15,67 @@ import asyncio
 import random
 import sys
 import socket
-from vm_protocol import VMProtocol
 import configparser
 
 queue = asyncio.Queue()
 
-class VMProtocol(asyncio.Protocol):
 
-    def connection_made(self, socket):
-        peername = socket.get_extra_info('peername')
-        print('Connection from {}'.format(peername))
-        self.socket = socket
+class VMProtocol(asyncio.Protocol):
+    def __init__(self, message, on_con_lost):
+        self.message = message
+        self.on_con_lost = on_con_lost
+
+    def connection_made(self, transport):
+        transport.write(self.message.encode())
+        print('Data sent: {!r}'.format(self.message))
 
     def data_received(self, data):
+        print('Data received: {!r}'.format(data.decode()))
         message = data.decode()
-        print('Data received: {!r}'.format(message))
         queue.put_nowait(message)
 
+    def connection_lost(self, exc):
+        print('The server closed the connection')
+        self.on_con_lost.set_result(True)
 
 class VirtualMachine():
 
-    def __init__(self, machine_id, clock_rate, output_log_path):
+    def __init__(self, machine_id, clock_rate, output_log_path, port2, port3):
         # Initialize vars
         self.machine_id = machine_id
         self.clock_rate = clock_rate
         self.output_file = open(output_log_path, "w")
         self.logical_clock = []
+        self.machine_2_port = port2
+        self.machine_3_port = port3
 
-    async def connect_to_other_machine(self, host, port):
-        self.reader1,self.stream1 = await asyncio.open_connection(host, port)
+    async def connect_to_other_machines(self, host, port2, port3):
+        self.reader2,self.stream2 = await asyncio.open_connection(host, port2)
+        self.reader3,self.stream3 = await asyncio.open_connection(host, port3)
 
     def update_logical_clock(self):
         print("update logical clock")
 
-    async def send_message(self, machine_id):
+    async def send_message(self, port):
         message = "yoooo"
 
-        self.output_file.write("Sending message to Machine {}".format(machine_id))
+        self.output_file.write("Sending message to machine at port: {}\n".format(port))
 
-        self.stream1.write(message.encode())        
-        await self.stream1.drain()
+        if port == self.machine_2_port:
+            self.stream2.write(message.encode())        
+            await self.stream2.drain()
+        if port == self.machine_3_port:
+            self.stream3.write(message.encode())        
+            await self.stream3.drain()
 
-    async def run_vm_client(self, m1port, m2port):
+    async def run_vm_client(self,host, m2port, m3port):
+        print("Starting client task")
         self.output_file.write("Starting VM\n")
+
+        print("Connecting to other machines")
+        await self.connect_to_other_machines(host, m2port, m3port)
+        
+        print("Listening for messages....")
         self.output_file.write("Listening for messages...\n")
 
         while True:
@@ -71,17 +89,19 @@ class VirtualMachine():
                 randint = random.randrange(1, 10) 
 
                 if randint == 1:
-                    print("send msg to vm1") 
-                    self.send_message(machine_id="machine1")
+                    print("send msg to vm2") 
+                    await self.send_message(m2port)
                     print("sent\n") 
                 
                 elif randint == 2:
-                    print("send msg to vm2")
-                    self.send_message(machine_id="machine2")
+                    print("send msg to vm3")
+                    await self.send_message(m3port)
                     print("sent\n") 
                 
                 elif randint == 3:
                     print("send to vm 2 and 3\n")
+                    await self.send_message(m2port)
+                    await self.send_message(m3port)
                 
                 else:
                     #if the value is other than 1-3, treat the cycle as an internal event; update the local logical clock, and log the internal event, the system time, and the logical clock value.
@@ -95,12 +115,13 @@ class VirtualMachine():
             print('This round is finished, night night\n\n')
 
 async def start_vm_server(host, port):
+    print("Starting server task on port {}".format(port))
     start_server_task = await asyncio.start_server(VMProtocol, host, port)
 
     async with start_server_task:
         await  start_server_task.serve_forever()
 
-def main(machine_id):
+async def main(machine_id):
     # Parse configurations
 
     config = configparser.ConfigParser()
@@ -110,20 +131,20 @@ def main(machine_id):
     if machine_id == "machine_1":
         myhost = config['machine_1']['host']
         myport = config['machine_1']['port']
-        m1port = config['machine_2']['port']
-        m2port = config['machine_3']['port']
+        m2port = config['machine_2']['port']
+        m3port = config['machine_3']['port']
         output_path = config['machine_1']['output_path']
     elif machine_id == "machine_2":
-        myhost = config['machine_1']['host']
-        myport = config['machine_1']['port']
-        m1port = config['machine_1']['port']
-        m2port = config['machine_3']['port']
+        myhost = config['machine_2']['host']
+        myport = config['machine_2']['port']
+        m2port = config['machine_1']['port']
+        m3port = config['machine_3']['port']
         output_path = config['machine_1']['output_path']
     elif machine_id == "machine3":
-        myhost = config['machine_1']['host']
-        myport = config['machine_1']['port']
-        m1port = config['machine_2']['port']
-        m2port = config['machine_1']['port']
+        myhost = config['machine_3']['host']
+        myport = config['machine_3']['port']
+        m2port = config['machine_2']['port']
+        m3port = config['machine_1']['port']
         output_path = config['machine_1']['output_path']
     else:
         print("Machine name does not exist")
@@ -132,15 +153,12 @@ def main(machine_id):
     # Start Loop
     loop = asyncio.get_event_loop()
 
-
-    print("Starting server task")
     start_server_task = loop.create_task(start_vm_server(myhost, myport))
 
     clock_rate = 5
-    vm = VirtualMachine(machine_id, clock_rate, output_path)
-
-    print("Starting client task")
-    start_client_task = loop.create_task(vm.run_vm_client(m1port, m2port))
+    vm = VirtualMachine(machine_id, clock_rate, output_path, m2port, m3port)
+    
+    start_client_task = loop.create_task(vm.run_vm_client(myhost, m2port, m3port))
 
     try:
         loop.run_forever()
