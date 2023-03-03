@@ -65,16 +65,47 @@ class VirtualMachine():
         message = "yoooo"
 
         self.output_file.write("Sending message to machine at port: {}\n".format(port))
-
+        print("Sending message to machine at port: {}".format(port))
         if port == self.machine_2_port:
             self.stream2.write(message.encode())        
             await self.stream2.drain()
+            print("sent to 2")
         if port == self.machine_3_port:
             self.stream3.write(message.encode())        
             await self.stream3.drain()
+            print("sent to 3")
+    async def run_enqueue(self, port):
+        # check for messages from machine 2 and 3 and add them to queueue
+        
+        while True:
+            await asyncio.sleep(0.1)
+            reader = None
+            machine = None
+            if port == self.machine_2_port:
+                reader = self.reader2
+                machine = 2
+            if port == self.machine_3_port:
+                reader = self.reader3
+                machine = 3
+            
+            # reader at eof check
+            if reader.at_eof():
+                print(f"machine {machine} reader at eof")
+                break
+
+            print(f"reading from {machine}")
+            data = await reader.read(100)
+            print(f"finished read from {machine}")
+            if data:
+                print(f"got data from {machine}", data)
+                queue.put_nowait(data.decode())
+                print(f"data from {machine} added to queue")
+
 
     async def run_vm_client(self,host, m2port, m3port):
-        print("Starting client task")
+        loop = asyncio.get_event_loop()
+
+        # write "startin vm" to logfile
         self.output_file.write("Starting VM\n")
 
         print("Connecting to other machines")
@@ -83,6 +114,9 @@ class VirtualMachine():
         print("Listening for messages....")
         self.output_file.write("Listening for messages...\n")
 
+        start_enqueue_2 = loop.create_task(self.run_enqueue(m2port))
+        start_enqueue_3 = loop.create_task(self.run_enqueue(m3port))
+        
         while True:
             # Sleep for the clock rate seconds.
             await asyncio.sleep(self.clock_rate)
@@ -160,7 +194,7 @@ def main(machine_id):
 
     start_server_task = loop.create_task(start_vm_server(myhost, myport))
 
-    #clock_rate = random.randint(1,6)
+    # clock_rate = random.randint(1,6)
     clock_rate = 5
     vm = VirtualMachine(machine_id, clock_rate, output_path, m2port, m3port)
     
