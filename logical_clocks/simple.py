@@ -74,7 +74,7 @@ class VirtualMachine():
 def main():
     loop = asyncio.get_event_loop()
 
-    vm = VirtualMachine("machine1", 5, "templog.txt")
+    vm = VirtualMachine("machine1", 5, "output_files/templog.txt")
 
     print("Starting server task")
     start_server_task = loop.create_task(loop.create_server(VMProtocol, '127.0.0.1', 8000))
