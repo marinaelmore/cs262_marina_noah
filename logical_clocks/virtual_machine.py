@@ -121,7 +121,7 @@ async def start_vm_server(host, port):
     async with start_server_task:
         await  start_server_task.serve_forever()
 
-async def main(machine_id):
+def main(machine_id):
     # Parse configurations
 
     config = configparser.ConfigParser()

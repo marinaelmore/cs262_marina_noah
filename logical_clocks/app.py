@@ -14,4 +14,5 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.machine_id:
-        asyncio.run(main(args.machine_id))
+        #asyncio.run(main(args.machine_id))
+        main(args.machine_id)
