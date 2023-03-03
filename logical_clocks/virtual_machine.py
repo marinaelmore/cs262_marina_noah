@@ -137,13 +137,13 @@ def main(machine_id):
         myport = config['machine_2']['port']
         m2port = config['machine_1']['port']
         m3port = config['machine_3']['port']
-        output_path = config['machine_1']['output_path']
+        output_path = config['machine_2']['output_path']
     elif machine_id == "machine_3":
         myhost = config['machine_3']['host']
         myport = config['machine_3']['port']
         m2port = config['machine_2']['port']
         m3port = config['machine_1']['port']
-        output_path = config['machine_1']['output_path']
+        output_path = config['machine_3']['output_path']
     else:
         print("Machine name does not exist")
         return None
