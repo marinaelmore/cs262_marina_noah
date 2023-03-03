@@ -65,8 +65,8 @@ class VirtualMachine():
         print("Connecting to other machines")
         await self.connect_to_other_machines(host, m2port, m3port)
 
-        print("Listening for messages....")
-        self.output_file.write("Listening for messages...\n")
+        print("Connected and listening for messages....")
+        self.output_file.write("Connected and listening for messages...\n")
 
         while True:
             # Sleep for the clock rate seconds.

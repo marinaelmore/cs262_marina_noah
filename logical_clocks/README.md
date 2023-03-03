@@ -25,6 +25,21 @@ python app.py --machine_id machine_2
 python app.py --machine_id machine_3
 ```
 
+Each command will initialize a VM and attempt to connect to the other machines. Expected output should be:
+
+```
+Starting server task on port 8000
+Connecting to other machines
+Attempting connect
+Peer VMs not initialized, retrying in 1 second....
+```
+
+Once all peer VMs are found, the program will output
+```
+Connected and listening for messages....
+```
+and begin the dice-rolling logical clock loop.
+
 
 # Directory Structure #
 ```zsh
