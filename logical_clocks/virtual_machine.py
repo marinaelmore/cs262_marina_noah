@@ -19,20 +19,20 @@ queue = asyncio.Queue()
 
 
 # class VMProtocol(asyncio.Protocol):
-#     def __init__(self, message=None, on_con_lost=None):
-#         self.message = message
-#         self.on_con_lost = on_con_lost
-
+#     def __init__(self, reader=None, writer=None):
+#         self.reader = reader
+#         self.writer = writer
+#
 #     def connection_made(self, transport):
 #         peername = transport.get_extra_info('peername')
 #         print('Connection from {}'.format(peername))
 #         self.transport = transport
-
+#
 #     def data_received(self, data):
 #         print('Data received: {!r}'.format(data.decode()))
 #         message = data.decode()
 #         queue.put_nowait(message)
-
+#
 #     def connection_lost(self, exc):
 #         print('The server closed the connection')
 #         #self.on_con_lost.set_result(True)
