@@ -11,12 +11,10 @@
 
 #On each clock cycle, if there is a message in the message queue for the machine (remember, the queue is not running at the same cycle speed) the virtual machine should take one message off the queue, update the local logical clock, and write in the log that it received a message, the global time (gotten from the system), the length of the message queue, and the logical clock time.
 
-import nest_asyncio
 import asyncio
 import random
 import configparser
 
-nest_asyncio.apply()
 queue = asyncio.Queue()
 
 

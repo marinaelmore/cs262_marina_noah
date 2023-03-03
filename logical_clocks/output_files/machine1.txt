@@ -1,9 +1,1 @@
 Starting VM
-Listening for messages...
-<<<<<<< HEAD
-Sending message to machine at port: 8080
-=======
-Sending message to machine at port: 8081
-Sending message to machine at port: 8000
-Sending message to machine at port: 8081
->>>>>>> refs/remotes/origin/main
