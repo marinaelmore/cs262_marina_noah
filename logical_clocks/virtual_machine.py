@@ -19,23 +19,41 @@ import datetime
 queue = asyncio.Queue()
 
 
+async def queue_protocol(reader, _writer):
+    request = await reader.read(1024)
+    # try to parse request as int
+    try:
+        queue.put_nowait(int(request.decode()))
+    except ValueError:
+        print("Received non-integer message")
+
+
 class VirtualMachine():
 
-    def __init__(self, machine_id, output_log_path, port2, port3):
+    def __init__(self, machine_id, output_log_path, host, myport, port2, port3):
         # Initialize vars
         self.machine_id = machine_id
         self.clock_rate = 1. / random.randrange(1, 6)
         self.output_file = open(output_log_path, "w")
         self.logical_clock = 0
+        self.host = host
+        self.my_port = myport
         self.machine_2_port = port2
         self.machine_3_port = port3
 
-    async def connect_to_other_machines(self, host, port2, port3):
+    async def start_vm_server(self):
+        print("Starting server task on port {}".format(self.my_port))
+        start_server_task = await asyncio.start_server(queue_protocol, self.host, self.my_port)
+
+        async with start_server_task:
+            await start_server_task.serve_forever()
+
+    async def connect_to_other_machines(self):
         first_attempt = True
         while True:
             try:
-                self.reader2, self.stream2 = await asyncio.open_connection(host, port2)
-                self.reader3, self.stream3 = await asyncio.open_connection(host, port3)
+                self.reader2, self.stream2 = await asyncio.open_connection(self.host, self.machine_2_port)
+                self.reader3, self.stream3 = await asyncio.open_connection(self.host, self.machine_3_port)
                 print()
                 break
             except ConnectionRefusedError:
@@ -57,12 +75,11 @@ class VirtualMachine():
             self.stream3.write(message.encode())
             await self.stream3.drain()
 
-    async def run_vm_client(self, host, m2port, m3port):
-        # write "startin vm" to logfile
+    async def run_vm_client(self):
         self.output_file.write("Starting VM\n")
 
         print("Connecting to other machines")
-        await self.connect_to_other_machines(host, m2port, m3port)
+        await self.connect_to_other_machines()
 
         print("Connected and listening for messages....")
         self.output_file.write("Connected and listening for messages...\n")
@@ -79,11 +96,11 @@ class VirtualMachine():
                 randint = random.randrange(1, 10)
                 ports = []
                 if randint == 1:
-                    ports = [m2port]
+                    ports = [self.machine_2_port]
                 elif randint == 2:
-                    ports = [m3port]
+                    ports = [self.machine_3_port]
                 elif randint == 3:
-                    ports = [m2port, m3port]
+                    ports = [self.machine_2_port, self.machine_3_port]
                 else:
                     # if the value is other than 1-3, treat the cycle as an internal event; update the local logical clock, and log the internal event, the system time, and the logical clock value.
                     log_msg = f"internal, time {self.logical_clock}\n"
@@ -115,23 +132,6 @@ class VirtualMachine():
             print('This round is finished, night night\n\n')
 
 
-async def queue_protocol(reader, _writer):
-    request = await reader.read(255)
-    # try to parse request as int
-    try:
-        queue.put_nowait(int(request.decode()))
-    except ValueError:
-        print("Received non-integer message")
-
-
-async def start_vm_server(host, port):
-    print("Starting server task on port {}".format(port))
-    start_server_task = await asyncio.start_server(queue_protocol, host, port)
-
-    async with start_server_task:
-        await start_server_task.serve_forever()
-
-
 def main(machine_id):
     # Parse configurations
 
@@ -161,18 +161,13 @@ def main(machine_id):
         print("Machine name does not exist")
         return None
 
-    # touch output file
-    open(output_path, 'a').close()
-
     # Start Loop
     loop = asyncio.get_event_loop()
 
-    start_server_task = loop.create_task(start_vm_server(myhost, myport))
-
-    vm = VirtualMachine(machine_id, output_path, m2port, m3port)
-
-    start_client_task = loop.create_task(
-        vm.run_vm_client(myhost, m2port, m3port))
+    vm = VirtualMachine(machine_id, output_path,
+                        myhost, myport, m2port, m3port)
+    start_server_task = loop.create_task(vm.start_vm_server())
+    start_client_task = loop.create_task(vm.run_vm_client())
 
     try:
         loop.run_forever()
