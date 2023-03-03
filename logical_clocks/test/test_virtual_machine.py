@@ -59,6 +59,26 @@ class TestVirtualMachineTest:
 
         server_mock.serve_forever.assert_called_once()
 
+    @pytest.mark.asyncio
+    async def test_connect_to_other_machines(self, mocker):
+        reader_mock = Mock(spec=asyncio.StreamReader)
+        stream_mock = Mock(spec=asyncio.StreamWriter)
+
+        mock_open_connection = mocker.patch(
+            'asyncio.open_connection', return_value=(reader_mock, stream_mock))
+        await self.vm.connect_to_other_machines()
+
+        # assert open_connection is called with correct args
+        mock_open_connection.assert_has_calls([
+            mocker.call(self.vm.host, self.vm.machine_2_port),
+            mocker.call(self.vm.host, self.vm.machine_3_port)
+        ])
+
+        assert self.vm.reader2 == reader_mock
+        assert self.vm.stream2 == stream_mock
+        assert self.vm.reader3 == reader_mock
+        assert self.vm.stream3 == stream_mock
+
 
 if __name__ == '__main__':
     pytest.main()
