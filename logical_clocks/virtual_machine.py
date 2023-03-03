@@ -62,15 +62,15 @@ class VirtualMachine():
     def update_logical_clock(self):
         print("update logical clock")
 
-    async def send_message(self, port):
-        message = "yoooo"
-
+    async def send_message(self, port, message):
         self.output_file.write("Sending message to machine at port: {}\n".format(port))
         print("Sending message to machine at port: {}".format(port))
+        
         if port == self.machine_2_port:
             self.stream2.write(message.encode())        
             await self.stream2.drain()
             print("sent to 2")
+        
         if port == self.machine_3_port:
             self.stream3.write(message.encode())        
             await self.stream3.drain()
@@ -129,20 +129,20 @@ class VirtualMachine():
                 print("Queue Empty, Roll the Dice")
                 randint = random.randrange(1, 10) 
 
+                message = "To Do"
+
                 if randint == 1:
-                    print("send msg to vm2") 
-                    await self.send_message(m2port)
-                    print("sent\n") 
+                    print("Sending message to port: {}\n".format(m2port)) 
+                    await self.send_message(m2port, message)
                 
                 elif randint == 2:
-                    print("send msg to vm3")
-                    await self.send_message(m3port)
-                    print("sent\n") 
+                    print("Sending message to port: {}\n".format(m3port)) 
+                    await self.send_message(m3port, message)
                 
                 elif randint == 3:
-                    print("send to vm 2 and 3\n")
-                    await self.send_message(m2port)
-                    await self.send_message(m3port)
+                    print("Sending message to ports: {} and {}\n".format(m2port, m3port)) 
+                    await self.send_message(m2port, message)
+                    await self.send_message(m3port, message)
                 
                 else:
                     #if the value is other than 1-3, treat the cycle as an internal event; update the local logical clock, and log the internal event, the system time, and the logical clock value.
