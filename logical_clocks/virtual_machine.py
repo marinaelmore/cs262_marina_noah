@@ -188,6 +188,9 @@ def main(machine_id):
     else:
         print("Machine name does not exist")
         return None
+    
+    # touch output file
+    open(output_path, 'a').close()
 
     # Start Loop
     loop = asyncio.get_event_loop()
