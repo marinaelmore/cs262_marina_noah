@@ -2,7 +2,7 @@ from virtual_machine import main
 import argparse
 import asyncio
 
-
+#python3 app.py --machine_id machine_2
 
 if __name__ == '__main__':
     # create parser
