@@ -155,6 +155,7 @@ async def main(machine_id):
 
     start_server_task = loop.create_task(start_vm_server(myhost, myport))
 
+    #clock_rate = random.randint(1,6)
     clock_rate = 5
     vm = VirtualMachine(machine_id, clock_rate, output_path, m2port, m3port)
     
