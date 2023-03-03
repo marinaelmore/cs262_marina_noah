@@ -18,9 +18,8 @@ import configparser
 queue = asyncio.Queue()
 
 
-
 class VMProtocol(asyncio.Protocol):
-    def __init__(self, message, on_con_lost):
+    def __init__(self, message=None, on_con_lost=None):
         self.message = message
         self.on_con_lost = on_con_lost
 

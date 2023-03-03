@@ -6,6 +6,10 @@ queue = asyncio.Queue()
 
 class VMProtocol(asyncio.Protocol):
 
+    def __init__(self, message=None, on_con_lost=None):
+        self.message = message
+        self.on_con_lost = on_con_lost
+
     def connection_made(self, transport):
         peername = transport.get_extra_info('peername')
         print('Connection from {}'.format(peername))
