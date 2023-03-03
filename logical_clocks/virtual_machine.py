@@ -19,13 +19,17 @@ import datetime
 queue = asyncio.Queue()
 
 
-async def queue_protocol(reader, _writer):
-    request = await reader.read(1024)
-    # try to parse request as int
-    try:
-        queue.put_nowait(int(request.decode()))
-    except ValueError:
-        print("Received non-integer message")
+async def queue_protocol(reader, writer):
+    while True:
+        # check if eof
+        if reader.at_eof():
+            break
+        request = await reader.readline()
+        try:
+            queue.put_nowait(int(request.decode()))
+        except ValueError:
+            print("Received non-integer message")
+    writer.close()
 
 
 class VirtualMachine():
@@ -33,7 +37,7 @@ class VirtualMachine():
     def __init__(self, machine_id, output_log_path, host, myport, port2, port3):
         # Initialize vars
         self.machine_id = machine_id
-        self.clock_rate = 1. / random.randrange(1, 6)
+        self.clock_rate = 1. / random.randrange(1, 7)
         self.output_file = open(output_log_path, "w")
         self.logical_clock = 0
         self.host = host
@@ -66,7 +70,9 @@ class VirtualMachine():
                     print(".", end="", flush=True)
                 await asyncio.sleep(1)
 
-    async def send_message(self, port, message):
+    async def send_clock_time(self, port):
+        message = f"{self.logical_clock}\n"
+
         if port == self.machine_2_port:
             self.stream2.write(message.encode())
             await self.stream2.drain()
@@ -91,6 +97,9 @@ class VirtualMachine():
             print("\n\n{} has slept for {} seconds".format(
                 self.machine_id, self.clock_rate))
 
+            # print queue length
+            print("Queue Length: {}".format(queue.qsize()))
+
             if queue.empty():
                 print("Queue Empty, Roll the Dice")
                 randint = random.randrange(1, 10)
@@ -112,7 +121,7 @@ class VirtualMachine():
                     print(log_msg)
                     self.output_file.write(log_msg)
                     for port in ports:
-                        await self.send_message(port, f"{self.logical_clock}")
+                        await self.send_clock_time(port)
 
                 self.logical_clock += 1
 
@@ -126,7 +135,7 @@ class VirtualMachine():
                 log_msg = f"receive, global time {datetime.datetime.now()}, new time {self.logical_clock}, queue length {queue.qsize()}\n"
                 print(log_msg)
                 self.output_file.write(log_msg)
-                queue.task_done()
+                # queue.task_done()
 
             self.output_file.flush()
             print('This round is finished, night night\n\n')
@@ -154,8 +163,8 @@ def main(machine_id):
     elif machine_id == "machine_3":
         myhost = config['machine_3']['host']
         myport = config['machine_3']['port']
-        m2port = config['machine_2']['port']
-        m3port = config['machine_1']['port']
+        m2port = config['machine_1']['port']
+        m3port = config['machine_2']['port']
         output_path = config['machine_3']['output_path']
     else:
         print("Machine name does not exist")
@@ -166,8 +175,9 @@ def main(machine_id):
 
     vm = VirtualMachine(machine_id, output_path,
                         myhost, myport, m2port, m3port)
-    start_server_task = loop.create_task(vm.start_vm_server())
-    start_client_task = loop.create_task(vm.run_vm_client())
+
+    loop.create_task(vm.start_vm_server())
+    loop.create_task(vm.run_vm_client())
 
     try:
         loop.run_forever()
