@@ -2,7 +2,7 @@ from virtual_machine import main
 import argparse
 import asyncio
 
-
+#python3 app.py --machine_id machine_2
 
 if __name__ == '__main__':
     # create parser
@@ -14,4 +14,5 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.machine_id:
-        asyncio.run(main(args.machine_id))
+        #asyncio.run(main(args.machine_id))
+        main(args.machine_id)

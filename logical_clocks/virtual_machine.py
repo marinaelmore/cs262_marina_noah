@@ -14,8 +14,6 @@
 import nest_asyncio
 import asyncio
 import random
-import sys
-import socket
 import configparser
 
 nest_asyncio.apply()
@@ -130,7 +128,7 @@ async def start_vm_server(host, port):
     async with start_server_task:
         await  start_server_task.serve_forever()
 
-async def main(machine_id):
+def main(machine_id):
     # Parse configurations
 
     config = configparser.ConfigParser()
@@ -148,13 +146,13 @@ async def main(machine_id):
         myport = config['machine_2']['port']
         m2port = config['machine_1']['port']
         m3port = config['machine_3']['port']
-        output_path = config['machine_1']['output_path']
+        output_path = config['machine_2']['output_path']
     elif machine_id == "machine_3":
         myhost = config['machine_3']['host']
         myport = config['machine_3']['port']
         m2port = config['machine_2']['port']
         m3port = config['machine_1']['port']
-        output_path = config['machine_1']['output_path']
+        output_path = config['machine_3']['output_path']
     else:
         print("Machine name does not exist")
         return None
@@ -164,6 +162,7 @@ async def main(machine_id):
 
     start_server_task = loop.create_task(start_vm_server(myhost, myport))
 
+    #clock_rate = random.randint(1,6)
     clock_rate = 5
     vm = VirtualMachine(machine_id, clock_rate, output_path, m2port, m3port)
     
