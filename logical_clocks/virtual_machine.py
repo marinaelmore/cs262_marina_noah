@@ -18,23 +18,24 @@ import configparser
 queue = asyncio.Queue()
 
 
-class VMProtocol(asyncio.Protocol):
-    def __init__(self, message=None, on_con_lost=None):
-        self.message = message
-        self.on_con_lost = on_con_lost
+# class VMProtocol(asyncio.Protocol):
+#     def __init__(self, message=None, on_con_lost=None):
+#         self.message = message
+#         self.on_con_lost = on_con_lost
 
-    def connection_made(self, transport):
-        transport.write(self.message.encode())
-        print('Data sent: {!r}'.format(self.message))
+#     def connection_made(self, transport):
+#         peername = transport.get_extra_info('peername')
+#         print('Connection from {}'.format(peername))
+#         self.transport = transport
 
-    def data_received(self, data):
-        print('Data received: {!r}'.format(data.decode()))
-        message = data.decode()
-        queue.put_nowait(message)
+#     def data_received(self, data):
+#         print('Data received: {!r}'.format(data.decode()))
+#         message = data.decode()
+#         queue.put_nowait(message)
 
-    def connection_lost(self, exc):
-        print('The server closed the connection')
-        self.on_con_lost.set_result(True)
+#     def connection_lost(self, exc):
+#         print('The server closed the connection')
+#         #self.on_con_lost.set_result(True)
 
 class VirtualMachine():
 
@@ -49,6 +50,7 @@ class VirtualMachine():
 
     async def connect_to_other_machines(self, host, port2, port3):
         while True:
+            print("Try connect")
             try:
                 self.reader2, self.stream2 = await asyncio.open_connection(host, port2)
                 self.reader3, self.stream3 = await asyncio.open_connection(host, port3)
@@ -73,32 +75,33 @@ class VirtualMachine():
             self.stream3.write(message.encode())        
             await self.stream3.drain()
             print("sent to 3")
-    async def run_enqueue(self, port):
-        # check for messages from machine 2 and 3 and add them to queueue
-        
-        while True:
-            await asyncio.sleep(0.1)
-            reader = None
-            machine = None
-            if port == self.machine_2_port:
-                reader = self.reader2
-                machine = 2
-            if port == self.machine_3_port:
-                reader = self.reader3
-                machine = 3
-            
-            # reader at eof check
-            if reader.at_eof():
-                print(f"machine {machine} reader at eof")
-                break
 
-            print(f"reading from {machine}")
-            data = await reader.read(100)
-            print(f"finished read from {machine}")
-            if data:
-                print(f"got data from {machine}", data)
-                queue.put_nowait(data.decode())
-                print(f"data from {machine} added to queue")
+    # async def run_enqueue(self, port):
+    #     # check for messages from machine 2 and 3 and add them to queueue
+        
+    #     while True:
+    #         await asyncio.sleep(0.1)
+    #         reader = None
+    #         machine = None
+    #         if port == self.machine_2_port:
+    #             reader = self.reader2
+    #             machine = 2
+    #         if port == self.machine_3_port:
+    #             reader = self.reader3
+    #             machine = 3
+            
+    #         # reader at eof check
+    #         if reader.at_eof():
+    #             print(f"machine {machine} reader at eof")
+    #             break
+
+    #         print(f"reading from {machine}")
+    #         data = await reader.read(100)
+    #         print(f"finished read from {machine}")
+    #         if data:
+    #             print(f"got data from {machine}", data)
+    #             queue.put_nowait(data.decode())
+    #             print(f"data from {machine} added to queue")
 
 
     async def run_vm_client(self,host, m2port, m3port):
@@ -113,8 +116,8 @@ class VirtualMachine():
         print("Listening for messages....")
         self.output_file.write("Listening for messages...\n")
 
-        start_enqueue_2 = loop.create_task(self.run_enqueue(m2port))
-        start_enqueue_3 = loop.create_task(self.run_enqueue(m3port))
+        #start_enqueue_2 = loop.create_task(self.run_enqueue(m2port))
+        #start_enqueue_3 = loop.create_task(self.run_enqueue(m3port))
         
         while True:
             # Sleep for the clock rate seconds.
@@ -147,14 +150,19 @@ class VirtualMachine():
             else:
                 print("Queue Not Empty, Print Message\n")
                 msg = queue.get_nowait()
-                print(msg)
+                print("Message: {}\n".format(msg))
                 queue.task_done()
 
             print('This round is finished, night night\n\n')
 
+# This is super simple, needs work
+async def queue_protocol(reader, writer):
+    request = await reader.read(255)
+    queue.put_nowait(request.decode())
+
 async def start_vm_server(host, port):
     print("Starting server task on port {}".format(port))
-    start_server_task = await asyncio.start_server(VMProtocol, host, port)
+    start_server_task = await asyncio.start_server(queue_protocol, host, port)
 
     async with start_server_task:
         await  start_server_task.serve_forever()
@@ -196,8 +204,7 @@ def main(machine_id):
 
     start_server_task = loop.create_task(start_vm_server(myhost, myport))
 
-    # clock_rate = random.randint(1,6)
-    clock_rate = 5
+    clock_rate = random.randrange(1,6)
     vm = VirtualMachine(machine_id, clock_rate, output_path, m2port, m3port)
     
     start_client_task = loop.create_task(vm.run_vm_client(myhost, m2port, m3port))
