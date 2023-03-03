@@ -1,4 +1,0 @@
-Starting VM
-Listening for messages...
-Sending message to machine at port: 8080
-Sending message to machine at port: 8081
