@@ -39,10 +39,10 @@ queue = asyncio.Queue()
 
 class VirtualMachine():
 
-    def __init__(self, machine_id, clock_rate, output_log_path, port2, port3):
+    def __init__(self, machine_id, output_log_path, port2, port3):
         # Initialize vars
         self.machine_id = machine_id
-        self.clock_rate = clock_rate
+        self.clock_rate = random.randrange(1,6)
         self.output_file = open(output_log_path, "w")
         self.logical_clock = []
         self.machine_2_port = port2
@@ -69,12 +69,10 @@ class VirtualMachine():
         if port == self.machine_2_port:
             self.stream2.write(message.encode())        
             await self.stream2.drain()
-            print("sent to 2")
         
         if port == self.machine_3_port:
             self.stream3.write(message.encode())        
             await self.stream3.drain()
-            print("sent to 3")
 
     # async def run_enqueue(self, port):
     #     # check for messages from machine 2 and 3 and add them to queueue
@@ -105,8 +103,6 @@ class VirtualMachine():
 
 
     async def run_vm_client(self,host, m2port, m3port):
-        loop = asyncio.get_event_loop()
-
         # write "startin vm" to logfile
         self.output_file.write("Starting VM\n")
 
@@ -123,7 +119,7 @@ class VirtualMachine():
             # Sleep for the clock rate seconds.
             await asyncio.sleep(self.clock_rate)
 
-            print(f'{self.machine_id} has slept for {self.clock_rate:.2f} seconds')
+            print("\n\n{} has slept for {} seconds".format(self.machine_id, self.clock_rate))
 
             if queue.empty():
                 print("Queue Empty, Roll the Dice")
@@ -132,25 +128,25 @@ class VirtualMachine():
                 message = "To Do"
 
                 if randint == 1:
-                    print("Sending message to port: {}\n".format(m2port)) 
+                    print("-> Sending message to port: {}\n".format(m2port)) 
                     await self.send_message(m2port, message)
                 
                 elif randint == 2:
-                    print("Sending message to port: {}\n".format(m3port)) 
+                    print("-> Sending message to port: {}\n".format(m3port)) 
                     await self.send_message(m3port, message)
                 
                 elif randint == 3:
-                    print("Sending message to ports: {} and {}\n".format(m2port, m3port)) 
+                    print("-> Sending message to ports: {} and {}\n".format(m2port, m3port)) 
                     await self.send_message(m2port, message)
                     await self.send_message(m3port, message)
                 
                 else:
                     #if the value is other than 1-3, treat the cycle as an internal event; update the local logical clock, and log the internal event, the system time, and the logical clock value.
-                    print("Internal event\n")
+                    print("-> Internal event\n")
             else:
-                print("Queue Not Empty, Print Message\n")
+                print("Queue Length: {}. Printing Message".format(queue.qsize()))
                 msg = queue.get_nowait()
-                print("Message: {}\n".format(msg))
+                print("--> Message: {}\n".format(msg))
                 queue.task_done()
 
             print('This round is finished, night night\n\n')
@@ -204,8 +200,7 @@ def main(machine_id):
 
     start_server_task = loop.create_task(start_vm_server(myhost, myport))
 
-    clock_rate = random.randrange(1,6)
-    vm = VirtualMachine(machine_id, clock_rate, output_path, m2port, m3port)
+    vm = VirtualMachine(machine_id, output_path, m2port, m3port)
     
     start_client_task = loop.create_task(vm.run_vm_client(myhost, m2port, m3port))
 
