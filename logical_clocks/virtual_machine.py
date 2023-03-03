@@ -11,13 +11,16 @@
 
 #On each clock cycle, if there is a message in the message queue for the machine (remember, the queue is not running at the same cycle speed) the virtual machine should take one message off the queue, update the local logical clock, and write in the log that it received a message, the global time (gotten from the system), the length of the message queue, and the logical clock time.
 
+import nest_asyncio
 import asyncio
 import random
 import sys
 import socket
 import configparser
 
+nest_asyncio.apply()
 queue = asyncio.Queue()
+
 
 
 class VMProtocol(asyncio.Protocol):
@@ -50,8 +53,14 @@ class VirtualMachine():
         self.machine_3_port = port3
 
     async def connect_to_other_machines(self, host, port2, port3):
-        self.reader2,self.stream2 = await asyncio.open_connection(host, port2)
-        self.reader3,self.stream3 = await asyncio.open_connection(host, port3)
+        while True:
+            try:
+                self.reader2, self.stream2 = await asyncio.open_connection(host, port2)
+                self.reader3, self.stream3 = await asyncio.open_connection(host, port3)
+                break
+            except ConnectionRefusedError:
+                # Connection failed, wait for a short delay before retrying
+                await asyncio.sleep(1)
 
     def update_logical_clock(self):
         print("update logical clock")
@@ -140,7 +149,7 @@ async def main(machine_id):
         m2port = config['machine_1']['port']
         m3port = config['machine_3']['port']
         output_path = config['machine_1']['output_path']
-    elif machine_id == "machine3":
+    elif machine_id == "machine_3":
         myhost = config['machine_3']['host']
         myport = config['machine_3']['port']
         m2port = config['machine_2']['port']
