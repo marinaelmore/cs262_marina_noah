@@ -46,9 +46,7 @@ class VirtualMachine():
     async def start_vm_server(self):
         print("Starting server task on port {}".format(self.my_port))
         start_server_task = await asyncio.start_server(self.queue_protocol, self.host, self.my_port)
-
-        async with start_server_task:
-            await start_server_task.serve_forever()
+        await start_server_task.serve_forever()
 
     async def connect_to_other_machines(self):
         first_attempt = True

@@ -44,6 +44,20 @@ class TestVirtualMachineTest:
         assert (self.vm.queue.get_nowait() == 4)
         writer.close.assert_called_once()
 
+    @pytest.mark.asyncio
+    async def test_start_server(self):
+        # assert start_server is called with correct args
+        start_server_mock = Mock(spec=asyncio.start_server)
+        server_mock = Mock(spec=asyncio.Server)
+        server_mock.serve_forever.side_effect = None
+        server_mock.serve_forever.return_value = None
+
+        start_server_mock.return_value = server_mock
+
+        await self.vm.start_vm_server()
+        start_server_mock.assert_called_once_with(
+            self.vm.host, self.vm.my_port)
+
 
 if __name__ == '__main__':
     pytest.main()
