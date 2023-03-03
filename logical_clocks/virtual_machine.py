@@ -31,7 +31,6 @@ class VirtualMachine():
         self.machine_3_port = port3
 
     async def connect_to_other_machines(self, host, port2, port3):
-        print("Attempting connect")
         first_attempt = True
         while True:
             try:

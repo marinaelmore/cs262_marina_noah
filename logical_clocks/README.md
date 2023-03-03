@@ -30,7 +30,6 @@ Each command will initialize a VM and attempt to connect to the other machines. 
 ```
 Starting server task on port 8000
 Connecting to other machines
-Attempting connect
 Peer VMs not initialized, retrying in 1 second....
 ```
 
