@@ -16,21 +16,6 @@ import random
 import configparser
 import datetime
 
-queue = asyncio.Queue()
-
-
-async def queue_protocol(reader, writer):
-    while True:
-        # check if eof
-        if reader.at_eof():
-            break
-        request = await reader.readline()
-        try:
-            queue.put_nowait(int(request.decode()))
-        except ValueError:
-            print("Received non-integer message")
-    writer.close()
-
 
 class VirtualMachine():
 
@@ -42,12 +27,25 @@ class VirtualMachine():
         self.logical_clock = 0
         self.host = host
         self.my_port = myport
+        self.queue = asyncio.Queue()
         self.machine_2_port = port2
         self.machine_3_port = port3
 
+    async def queue_protocol(self, reader, writer):
+        while True:
+            # check if eof
+            if reader.at_eof():
+                break
+            request = await reader.readline()
+            try:
+                self.queue.put_nowait(int(request.decode()))
+            except ValueError:
+                print("Received non-integer message")
+        writer.close()
+
     async def start_vm_server(self):
         print("Starting server task on port {}".format(self.my_port))
-        start_server_task = await asyncio.start_server(queue_protocol, self.host, self.my_port)
+        start_server_task = await asyncio.start_server(self.queue_protocol, self.host, self.my_port)
 
         async with start_server_task:
             await start_server_task.serve_forever()
@@ -98,9 +96,8 @@ class VirtualMachine():
                 self.machine_id, self.clock_rate))
 
             # print queue length
-            print("Queue Length: {}".format(queue.qsize()))
 
-            if queue.empty():
+            if self.queue.empty():
                 print("Queue Empty, Roll the Dice")
                 randint = random.randrange(1, 10)
                 ports = []
@@ -126,16 +123,17 @@ class VirtualMachine():
                 self.logical_clock += 1
 
             else:
-                print("Queue Length: {}. Printing Message".format(queue.qsize()))
-                msg = queue.get_nowait()
+                print("Queue Length: {}. Printing Message".format(
+                    self.queue.qsize()))
+                msg = self.queue.get_nowait()
                 print("--> Message: {}\n".format(msg))
                 self.logical_clock = max(self.logical_clock, msg) + 1
 
                 # update local logical clock
-                log_msg = f"receive, global time {datetime.datetime.now()}, new time {self.logical_clock}, queue length {queue.qsize()}\n"
+                log_msg = f"receive, global time {datetime.datetime.now()}, new time {self.logical_clock}, queue length {self.queue.qsize()}\n"
                 print(log_msg)
                 self.output_file.write(log_msg)
-                # queue.task_done()
+                self.queue.task_done()
 
             self.output_file.flush()
             print('This round is finished, night night\n\n')
