@@ -1,6 +1,6 @@
-#Each model machine will run at a clock rate determined during initialization. You will pick a random number between 1 and 6, and that will be the number of clock ticks per (real world) second for that machine. This means that only that many instructions can be performed by the machine during that time. Each machine will also have a network queue (which is not constrained to the n operations per second) in which it will hold incoming messages. The (virtual) machine should listen on one or more sockets for such messages.
+# Each model machine will run at a clock rate determined during initialization. You will pick a random number between 1 and 6, and that will be the number of clock ticks per (real world) second for that machine. This means that only that many instructions can be performed by the machine during that time. Each machine will also have a network queue (which is not constrained to the n operations per second) in which it will hold incoming messages. The (virtual) machine should listen on one or more sockets for such messages.
 
-#Each of your virtual machines should connect to each of the other virtual machines so that messages can be passed between them. Doing this is part of initialization, and not constrained to happen at the speed of the internal model clocks. Each virtual machine should also open a file as a log. Finally, each machine should have a logical clock, which should be updated using the rules for logical clocks.
+# Each of your virtual machines should connect to each of the other virtual machines so that messages can be passed between them. Doing this is part of initialization, and not constrained to happen at the speed of the internal model clocks. Each virtual machine should also open a file as a log. Finally, each machine should have a logical clock, which should be updated using the rules for logical clocks.
 
 # SET UP
 # Initialize clock rate (rand int)
@@ -9,159 +9,128 @@
 # Open file as a log
 # Initialize logical clock
 
-#On each clock cycle, if there is a message in the message queue for the machine (remember, the queue is not running at the same cycle speed) the virtual machine should take one message off the queue, update the local logical clock, and write in the log that it received a message, the global time (gotten from the system), the length of the message queue, and the logical clock time.
+# On each clock cycle, if there is a message in the message queue for the machine (remember, the queue is not running at the same cycle speed) the virtual machine should take one message off the queue, update the local logical clock, and write in the log that it received a message, the global time (gotten from the system), the length of the message queue, and the logical clock time.
 
 import asyncio
 import random
 import configparser
+import datetime
 
 queue = asyncio.Queue()
 
-
-# class VMProtocol(asyncio.Protocol):
-#     def __init__(self, reader=None, writer=None):
-#         self.reader = reader
-#         self.writer = writer
-#
-#     def connection_made(self, transport):
-#         peername = transport.get_extra_info('peername')
-#         print('Connection from {}'.format(peername))
-#         self.transport = transport
-#
-#     def data_received(self, data):
-#         print('Data received: {!r}'.format(data.decode()))
-#         message = data.decode()
-#         queue.put_nowait(message)
-#
-#     def connection_lost(self, exc):
-#         print('The server closed the connection')
-#         #self.on_con_lost.set_result(True)
 
 class VirtualMachine():
 
     def __init__(self, machine_id, output_log_path, port2, port3):
         # Initialize vars
         self.machine_id = machine_id
-        self.clock_rate = random.randrange(1,6)
+        self.clock_rate = random.randrange(1, 6)
         self.output_file = open(output_log_path, "w")
-        self.logical_clock = []
+        self.logical_clock = 0
         self.machine_2_port = port2
         self.machine_3_port = port3
 
     async def connect_to_other_machines(self, host, port2, port3):
+        print("Attempting connect")
+        first_attempt = True
         while True:
-            print("Try connect")
             try:
                 self.reader2, self.stream2 = await asyncio.open_connection(host, port2)
                 self.reader3, self.stream3 = await asyncio.open_connection(host, port3)
+                print()
                 break
             except ConnectionRefusedError:
                 # Connection failed, wait for a short delay before retrying
+                if first_attempt:
+                    print(
+                        "Peer VMs not initialized, retrying in 1 second", end="", flush=True)
+                    first_attempt = False
+                else:
+                    print(".", end="", flush=True)
                 await asyncio.sleep(1)
 
-    def update_logical_clock(self):
-        print("update logical clock")
-
     async def send_message(self, port, message):
-        self.output_file.write("Sending message to machine at port: {}\n".format(port))
-        print("Sending message to machine at port: {}".format(port))
-        
         if port == self.machine_2_port:
-            self.stream2.write(message.encode())        
+            self.stream2.write(message.encode())
             await self.stream2.drain()
-        
+
         if port == self.machine_3_port:
-            self.stream3.write(message.encode())        
+            self.stream3.write(message.encode())
             await self.stream3.drain()
 
-    # async def run_enqueue(self, port):
-    #     # check for messages from machine 2 and 3 and add them to queueue
-        
-    #     while True:
-    #         await asyncio.sleep(0.1)
-    #         reader = None
-    #         machine = None
-    #         if port == self.machine_2_port:
-    #             reader = self.reader2
-    #             machine = 2
-    #         if port == self.machine_3_port:
-    #             reader = self.reader3
-    #             machine = 3
-            
-    #         # reader at eof check
-    #         if reader.at_eof():
-    #             print(f"machine {machine} reader at eof")
-    #             break
-
-    #         print(f"reading from {machine}")
-    #         data = await reader.read(100)
-    #         print(f"finished read from {machine}")
-    #         if data:
-    #             print(f"got data from {machine}", data)
-    #             queue.put_nowait(data.decode())
-    #             print(f"data from {machine} added to queue")
-
-
-    async def run_vm_client(self,host, m2port, m3port):
+    async def run_vm_client(self, host, m2port, m3port):
         # write "startin vm" to logfile
         self.output_file.write("Starting VM\n")
 
         print("Connecting to other machines")
         await self.connect_to_other_machines(host, m2port, m3port)
-        
+
         print("Listening for messages....")
         self.output_file.write("Listening for messages...\n")
 
-        #start_enqueue_2 = loop.create_task(self.run_enqueue(m2port))
-        #start_enqueue_3 = loop.create_task(self.run_enqueue(m3port))
-        
         while True:
             # Sleep for the clock rate seconds.
             await asyncio.sleep(self.clock_rate)
 
-            print("\n\n{} has slept for {} seconds".format(self.machine_id, self.clock_rate))
+            print("\n\n{} has slept for {} seconds".format(
+                self.machine_id, self.clock_rate))
 
             if queue.empty():
                 print("Queue Empty, Roll the Dice")
-                randint = random.randrange(1, 10) 
-
-                message = "To Do"
-
+                randint = random.randrange(1, 10)
+                ports = []
                 if randint == 1:
-                    print("-> Sending message to port: {}\n".format(m2port)) 
-                    await self.send_message(m2port, message)
-                
+                    ports = [m2port]
                 elif randint == 2:
-                    print("-> Sending message to port: {}\n".format(m3port)) 
-                    await self.send_message(m3port, message)
-                
+                    ports = [m3port]
                 elif randint == 3:
-                    print("-> Sending message to ports: {} and {}\n".format(m2port, m3port)) 
-                    await self.send_message(m2port, message)
-                    await self.send_message(m3port, message)
-                
+                    ports = [m2port, m3port]
                 else:
-                    #if the value is other than 1-3, treat the cycle as an internal event; update the local logical clock, and log the internal event, the system time, and the logical clock value.
-                    print("-> Internal event\n")
+                    # if the value is other than 1-3, treat the cycle as an internal event; update the local logical clock, and log the internal event, the system time, and the logical clock value.
+                    log_msg = f"internal, time {self.logical_clock}\n"
+                    print(log_msg)
+                    self.output_file.write(log_msg)
+
+                for port in ports:
+                    log_msg = f"send {port}, time {self.logical_clock}\n"
+                    print(log_msg)
+                    self.output_file.write(log_msg)
+                    await self.send_message(port, f"{self.logical_clock}")
+
+                self.logical_clock += 1
+
             else:
                 print("Queue Length: {}. Printing Message".format(queue.qsize()))
                 msg = queue.get_nowait()
                 print("--> Message: {}\n".format(msg))
+                self.logical_clock = max(self.logical_clock, msg) + 1
+
+                # update local logical clock
+                log_msg = f"receive, global time {datetime.datetime.now()}, new time {self.logical_clock}, queue length {queue.qsize()}\n"
+                print(log_msg)
+                self.output_file.write(log_msg)
                 queue.task_done()
 
+            self.output_file.flush()
             print('This round is finished, night night\n\n')
 
-# This is super simple, needs work
-async def queue_protocol(reader, writer):
+
+async def queue_protocol(reader, _writer):
     request = await reader.read(255)
-    queue.put_nowait(request.decode())
+    # try to parse request as int
+    try:
+        queue.put_nowait(int(request.decode()))
+    except ValueError:
+        print("Received non-integer message")
+
 
 async def start_vm_server(host, port):
     print("Starting server task on port {}".format(port))
     start_server_task = await asyncio.start_server(queue_protocol, host, port)
 
     async with start_server_task:
-        await  start_server_task.serve_forever()
+        await start_server_task.serve_forever()
+
 
 def main(machine_id):
     # Parse configurations
@@ -191,7 +160,7 @@ def main(machine_id):
     else:
         print("Machine name does not exist")
         return None
-    
+
     # touch output file
     open(output_path, 'a').close()
 
@@ -201,8 +170,9 @@ def main(machine_id):
     start_server_task = loop.create_task(start_vm_server(myhost, myport))
 
     vm = VirtualMachine(machine_id, output_path, m2port, m3port)
-    
-    start_client_task = loop.create_task(vm.run_vm_client(myhost, m2port, m3port))
+
+    start_client_task = loop.create_task(
+        vm.run_vm_client(myhost, m2port, m3port))
 
     try:
         loop.run_forever()
