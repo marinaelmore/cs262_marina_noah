@@ -33,14 +33,14 @@ class VirtualMachine():
 
     async def queue_protocol(self, reader, writer):
         while True:
-            # check if eof
-            if reader.at_eof():
-                break
+
             request = await reader.readline()
             try:
                 self.queue.put_nowait(int(request.decode()))
             except ValueError:
                 print("Received non-integer message")
+            if reader.at_eof():
+                break
         writer.close()
 
     async def start_vm_server(self):

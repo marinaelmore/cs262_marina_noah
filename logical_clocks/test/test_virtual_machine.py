@@ -33,10 +33,12 @@ class TestVirtualMachineTest:
         # check that self.ouput_file is created
         assert (os.path.exists('output.txt'))
 
+    @pytest.mark.asyncio
     async def test_queue_protocol(self):
         reader = Mock(spec=asyncio.StreamReader)
         writer = Mock(spec=asyncio.StreamWriter)
-        reader.read.side_effect = [b"4\n", b""]
+
+        reader.readline.side_effect = [b'4\n', b'']
         await self.vm.queue_protocol(reader, writer)
         assert (self.vm.queue.qsize() == 1)
         assert (self.vm.queue.get_nowait() == 4)
