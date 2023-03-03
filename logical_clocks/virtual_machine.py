@@ -24,7 +24,7 @@ class VirtualMachine():
     def __init__(self, machine_id, output_log_path, port2, port3):
         # Initialize vars
         self.machine_id = machine_id
-        self.clock_rate = random.randrange(1, 6)
+        self.clock_rate = 1. / random.randrange(1, 6)
         self.output_file = open(output_log_path, "w")
         self.logical_clock = 0
         self.machine_2_port = port2
@@ -91,11 +91,12 @@ class VirtualMachine():
                     print(log_msg)
                     self.output_file.write(log_msg)
 
-                for port in ports:
-                    log_msg = f"send {port}, time {self.logical_clock}\n"
+                if len(ports) > 0:
+                    log_msg = f"send {ports}, time {self.logical_clock}\n"
                     print(log_msg)
                     self.output_file.write(log_msg)
-                    await self.send_message(port, f"{self.logical_clock}")
+                    for port in ports:
+                        await self.send_message(port, f"{self.logical_clock}")
 
                 self.logical_clock += 1
 
