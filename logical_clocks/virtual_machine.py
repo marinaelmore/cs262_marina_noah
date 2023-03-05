@@ -58,11 +58,19 @@ class VirtualMachine():
 
         if port == self.machine_2_port:
             self.stream2.write(message.encode())
-            await self.stream2.drain()
+            try:
+                await self.stream2.drain()
+                return True
+            except ConnectionResetError as connection_lost:
+                return False
 
         if port == self.machine_3_port:
             self.stream3.write(message.encode())
-            await self.stream3.drain()
+            try:
+                await self.stream3.drain()
+                return True
+            except ConnectionResetError as connection_lost:
+                return False
 
     async def run_vm_client(self):
         self.output_file.write("Starting VM\n")
@@ -103,7 +111,10 @@ class VirtualMachine():
                     print(log_msg)
                     self.output_file.write(log_msg)
                     for port in ports:
-                        await self.send_clock_time(port)
+                        send_success = await self.send_clock_time(port)
+                        if not send_success:
+                            print("Attempting to reconnect to other machines...")
+                            await self.connect_to_other_machines() 
 
                 self.logical_clock += 1
 
