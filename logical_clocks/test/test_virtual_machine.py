@@ -66,7 +66,7 @@ class TestVirtualMachineTest:
 
     @pytest.mark.asyncio
     async def test_start_server(self, mocker):
-        server_mock = Mock(spec=asyncio.Server)
+        server_mock = Mock(spec=asyncio.AbstractServer)
         server_mock.serve_forever.return_value = None
 
         mock_start_server = mocker.patch(
