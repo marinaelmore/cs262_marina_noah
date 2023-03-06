@@ -50,3 +50,43 @@ and begin the dice-rolling logical clock loop.
 ├── output_files # folder for output logs, individual files ignored
 │   ├── {machine_id}.txt
 ```
+
+## To Test
+
+1. In the terminal, run the unit tests from the home directory:
+
+``pytest -v test/test_virtual_machine.py``
+
+```
+========================================================== test session starts =========================================================
+
+test/test_virtual_machine.py::TestVirtualMachineTest::test_init PASSED                                                            [ 12%]
+test/test_virtual_machine.py::TestVirtualMachineTest::test_queue_protocol PASSED                                                  [ 25%]
+test/test_virtual_machine.py::TestVirtualMachineTest::test_start_server PASSED                                                    [ 37%]
+test/test_virtual_machine.py::TestVirtualMachineTest::test_connect_to_other_machines PASSED                                       [ 50%]
+test/test_virtual_machine.py::TestVirtualMachineTest::test_send_clock_time PASSED                                                 [ 62%]
+test/test_virtual_machine.py::TestVirtualMachineTest::test_tick_queue_empty PASSED                                                [ 75%]
+test/test_virtual_machine.py::TestVirtualMachineTest::test_tick_queue_has_item PASSED                                             [ 87%]
+test/test_virtual_machine.py::test_main PASSED                                                                                    [100%]
+
+=========================================================== 8 passed in 0.07s ===========================================================
+
+```
+
+## To Generate Code Coverage Report
+
+1. In the terminal, generate the coverage report:
+
+``coverage run  test/test_virtual_machine.py``
+
+1. Output the coverage report:
+
+``coverage report``
+
+```
+Name                           Stmts   Miss  Cover
+--------------------------------------------------
+virtual_machine.py               114     29    75%
+--------------------------------------------------
+TOTAL                            227     29    87%
+```
