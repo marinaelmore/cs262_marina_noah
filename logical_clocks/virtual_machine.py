@@ -56,7 +56,12 @@ class VirtualMachine():
     async def send_clock_time(self, writer):
         message = f"{self.logical_clock}\n"
         writer.write(message.encode())
-        await writer.drain()
+        try: 
+            await writer.drain()
+            return True
+        except ConnectionResetError:
+            return False
+             
 
     async def run_vm_client(self):
         self.output_file.write("Starting VM\n")
@@ -102,7 +107,11 @@ class VirtualMachine():
             print(log_msg)
             self.output_file.write(log_msg)
             for machine in machines:
-                await self.send_clock_time(machine["stream"])
+                send_success = await self.send_clock_time(machine["stream"])
+                if not send_success:
+                    print("Attempting to reconnect to other machines...")
+                    await self.connect_to_other_machines() 
+
 
         self.logical_clock += 1
         self.output_file.flush()
