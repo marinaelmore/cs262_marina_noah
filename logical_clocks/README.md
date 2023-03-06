@@ -58,7 +58,7 @@ and begin the dice-rolling logical clock loop.
 └── README.md
 ```
 
-## To Test
+# To Test
 
 1. In the terminal, run the unit tests from the home directory:
 
@@ -81,7 +81,7 @@ test/test_virtual_machine.py::test_main PASSED                           [100%]
 
 ```
 
-## To Generate Code Coverage Report
+# To Generate Code Coverage Report
 
 1. In the terminal, generate the coverage reports from the home directory:
 
@@ -95,3 +95,7 @@ virtual_machine.py     114     29    75%
 ----------------------------------------
 TOTAL                  128     30    77%
 ```
+
+# Engineering Notebook
+
+You can find our engineering notebook at: ``EngineeringNotebook.md``
