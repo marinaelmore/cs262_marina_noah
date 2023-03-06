@@ -1,0 +1,20 @@
+{
+    "machine_1": {
+        "name": "Machine 1",
+        "port": 8000,
+        "host": "127.0.0.1",
+        "output_path": "output_files/machine_1.txt"
+    },
+    "machine_2": {
+        "name": "Machine 2",
+        "port": 8080,
+        "host": "127.0.0.1",
+        "output_path": "output_files/machine_2.txt"
+    },
+    "machine_3": {
+        "name": "Machine 3",
+        "port": 8081,
+        "host": "127.0.0.1",
+        "output_path": "output_files/machine_3.txt"
+    }
+}
