@@ -60,7 +60,7 @@ Creating config.ini file to pass in attributes of machines so that no modificati
             return True
         except ConnectionResetError as connection_lost:
             return False
-```v
+```
 
 Some observations from Ex.1:
 * In implementing our wireprotcol, it was amazing and disappointing to see how little control over the underlying bytes python afforded. C for the win!
