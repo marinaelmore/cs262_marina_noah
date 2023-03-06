@@ -106,11 +106,15 @@ class VirtualMachine():
             log_msg = f"send {names}, time {self.logical_clock}\n"
             print(log_msg)
             self.output_file.write(log_msg)
+
             for machine in machines:
+
                 send_success = await self.send_clock_time(machine["stream"])
-                if not send_success:
+
+                while not send_success:
                     print("Attempting to reconnect to other machines...")
                     await self.connect_to_other_machines() 
+                    send_success = await self.send_clock_time(machine["stream"])
 
 
         self.logical_clock += 1
