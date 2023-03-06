@@ -39,7 +39,18 @@ Error Message: TypeError: VMProtocol() takes no arguments
 
 4 March
 
-Creating config.ini file to pass in attributes of machines so that no modifications to source code need to be made.
+Creating config.json file to pass in attributes of machines so that no modifications to source code need to be made. This will also allow us to pass a Machine dataobject rather than fields for port, machine_id, etc.
+```
+{
+    "machine_1": {
+        "name": "Machine 1",
+        "port": 8000,
+        "host": "127.0.0.1",
+        "output_path": "output_files/machine_1.txt"
+  }
+  
+  await asyncio.open_connection(self.machine_2["host"], self.machine_2["port"])
+```
 
 5 March
 ```
