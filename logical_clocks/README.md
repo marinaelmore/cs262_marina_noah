@@ -24,6 +24,7 @@ python app.py --machine_id machine_2
 #Terminal 3:
 python app.py --machine_id machine_3
 ```
+Feel free to edit `config.json` with the ports and hosts of interest.
 
 Each command will initialize a VM and attempt to connect to the other machines. Expected output should be:
 
