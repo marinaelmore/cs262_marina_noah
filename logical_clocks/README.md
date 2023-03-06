@@ -57,6 +57,7 @@ and begin the dice-rolling logical clock loop.
 
 ``pytest -v test/``
 
+```
 ============================= test session starts ==============================
 
 test/test_main.py::TestApp::test_main PASSED                             [ 11%]
@@ -75,20 +76,15 @@ test/test_virtual_machine.py::test_main PASSED                           [100%]
 
 ## To Generate Code Coverage Report
 
-1. In the terminal, generate the coverage reports:
-   
-``coverage run -a test/test_main.py
+1. In the terminal, generate the coverage reports from the home directory:
 
-  coverage run -a test/test_virtual_machine.py``
+``./generate_coverage.sh``
 
-2. Combine and output the coverage reports
-
-``coverage report``
 ```
-Name                 Stmts   Miss Branch BrPart  Cover
-------------------------------------------------------
-app.py                  14      1      4      2    83%
-virtual_machine.py     114     29     24      3    74%
-------------------------------------------------------
-TOTAL                  128     30     28      5    75%
+Name                 Stmts   Miss  Cover
+----------------------------------------
+app.py                  14      1    93%
+virtual_machine.py     114     29    75%
+----------------------------------------
+TOTAL                  128     30    77%
 ```
