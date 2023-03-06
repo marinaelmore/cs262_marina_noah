@@ -9,7 +9,6 @@ class VirtualMachine():
 
     def __init__(self, machine_id, my_machine, machine_2, machine_3):
         # Initialize vars
-        print("ineher", my_machine)
         self.clock_rate = 1. / random.randrange(1, 7)
         self.output_file = open(my_machine['output_path'], "w")
         self.machine_id = machine_id
