@@ -55,38 +55,40 @@ and begin the dice-rolling logical clock loop.
 
 1. In the terminal, run the unit tests from the home directory:
 
-``pytest -v test/test_virtual_machine.py``
+``pytest -v test/``
 
-```
-========================================================== test session starts =========================================================
+============================= test session starts ==============================
 
-test/test_virtual_machine.py::TestVirtualMachineTest::test_init PASSED                                                            [ 12%]
-test/test_virtual_machine.py::TestVirtualMachineTest::test_queue_protocol PASSED                                                  [ 25%]
-test/test_virtual_machine.py::TestVirtualMachineTest::test_start_server PASSED                                                    [ 37%]
-test/test_virtual_machine.py::TestVirtualMachineTest::test_connect_to_other_machines PASSED                                       [ 50%]
-test/test_virtual_machine.py::TestVirtualMachineTest::test_send_clock_time PASSED                                                 [ 62%]
-test/test_virtual_machine.py::TestVirtualMachineTest::test_tick_queue_empty PASSED                                                [ 75%]
-test/test_virtual_machine.py::TestVirtualMachineTest::test_tick_queue_has_item PASSED                                             [ 87%]
-test/test_virtual_machine.py::test_main PASSED                                                                                    [100%]
+test/test_main.py::TestApp::test_main PASSED                             [ 11%]
+test/test_virtual_machine.py::TestVirtualMachineTest::test_init PASSED   [ 22%]
+test/test_virtual_machine.py::TestVirtualMachineTest::test_queue_protocol PASSED [ 33%]
+test/test_virtual_machine.py::TestVirtualMachineTest::test_start_server PASSED [ 44%]
+test/test_virtual_machine.py::TestVirtualMachineTest::test_connect_to_other_machines PASSED [ 55%]
+test/test_virtual_machine.py::TestVirtualMachineTest::test_send_clock_time PASSED [ 66%]
+test/test_virtual_machine.py::TestVirtualMachineTest::test_tick_queue_empty PASSED [ 77%]
+test/test_virtual_machine.py::TestVirtualMachineTest::test_tick_queue_has_item PASSED [ 88%]
+test/test_virtual_machine.py::test_main PASSED                           [100%]
 
-=========================================================== 8 passed in 0.07s ===========================================================
+============================== 9 passed in 0.30s ===============================
 
 ```
 
 ## To Generate Code Coverage Report
 
-1. In the terminal, generate the coverage report:
+1. In the terminal, generate the coverage reports:
+   
+``coverage run -a test/test_main.py
 
-``coverage run  test/test_virtual_machine.py``
+  coverage run -a test/test_virtual_machine.py``
 
-1. Output the coverage report:
+2. Combine and output the coverage reports
 
 ``coverage report``
-
 ```
-Name                           Stmts   Miss  Cover
---------------------------------------------------
-virtual_machine.py               114     29    75%
---------------------------------------------------
-TOTAL                            227     29    87%
+Name                 Stmts   Miss Branch BrPart  Cover
+------------------------------------------------------
+app.py                  14      1      4      2    83%
+virtual_machine.py     114     29     24      3    74%
+------------------------------------------------------
+TOTAL                  128     30     28      5    75%
 ```

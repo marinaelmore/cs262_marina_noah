@@ -177,6 +177,7 @@ def test_main(mocker):
     vm_mock.assert_called_once_with(
         "machine_2", config["machine_2"], config["machine_1"], config["machine_3"])
 
+    os.remove("output.txt")
 
 
 if __name__ == '__main__':
