@@ -131,7 +131,7 @@ class VirtualMachine():
         self.output_file.flush()
 
 
-def main(machine_id):
+def run_virtual_machine(machine_id):
     # Parse configurations
     json_data = open('config.json').read()
     config = json.loads(json_data)
