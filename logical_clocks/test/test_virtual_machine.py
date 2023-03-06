@@ -173,7 +173,7 @@ def test_main(mocker):
     vm_mock = mocker.patch.object(
         vm.VirtualMachine, "__init__", return_value=None)
 
-    vm.main("machine_2")
+    vm.run_virtual_machine("machine_2")
     vm_mock.assert_called_once_with(
         "machine_2", config["machine_2"], config["machine_1"], config["machine_3"])
 
