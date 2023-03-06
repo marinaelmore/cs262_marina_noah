@@ -1,0 +1,45 @@
+Starting VM
+Connected and listening for messages...
+send ['8080'], time 0
+internal, time 1
+internal, time 2
+internal, time 3
+internal, time 4
+internal, time 5
+receive, global time 2023-03-05 19:45:01.009792, new time 7, queue length 0
+send ['8080'], time 7
+internal, time 8
+internal, time 9
+send ['6125', '8080'], time 10
+internal, time 11
+internal, time 12
+send ['6125'], time 13
+internal, time 14
+send ['6125', '8080'], time 15
+send ['6125'], time 16
+send ['8080'], time 17
+send ['6125', '8080'], time 18
+internal, time 19
+internal, time 20
+internal, time 21
+internal, time 22
+send ['6125', '8080'], time 23
+internal, time 24
+internal, time 25
+internal, time 26
+internal, time 27
+receive, global time 2023-03-05 19:45:06.542339, new time 29, queue length 0
+internal, time 29
+internal, time 30
+send ['6125'], time 31
+internal, time 32
+send ['8080'], time 33
+internal, time 34
+internal, time 35
+internal, time 36
+internal, time 37
+internal, time 38
+internal, time 39
+send ['8080'], time 40
+internal, time 41
+internal, time 42
