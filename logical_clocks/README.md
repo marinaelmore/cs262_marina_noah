@@ -100,4 +100,4 @@ TOTAL                  128     30    77%
 
 You can find our engineering notebook at:
 
-[EngineeringNotebook.md](lhttps://github.com/marinaelmore/cs262_marina_noah/blob/main/logical_clocks/EngineeringNotebook.md)
+[EngineeringNotebook.md](https://github.com/marinaelmore/cs262_marina_noah/blob/main/README.md)
