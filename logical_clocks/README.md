@@ -43,12 +43,19 @@ and begin the dice-rolling logical clock loop.
 
 # Directory Structure #
 ```zsh
-. #logical_clocks
-├── app.py #Script entry point
-├── config.ini #Editable config file where ports+machine ids are specified
+.
+├── app.py  #Script entry point
 ├── virtual_machine.py #code for running VMs
-├── output_files # folder for output logs, individual files ignored
-│   ├── {machine_id}.txt
+├── config.json #Editable config file where ports+machine ids are specified
+├── output_files
+│   └── {machine_id}.txt # folder for output logs, individual files ignored
+├── requirements.txt
+├── test # Test Directory
+│   ├── test_main.py
+│   └── test_virtual_machine.py
+├── generate_coverage.sh #Bash file to generate code coverage statistics
+├── EngineeringNotebook.md
+└── README.md
 ```
 
 ## To Test
