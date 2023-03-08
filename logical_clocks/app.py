@@ -2,8 +2,7 @@ from virtual_machine import run_virtual_machine
 import argparse
 import json
 
-#python3 app.py --machine_id machine_2
-
+#Entry point to the program, sets up the command line arguments
 def main():
     # Parse configurations to get machine ids
     json_data = open('config.json').read()
@@ -19,6 +18,8 @@ def main():
 
     args = parser.parse_args()
 
+    #esnures that a machine id is passed in that 
+    # has a corresponding entry in the config file
     if args.machine_id and args.machine_id in machine_ids:
         run_virtual_machine(args.machine_id)
 
