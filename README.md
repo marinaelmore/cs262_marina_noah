@@ -8,6 +8,9 @@ Logical Clock Observations:
 * As we make internal events more likely, we also get larger jumps in the clock (since they sync more infrequently).
 
 
+* **Learnings**
+* Using sockets provided the most scalable and extensive architecture (over piping). Allows extending across the network in the future
+* Smaller differences in tick rates can make predicting timing of the system easier.
 
 
 29 Feb
