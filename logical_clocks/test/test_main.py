@@ -1,6 +1,4 @@
-import app as app
 import pytest
-from mock import MagicMock
 from mock import patch
 import unittest
 import sys
