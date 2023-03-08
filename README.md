@@ -2,9 +2,15 @@
 Marina Elmore + Noah Zweben for CS 262
 
 # Assignment 2: Logical Clocks
+Logical Clock Observations:
+* Queue buildup occurs when the slower rate falls roughly into the formula `# slower ticks per second < # faster ticks per second / 5` where the tick rate is the random number 1-6 that dicatates # of ticks. The 1/5 factor is derived from the fact that about 1/5th of the messages from the faster process end up in the slower process's queue (this is because dice rolls 1&3 out of 10 possible rolls send a message to a given queue). The formula is not a hard and fast rule, but generally applies. The greater the faster term is (`# slower ticks per second <<< # faster ticks per second` ), the larger the jumps in the logical clocks are upon reading from the queue (~8-10) and the larger buildup there are in the queues. As the ticks rates approach equal the junmps becomes smaller (~1-2). Changes to the internal event rate are discussed beloww.
+* Changing the range of possible tick rates makes it more likely we have larger clock drift
+* As we make internal events more likely, we also get larger jumps in the clock (since they sync more infrequently).
+
+
+
 
 29 Feb
-
 Having issues with the server calls - not adding messages to the queue when passing protocol construct for the server:
 ```
 class VMProtocol(asyncio.Protocol):
