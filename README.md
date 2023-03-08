@@ -6,9 +6,8 @@ Logical Clock Observations:
 * Queue buildup occurs when the slower rate falls roughly into the formula `# slower ticks per second < # faster ticks per second / 5` where the tick rate is the random number 1-6 that dicatates # of ticks. The 1/5 factor is derived from the fact that about 1/5th of the messages from the faster process end up in the slower process's queue (this is because dice rolls 1&3 out of 10 possible rolls send a message to a given queue). The formula is not a hard and fast rule, but generally applies. The greater the faster term is (`# slower ticks per second <<< # faster ticks per second` ), the larger the jumps in the logical clocks are upon reading from the queue (~8-10) and the larger buildup there are in the queues. As the ticks rates approach equal the junmps becomes smaller (~1-2). Changes to the internal event rate are discussed beloww.
 * Changing the range of possible tick rates makes it more likely we have larger clock drift
 * As we make internal events more likely, we also get larger jumps in the clock (since they sync more infrequently).
-
-
-* **Learnings**
+* As internal event rates become more likely, the slower queue builds up less, but the jumps are larger.
+* Really slow clock frequencies start drifting more from actual system time.
 * Using sockets provided the most scalable and extensive architecture (over piping). Allows extending across the network in the future
 * Smaller differences in tick rates can make predicting timing of the system easier.
 
