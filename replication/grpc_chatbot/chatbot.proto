@@ -1,0 +1,37 @@
+syntax = "proto3";
+package chatbot;
+
+// The Chatbot service definition.
+service ChatBot{
+  rpc create_user (UserRequest) returns (ChatbotReply) {}
+  rpc send_message (MessageRequest) returns (ChatbotReply) {}
+  rpc get_message (GetRequest) returns (ChatbotReply) {}
+  rpc list_users (ListRequest) returns (ChatbotReply) {}
+  rpc delete_user (UserRequest) returns (ChatbotReply) {}
+  rpc login_user (UserRequest) returns (ChatbotReply) {}
+}
+
+message UserRequest {
+  string username = 1;
+}
+
+message MessageRequest {
+  string logged_in_user = 1;
+  string username = 2;
+  string message = 3;
+}
+
+message GetRequest {
+  string logged_in_user = 1;
+}
+
+message ListRequest {
+  string wildcard = 1;
+}
+
+message ChatbotReply {
+  string message = 1;
+  // a "HEADER" set by the server that instructs the client to set a 
+  // logged in user cookie
+  string SET_LOGIN_USER = 2;
+}
