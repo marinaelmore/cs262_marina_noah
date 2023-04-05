@@ -12,20 +12,21 @@ class ChatBotServer(chatbot_pb2_grpc.ChatBotServicer):
 
     def __init__(self, primary):
         self.primary = primary
-        self.message_blob = {}
         self.initalize_server()
 
     def initalize_server(self):
         # Intialize server with current state
         if self.primary:
             with open("grpc_chatbot/datastore/message_store.json") as message_store:
-                print("Initialize messages by user")
+                print("Initializing server from data store...")
                 message_blob = json.loads(message_store.read())
-                for user, msgs in message_blob.items():
-                    ServerMemory.create_user(user)
-                    ServerMemory.users[user] = msgs
-            
-            print(ServerMemory.users)
+
+                for username, msgs in message_blob.items():
+                    ServerMemory.create_user(username)
+                    ServerMemory.users[username].messages = msgs
+
+            print("Initialization Complete...")
+
         else:
             print("Secondary server. Going to chill until needed.")
 
@@ -34,7 +35,7 @@ class ChatBotServer(chatbot_pb2_grpc.ChatBotServicer):
         username = request.username
         print("CREATING USER", username)
         result = ServerMemory.create_user(username)
-        response = "CREATE:SUCCESS:EOM" if result else "CREATE:FAILURE:EOM"
+        response = "Successfully created user: {}".format(username) if result else "Failure to create user: {}".format(username)
         return chatbot_pb2.ChatbotReply(message=response)
 
     # helper method to login a new user by setting the SET_LOGIN_USER header
