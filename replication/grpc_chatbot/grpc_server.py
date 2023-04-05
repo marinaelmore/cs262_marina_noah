@@ -3,27 +3,31 @@ from concurrent import futures
 from . import chatbot_pb2
 from . import chatbot_pb2_grpc
 from helpers.memory_manager import MemoryManager
+import json
 
 # Start shared memory manager for server
 ServerMemory = MemoryManager()
-
 
 class ChatBotServer(chatbot_pb2_grpc.ChatBotServicer):
 
     def __init__(self, primary):
         self.primary = primary
+        self.message_blob = {}
         self.initalize_server()
 
     def initalize_server(self):
         # Intialize server with current state
         if self.primary:
-            with open("grpc_chatbot/datastore/message_store.json", "w") as message_store:
-                # Do something
-                print("Initialize messages")
-
-            with open("grpc_chatbot/datastore/user_store.json", "w") as user_store:
-                # Do something else
-                print("Initialize users")
+            with open("grpc_chatbot/datastore/message_store.json") as message_store:
+                print("Initialize messages by user")
+                message_blob = json.loads(message_store.read())
+                for user, msgs in message_blob.items():
+                    ServerMemory.create_user(user)
+                    ServerMemory.users[user] = msgs
+            
+            print(ServerMemory.users)
+        else:
+            print("Secondary server. Going to chill until needed.")
 
     # helper method to create a new user
     def create_user(self, request, _context):
