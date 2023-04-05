@@ -1,4 +1,5 @@
 import re
+import json
 
 
 # A User class which stores a username and a list of messages sent to them
@@ -11,24 +12,51 @@ class User:
     def add_message(self, message):
         self.messages.append(message)
 
+    def user_to_dict(self):
+        return {self.username : self.messages}
+
 
 class MemoryManager:
-    def __init__(self):
+    def __init__(self, filename):
         self.users = {}
+        self.filename = filename
+        self.initialize_memory()
+
+    def initialize_memory(self):
+        with open(self.filename, 'r') as message_store:
+            print("Initializing memory from data store....")
+            message_blob = json.loads(message_store.read())
+
+            for username, msgs in message_blob.items():
+                self.create_user(username)
+                self.users[username].messages = msgs
+
+        print("Initialization Complete...")
+
+    def json_dump_users(self):
+        with open(self.filename, 'w') as message_store:
+            users_dict = {}
+            for username,user_obj in self.users.items():
+                users_dict[username] = user_obj.messages
+            json.dump(users_dict, message_store)
+
 
     # Adds a new user to the memory manager
     def create_user(self, username):
         if username not in self.users:
             self.users[username] = User(username)
+            self.json_dump_users()
             return True
         else:
             return False
+        
 
     # Sends a message from one user to another
     def send_message(self, sender, to, message):
         if (sender in self.users) and (to in self.users):
             self.users[to].add_message(f"{sender}: {message}")
             print(f"Messages of {to}: {self.users[to].messages}")
+            self.json_dump_users()
             return True
         else:
             return False
@@ -40,6 +68,7 @@ class MemoryManager:
             messages = self.users[username].messages
             if len(messages) > 0:
                 msg = messages.pop(0)
+                self.json_dump_users()
                 return msg
         return None
 
@@ -66,6 +95,7 @@ class MemoryManager:
         if username in self.users:
             self.users.pop(username)
             print("Deleted user: {}".format(username))
+            self.json_dump_users()
             return True
 
         else:

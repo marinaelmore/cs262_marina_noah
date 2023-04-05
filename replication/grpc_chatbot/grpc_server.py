@@ -5,37 +5,25 @@ from . import chatbot_pb2_grpc
 from helpers.memory_manager import MemoryManager
 import json
 
+# To do - figure out how to store and assign this
+filename = "grpc_chatbot/datastore/message_store.json"
+
 # Start shared memory manager for server
-ServerMemory = MemoryManager()
+ServerMemory = MemoryManager(filename)
+
 
 class ChatBotServer(chatbot_pb2_grpc.ChatBotServicer):
 
     def __init__(self, primary):
         self.primary = primary
-        self.initalize_server()
-
-    def initalize_server(self):
-        # Intialize server with current state
-        if self.primary:
-            with open("grpc_chatbot/datastore/message_store.json") as message_store:
-                print("Initializing server from data store...")
-                message_blob = json.loads(message_store.read())
-
-                for username, msgs in message_blob.items():
-                    ServerMemory.create_user(username)
-                    ServerMemory.users[username].messages = msgs
-
-            print("Initialization Complete...")
-
-        else:
-            print("Secondary server. Going to chill until needed.")
 
     # helper method to create a new user
     def create_user(self, request, _context):
         username = request.username
         print("CREATING USER", username)
         result = ServerMemory.create_user(username)
-        response = "Successfully created user: {}".format(username) if result else "Failure to create user: {}".format(username)
+        response = "Successfully created user: {}.".format(
+            username) if result else "Failure to create user: {}.".format(username)
         return chatbot_pb2.ChatbotReply(message=response)
 
     # helper method to login a new user by setting the SET_LOGIN_USER header
@@ -43,9 +31,9 @@ class ChatBotServer(chatbot_pb2_grpc.ChatBotServicer):
         username = request.username
         print("LOGGING IN USER", username)
         if username in ServerMemory.users:
-            return chatbot_pb2.ChatbotReply(SET_LOGIN_USER=username, message='LOGIN:SUCCESS:EOM')
+            return chatbot_pb2.ChatbotReply(SET_LOGIN_USER=username, message='Sucessfully logged in user: {}.'.format(username))
         else:
-            return chatbot_pb2.ChatbotReply(message='LOGIN:FAILURE:EOM')
+            return chatbot_pb2.ChatbotReply(message='Failed to login user: {}'.format(username))
 
     # send message from one logged in user to another
     def send_message(self, request, _context):
@@ -56,10 +44,11 @@ class ChatBotServer(chatbot_pb2_grpc.ChatBotServicer):
         if logged_in_user != "":
             call_result = ServerMemory.send_message(
                 logged_in_user, to, message)
-            response = "SEND:SUCCESS:EOM" if call_result else "SEND:FAILURE:EOM"
+            response = "Messaged successfully sent." if call_result else "Failure to send message."
             return chatbot_pb2.ChatbotReply(message=response)
         else:
-            return chatbot_pb2.ChatbotReply(message='SEND:FAILURE:LOGIN_REQUIRED:EOM')
+            return chatbot_pb2.ChatbotReply(message='Failure - please login to send a message.'.format(request.username))
+            
 
 # list users matching with a wildcard
     def list_users(self, request, _context):
@@ -90,10 +79,12 @@ class ChatBotServer(chatbot_pb2_grpc.ChatBotServicer):
             return chatbot_pb2.ChatbotReply(message=response)
 
 # main server function
+
 def run_server(primary):
     port = '50051'
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=5))
-    chatbot_pb2_grpc.add_ChatBotServicer_to_server(ChatBotServer(primary), server)
+    chatbot_pb2_grpc.add_ChatBotServicer_to_server(
+        ChatBotServer(primary), server)
     server.add_insecure_port('[::]:' + port)
     server.start()
     print("GRPC Server started, listening on " + port)
