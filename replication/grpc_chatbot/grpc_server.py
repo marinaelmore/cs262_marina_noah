@@ -8,7 +8,22 @@ from helpers.memory_manager import MemoryManager
 ServerMemory = MemoryManager()
 
 
-class ChatBot(chatbot_pb2_grpc.ChatBotServicer):
+class ChatBotServer(chatbot_pb2_grpc.ChatBotServicer):
+
+    def __init__(self, primary):
+        self.primary = primary
+        self.initalize_server()
+
+    def initalize_server(self):
+        # Intialize server with current state
+        if self.primary:
+            with open("grpc_chatbot/datastore/message_store.json", "w") as message_store:
+                # Do something
+                print("Initialize messages")
+
+            with open("grpc_chatbot/datastore/user_store.json", "w") as user_store:
+                # Do something else
+                print("Initialize users")
 
     # helper method to create a new user
     def create_user(self, request, _context):
@@ -70,12 +85,10 @@ class ChatBot(chatbot_pb2_grpc.ChatBotServicer):
             return chatbot_pb2.ChatbotReply(message=response)
 
 # main server function
-
-
-def run_server():
+def run_server(primary):
     port = '50051'
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=5))
-    chatbot_pb2_grpc.add_ChatBotServicer_to_server(ChatBot(), server)
+    chatbot_pb2_grpc.add_ChatBotServicer_to_server(ChatBotServer(primary), server)
     server.add_insecure_port('[::]:' + port)
     server.start()
     print("GRPC Server started, listening on " + port)

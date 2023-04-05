@@ -1,5 +1,4 @@
 import argparse
-from chatbot import server, client
 from grpc_chatbot import grpc_server, grpc_client
 
 
@@ -9,24 +8,21 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     # add argument
     parser.add_argument("--mode", help="Client or Server mode",
-                        type=str, choices=["client", "server"], required=True)
+                        type=str, choices=["client", "backup_server", "primary_server"], required=True)
     parser.add_argument("--host", help="host IP address",
                         type=str, default="0.0.0.0")
     parser.add_argument("--port", help="port to run server on",
                         type=int, default=8000)
-    parser.add_argument("--grpc", help="run grpc server",
-                        action="store_true")
 
     # parse arguments
     args = parser.parse_args()
-    # if grpc
-    if args.grpc:
-        if args.mode == "server":
-            grpc_server.run_server()
-        elif args.mode == "client":
-            grpc_client.run_client(args.host)
-    else:
-        if args.mode == "server":
-            server.run_server(args.port)
-        elif args.mode == "client":
-            client.run_client(args.host, args.port)
+    
+    if args.mode == "primary_server":
+        grpc_server.run_server(primary=True)
+
+    elif args.mode == "backup_server":
+        grpc_server.run_server(primary=False)
+    
+    elif args.mode == "client":
+        chatbot_client = grpc_client.ChatbotClient(args.host)
+        chatbot_client.run_client()
