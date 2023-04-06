@@ -5,11 +5,13 @@ Marina Elmore + Noah Zweben for CS 262
 ## Implementation
 4 April
 * Decided to implement replication using the backup-server approach from the reading/lecture. We agreed on an architecture diagram and stages for implementation: (1) persistance, (2) replication on one machine, (3) networking of replication across two machines.
-* #1: Persistance:
+* #1: Persistance
     * Used shared memory to write to JSON blob
     * Replicate JSON blob across all machines
-* #2: Replication on One Machine:
+* #2: Replication on One Machine
     * Promote backup to primary server and load from JSON blob
+* #3: Networking for Replication
+   * Implementation TBD
 
 # Assignment 2: Logical Clocks
 ## Logical Clock Observations:
