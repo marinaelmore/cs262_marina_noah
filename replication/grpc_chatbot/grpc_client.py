@@ -1,7 +1,7 @@
 import grpc
-from . import chatbot_pb2
-from . import chatbot_pb2_grpc
-from . import receiver_thread
+from .proto_files import chatbot_pb2
+from .proto_files import chatbot_pb2_grpc
+from .helpers import receiver_thread
 import re
 
 # A helper method to ensure we get alphanumeric input from the user

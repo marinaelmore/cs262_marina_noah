@@ -1,10 +1,8 @@
 import grpc
 from concurrent import futures
-from . import chatbot_pb2
-from . import chatbot_pb2_grpc
-from helpers.memory_manager import MemoryManager
-import json
-
+from .proto_files import chatbot_pb2
+from .proto_files import chatbot_pb2_grpc
+from .helpers.memory_manager import MemoryManager
 
 # Start shared memory manager for server
 ServerMemory = MemoryManager()

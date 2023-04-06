@@ -1,6 +1,6 @@
 from threading import Thread
 from time import sleep
-from . import chatbot_pb2
+from ..proto_files import chatbot_pb2
 
 
 class ReceiverThread(Thread):
