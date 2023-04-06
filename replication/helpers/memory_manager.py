@@ -17,12 +17,12 @@ class User:
 
 
 class MemoryManager:
-    def __init__(self, filename):
+    def __init__(self):
         self.users = {}
-        self.filename = filename
-        self.initialize_memory()
+        self.filename = ""
 
-    def initialize_memory(self):
+    def initialize_memory(self, filename):
+        self.filename = filename
         with open(self.filename, 'r') as message_store:
             print("Initializing memory from data store....")
             message_blob = json.loads(message_store.read())

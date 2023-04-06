@@ -22,9 +22,9 @@ class ReceiverThread(Thread):
             response = self.client_grpc.get_message(
                 chatbot_pb2.GetRequest(logged_in_user=self.logged_in_user))
             if response.message != "":
-                print()
-                print("*** Incoming message from server ***")
-                print(response.message)
-                print("*** Message Received ***")
-                print()
+                print("\n")
+                print("---------------------------------------------------------")
+                print("You have recieved a message: {}".format(response.message))
+                print("---------------------------------------------------------")
+                print("\n")
             sleep(1)
