@@ -31,6 +31,7 @@ class ChatbotClient:
             # the main difference from the non-grpc client is that we need to keep track of thread specific state
             # on the client (server is stateless). This is akin to how HTTP operates.
             logged_in_user = ""
+
             while True:
 
                 command = input(

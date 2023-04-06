@@ -21,7 +21,7 @@ class MemoryManager:
         self.users = {}
         self.filename = ""
 
-    # filename passed from server - 
+    # filename passed from server ->
     # this func called in server file to initialize memory
     def initialize_memory(self, filename):
         self.filename = filename
