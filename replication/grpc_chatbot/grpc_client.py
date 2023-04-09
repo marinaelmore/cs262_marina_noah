@@ -5,6 +5,8 @@ from .helpers import receiver_thread
 import re
 
 # A helper method to ensure we get alphanumeric input from the user
+
+
 def get_alphanumeric_input(prompt):
     alphanumeric = re.compile("[a-zA-Z0-9]+")
     while True:
@@ -13,17 +15,19 @@ def get_alphanumeric_input(prompt):
             return user_input
         else:
             print("Please only use letters and numbers")
-    
+
+
 class ChatbotClient:
-    def __init__(self, host):
+    def __init__(self, host, port):
         self.host = host
+        self.port = port
 
     def run_client(self):
 
         print("Attempting to establish a connection...")
         # create RPC channel and establish connection with the server
 
-        with grpc.insecure_channel(f'{self.host}:50051') as channel:
+        with grpc.insecure_channel(f'{self.host}:{self.port}') as channel:
 
             chatbot_stub = chatbot_pb2_grpc.ChatBotStub(channel)
             response = None

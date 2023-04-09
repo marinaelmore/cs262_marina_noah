@@ -1,10 +1,7 @@
 import argparse
 from grpc_chatbot import grpc_server, grpc_client
+import uuid
 
-
-def initialize_file(filename):
-    fp = open(filename)
-    fp.close()
 
 # start program when run on command line
 if __name__ == '__main__':
@@ -12,33 +9,24 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     # add argument
     parser.add_argument("--mode", help="Client or Server mode",
-                        type=str, choices=["client", "backup_server", "primary_server"], required=True)
+                        type=str, choices=["client", "backup", "primary"], required=True)
     parser.add_argument("--host", help="host IP address",
                         type=str, default="0.0.0.0")
     parser.add_argument("--port", help="port to run server on",
-                        type=int, default=8000)
+                        type=int, default=50051)
+
+    parser.add_argument("--file", help="where to persist messages from/to",
+                        type=str, default=f"message_store.{uuid.uuid4()}.json")
 
     # parse arguments
     args = parser.parse_args()
-
-
-    if args.mode == "primary_server":
-        #Ensure memory file exists
-        filename = "grpc_chatbot/datastore/message_store.json"
-        initialize_file(filename) 
-
-        # Start primary server
-        grpc_server.run_server(primary=True, filename=filename)
-
-    elif args.mode == "backup_server":
-        #Ensure memory file exists
-        filename = "grpc_chatbot/datastore/message_store.json"
-        initialize_file(filename) 
-
-        # Start backup server
-        grpc_server.run_server(primary=False, filename=filename)
-    
-    elif args.mode == "client":
-        # Start client
-        chatbot_client = grpc_client.ChatbotClient(args.host)
+    if args.mode == "client":
+        chatbot_client = grpc_client.ChatbotClient(args.host, args.port)
         chatbot_client.run_client()
+    else:
+        primary = True if args.mode == "primary" else False
+        # prepend grpc_chatbot/datastore/ to filename
+        print("persiting messages to", args.file)
+        filename = f"grpc_chatbot/datastore/{args.file}"
+        grpc_server.run_server(
+            primary=primary, filename=filename, port=args.port)

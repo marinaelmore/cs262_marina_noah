@@ -13,37 +13,46 @@ class User:
         self.messages.append(message)
 
     def user_to_dict(self):
-        return {self.username : self.messages}
+        return {self.username: self.messages}
 
 
 class MemoryManager:
     def __init__(self):
         self.users = {}
         self.filename = ""
+        self.state_hash = 0
 
     # filename passed from server ->
     # this func called in server file to initialize memory
     def initialize_memory(self, filename):
         self.filename = filename
-        with open(self.filename, 'r') as message_store:
-            print("Initializing memory from data store....")
-            message_blob = json.loads(message_store.read())
-
-            for username, msgs in message_blob.items():
-                self.create_user(username)
-                self.users[username].messages = msgs
+        # try to open the file, if it does not exist, create it
+        try:
+            with open(self.filename, 'r') as message_store:
+                print("Initializing memory from data store....")
+                message_blob = json.loads(message_store.read())
+                for username, msgs in message_blob.items():
+                    self.create_user(username)
+                    self.users[username].messages = msgs
+        except FileNotFoundError:
+            with open(self.filename, 'w') as message_store:
+                self.json_dump_users()
 
         print("Initialization Complete...")
 
     def json_dump_users(self):
         with open(self.filename, 'w') as message_store:
             users_dict = {}
-            for username,user_obj in self.users.items():
+            for username, user_obj in self.users.items():
                 users_dict[username] = user_obj.messages
-            json.dump(users_dict, message_store)
-
+            # hash users_dict and store hash in self.state_hash
+            json_memory = json.dumps(users_dict, sort_keys=True)
+            self.state_hash = hash(json_memory)
+            print("new state hash: ", self.state_hash)
+            message_store.write(json_memory)
 
     # Adds a new user to the memory manager
+
     def create_user(self, username):
         if username not in self.users:
             self.users[username] = User(username)
@@ -51,9 +60,9 @@ class MemoryManager:
             return True
         else:
             return False
-        
 
     # Sends a message from one user to another
+
     def send_message(self, sender, to, message):
         if (sender in self.users) and (to in self.users):
             self.users[to].add_message(f"{sender}: {message}")
