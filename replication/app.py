@@ -12,11 +12,9 @@ if __name__ == '__main__':
                         type=str, choices=["client", "backup", "primary"], required=True)
     parser.add_argument("--host", help="host IP address",
                         type=str, default="0.0.0.0")
-    parser.add_argument("--port", help="port to run server on",
-                        type=int, default=50051)
-
-    parser.add_argument("--file", help="where to persist messages from/to",
-                        type=str, default=f"message_store.{uuid.uuid4()}.json")
+    parser.add_argument("--server_id", help="server from servers.json to use for this server",
+                        type=str, required=True)
+    parser.add_argument("--port", help="port number", type=int, default=50051)
 
     # parse arguments
     args = parser.parse_args()
@@ -26,7 +24,7 @@ if __name__ == '__main__':
     else:
         primary = True if args.mode == "primary" else False
         # prepend grpc_chatbot/datastore/ to filename
-        print("persiting messages to", args.file)
-        filename = f"grpc_chatbot/datastore/{args.file}"
+        filename = f"grpc_chatbot/datastore/message_store.{args.server_id}.json"
+        print("persiting messages to", filename)
         grpc_server.run_server(
-            primary=primary, filename=filename, port=args.port)
+            primary=primary, filename=filename, port=args.port, server_id=args.server_id)

@@ -10,7 +10,8 @@ service ChatBot {
   rpc delete_user(UserRequest) returns (ChatbotReply) {}
   rpc login_user(UserRequest) returns (ChatbotReply) {}
   rpc sync_state(SyncRequest) returns (Empty) {}
-  rpc get_full_state(Empty) returns (SyncRequest) {}
+  rpc get_full_state(Empty) returns (FullStateReply) {}
+  rpc heartbeat(Heartbeat) returns (Empty) {}
 }
 
 message UserRequest { string username = 1; }
@@ -30,6 +31,12 @@ message SyncRequest {
   string to_hash = 2;
   string diff = 3;
 }
+
+message FullStateReply { string state = 1; }
+
+message Heartbeat { string server_id = 1; }
+
+message Empty {}
 
 message ChatbotReply {
   string message = 1;

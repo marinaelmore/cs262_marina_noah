@@ -1,16 +1,14 @@
 {
     "servers": [
         {
+            "global_id": "server1",
             "host": "0.0.0.0",
             "port": 50051
         },
         {
+            "global_id": "server2",
             "host": "0.0.0.0",
             "port": 50052
-        },
-        {
-            "host": "0.0.0.0",
-            "port": 50053
         }
     ]
 }

@@ -1,8 +1,13 @@
 import re
 import json
-
+import jsonpatch
+import hashlib
+from ..proto_files import chatbot_pb2
+import threading
 
 # A User class which stores a username and a list of messages sent to them
+
+
 class User:
     def __init__(self, username):
         self.username = username
@@ -17,15 +22,21 @@ class User:
 
 
 class MemoryManager:
-    def __init__(self):
+    def __init__(self, primary, backup_servers, filename):
         self.users = {}
-        self.filename = ""
-        self.state_hash = 0
+        self.primary = primary
+        self.backup_servers = backup_servers
+        self.filename = filename
+        self.state = {}
+        self.state_hash = hashlib.sha256(
+            json.dumps(self.state, sort_keys=True).encode('utf-8')).hexdigest()
+
+    def set_primary(self, primary):
+        self.primary = primary
 
     # filename passed from server ->
     # this func called in server file to initialize memory
-    def initialize_memory(self, filename):
-        self.filename = filename
+    def initialize_memory(self):
         # try to open the file, if it does not exist, create it
         try:
             with open(self.filename, 'r') as message_store:
@@ -34,29 +45,85 @@ class MemoryManager:
                 for username, msgs in message_blob.items():
                     self.create_user(username)
                     self.users[username].messages = msgs
+                self.persist_and_replicate()
         except FileNotFoundError:
             with open(self.filename, 'w') as message_store:
-                self.json_dump_users()
+                self.persist_and_replicate()
 
         print("Initialization Complete...")
 
-    def json_dump_users(self):
+    def sync_state(self, from_hash, to_hash, diff):
+        # check if the hashes match
+        if from_hash == self.state_hash:
+            # apply the diff to the state
+            patch = jsonpatch.JsonPatch.from_string(diff)
+            self.state = patch.apply(self.state)
+            self.state_hash = hashlib.sha256(
+                json.dumps(self.state, sort_keys=True).encode('utf-8')).hexdigest()
+            # write the new state to the file
+            with open(self.filename, 'w') as message_store:
+                json_memory = json.dumps(self.state, sort_keys=True)
+                message_store.write(json_memory)
+        else:
+            print("Hashes do not match, cannot sync state, refetching all memory")
+            # get the full state from the primary server, in a new thread
+            t = threading.Thread(
+                target=self.get_state_from_primary)
+            t.start()
+
+    def get_state_from_primary(self):
+        print("Getting full state from primary server...")
+        backup_server = self.backup_servers[0]
+        full_state = backup_server.get_full_state(
+            chatbot_pb2.Empty())
+        # load state into memory
+        self.state = json.loads(full_state.state)
+        self.state_hash = hashlib.sha256(
+            full_state.state.encode('utf-8')).hexdigest()
+        # write state to file
         with open(self.filename, 'w') as message_store:
-            users_dict = {}
-            for username, user_obj in self.users.items():
-                users_dict[username] = user_obj.messages
+            message_store.write(full_state.state)
+
+    def memory_to_dict(self):
+        users_dict = {}
+        for username, user_obj in self.users.items():
+            users_dict[username] = user_obj.messages.copy()
+        return users_dict
+
+    def persist_and_replicate(self):
+        if self.primary:
+            users_dict = self.memory_to_dict()
             # hash users_dict and store hash in self.state_hash
+            old_state = self.state
+            old_hash = self.state_hash
             json_memory = json.dumps(users_dict, sort_keys=True)
-            self.state_hash = hash(json_memory)
-            print("new state hash: ", self.state_hash)
-            message_store.write(json_memory)
+            new_hash = hashlib.sha256(
+                json_memory.encode('utf-8')).hexdigest()
+
+            self.state = users_dict
+            self.state_hash = str(new_hash)
+
+            # persistance and replication operations
+            patch = jsonpatch.make_patch(old_state, users_dict)
+            print(old_state),
+            print(users_dict)
+            print("diff", patch)
+            with open(self.filename, 'w') as message_store:
+                message_store.write(json_memory)
+            for backup in self.backup_servers:
+                # these are non blocking to make sure the server does not hang
+                try:
+                    backup.sync_state(chatbot_pb2.SyncRequest(
+                        from_hash=str(old_hash), to_hash=str(new_hash), diff=f"{patch}"))
+                except Exception as e:
+                    pass
 
     # Adds a new user to the memory manager
 
     def create_user(self, username):
         if username not in self.users:
             self.users[username] = User(username)
-            self.json_dump_users()
+            self.persist_and_replicate()
             return True
         else:
             return False
@@ -67,7 +134,7 @@ class MemoryManager:
         if (sender in self.users) and (to in self.users):
             self.users[to].add_message(f"{sender}: {message}")
             print(f"Messages of {to}: {self.users[to].messages}")
-            self.json_dump_users()
+            self.persist_and_replicate()
             return True
         else:
             return False
@@ -79,7 +146,7 @@ class MemoryManager:
             messages = self.users[username].messages
             if len(messages) > 0:
                 msg = messages.pop(0)
-                self.json_dump_users()
+                self.persist_and_replicate()
                 return msg
         return None
 
@@ -106,7 +173,7 @@ class MemoryManager:
         if username in self.users:
             self.users.pop(username)
             print("Deleted user: {}".format(username))
-            self.json_dump_users()
+            self.persist_and_replicate()
             return True
 
         else:
