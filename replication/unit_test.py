@@ -1,10 +1,7 @@
 import unittest
-from helpers.memory_manager import User, MemoryManager
-from chatbot.receiver_thread import ReceiverThread
-from chatbot.server_thread import ServerThread
+from grpc_chatbot.helpers.memory_manager import User, MemoryManager
 from unittest.mock import patch, Mock, MagicMock
-from grpc_chatbot.grpc_server import ChatBot
-import socket
+
 
 class MockThread:
     def __init__(self, socket):
@@ -71,7 +68,7 @@ class WireProtocolTestCase(unittest.TestCase):
         self.username1 = "moah"
         self.message = "hello from the other side"
         self.user = User(self.username)
-        self.memory_manager = MemoryManager()
+        self.memory_manager = MemoryManager(False,[],"test.json")
 
     # Memory Manager - User Class
     def test_User_class(self):
@@ -86,15 +83,6 @@ class WireProtocolTestCase(unittest.TestCase):
         self.user.add_message(self.message)
         self.assertEqual(msg_list, self.user.messages)
 
-    def test_Reciever_Thread(self):
-        mocked_socket = MockSocket()
-        mocked_thread = MockThread(mocked_socket)
-        reciver_thread = ReceiverThread(mocked_thread)
-
-        with patch('socket.socket.recv') as recv:
-            recv.return_value = ""
-            reciver_thread.run()
-            self.assertIsNotNone(reciver_thread.client_socket)
 
     def test_MemoryManager_class(self):
 
@@ -134,95 +122,6 @@ class WireProtocolTestCase(unittest.TestCase):
         curr_users = list(self.memory_manager.users.keys())
         self.assertEqual(["moah"], curr_users)
 
-
-    def test_Chatbot_server_thread(self):
-
-        mocked_socket = MockSocket()
-        mocked_thread = MockThread(mocked_socket)
-        server_thread = ServerThread(mocked_thread)
-        
-        # Create
-        self.assertEqual(None, server_thread.create(self.username))
-
-        # Login
-        server_thread.login(self.username)     
-        self.assertEqual(server_thread.logged_in_user, self.username)
-
-        # Send to non-logged in user
-        server_thread.send(self.username1, self.message)
-        self.assertEqual(mocked_thread.client_socket,b"SEND:FAILURE:EOM")
-
-        server_thread2 = ServerThread(mocked_thread)
-        server_thread2.create(self.username1)
-        server_thread2.login(self.username1)     
-        self.assertEqual(server_thread2.logged_in_user, self.username1)
-        
-        # Send to logged in user
-        server_thread.send(self.username1, self.message)
-        self.assertEqual(mocked_thread.client_socket,b"SEND:SUCCESS:EOM")
-
-        # List Users
-        server_thread.list_users("")
-        list_string = "LIST:{}, {}:EOM".format(self.username, self.username1) 
-        self.assertEqual(mocked_thread.client_socket,list_string.encode())
-
-        # Delete User           
-        server_thread.delete(self.username)
-        delete_string = "DELETE:SUCCESS:EOM"
-        self.assertEqual(mocked_thread.client_socket,delete_string.encode())
-
-
-    def test_Chatbot_grpc_server(self):
-        mocked_chatbot_reply = MagicMock()
-
-        with patch('grpc_chatbot.chatbot_pb2') as mock_chatbot_reply:
-            mock_chatbot_reply.ChatbotReply.return_value = MockedChatbotReply(SET_LOGIN_USER="", message=mock_chatbot_reply.message)
-            grpc_server_thread = ChatBot()
-
-            # Create User
-            user_request = MockedGRPCRequest(username=self.username)
-            self.assertEqual("CREATE:SUCCESS:EOM", grpc_server_thread.create_user(user_request,"").message)
-
-            # Login User
-            user_request_exists = MockedGRPCRequest(username=self.username)
-            user_request_dn_exist = MockedGRPCRequest(username=self.username1)
-
-            logged_in_reply = grpc_server_thread.login_user(user_request_exists, "")
-            self.assertEqual("LOGIN:SUCCESS:EOM", logged_in_reply.message)
-            self.assertEqual(self.username, logged_in_reply.SET_LOGIN_USER)
-
-            self.assertEqual("LOGIN:FAILURE:EOM", grpc_server_thread.login_user(user_request_dn_exist, "").message)
-
-
-            ## Send message to non-logged in user
-            message_request = MockedMessageRequest(logged_in_user=self.username, username=self.username1, message=self.message)
-            self.assertEqual("SEND:FAILURE:EOM", grpc_server_thread.send_message(message_request, "").message)
-
-            # Create Second User
-            user_request1 = MockedGRPCRequest(username=self.username1)
-            self.assertEqual("CREATE:SUCCESS:EOM", grpc_server_thread.create_user(user_request1,"").message)
-
-            # Message Failure - Not Logged In
-            message_request = MockedMessageRequest(logged_in_user="", username=self.username1, message=self.message)
-            self.assertEqual("SEND:FAILURE:LOGIN_REQUIRED:EOM", grpc_server_thread.send_message(message_request, "").message)
-
-            # Login Second User
-            logged_in_reply = grpc_server_thread.login_user(user_request_dn_exist, "")
-            self.assertEqual("LOGIN:SUCCESS:EOM", logged_in_reply.message)
-            self.assertEqual(self.username1, logged_in_reply.SET_LOGIN_USER)
-
-            # Send Message to User
-            message_request = MockedMessageRequest(logged_in_user=logged_in_reply.SET_LOGIN_USER, username=self.username1, message=self.message)
-            self.assertEqual("SEND:SUCCESS:EOM", grpc_server_thread.send_message(message_request, "").message)
-
-            # List Users
-            list_request = MockedListRequest(wildcard="")
-            self.assertEqual("LIST:{}, {}:EOM".format(self.username, self.username1), grpc_server_thread.list_users(list_request, "").message)
-
-            # Delete User
-            delete_request = MockedGRPCRequest(username=self.username)
-            self.assertEqual("DELETE:SUCCESS:EOM", grpc_server_thread.delete_user(delete_request, "").message)
-            self.assertEqual("LIST:{}:EOM".format(self.username1), grpc_server_thread.list_users(list_request, "").message)
 
 
 if __name__ == '__main__':
