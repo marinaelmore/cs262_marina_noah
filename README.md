@@ -9,7 +9,7 @@ Marina Elmore + Noah Zweben for CS 262
 * Leader election:
    * We elect leader with a simple heartbeat algorithm. Leaders are determined by the server id with the lowest global id that ALSO has sent a heartbeat within the last 0.5 seconds. There is possibility of a network bifurcation here, but given the nature of the assignment we determined this to be acceptable.
    * The chat client will only communicate with the primary server. If the client receives an error that it is not interfacing with a leader, it will switch the server it is pointing at.
-* Added unit tests but code coverage leaves a lot to be desired - we have so many "while true" loops that it is difficult to fully test implementation without completely restructuring existing code.
+* Added unit tests but code coverage for the client functionalities could be improved (currently 30%) - we have so many "while true" loops that it is difficult to fully test implementation without completely restructuring existing code. Overall code coverage is 66%.
 
 4 April
 * Decided to implement replication using the backup-server approach from the reading/lecture. We agreed on an architecture diagram and stages for implementation: (1) persistance, (2) replication on one machine, (3) networking of replication across two machines.
