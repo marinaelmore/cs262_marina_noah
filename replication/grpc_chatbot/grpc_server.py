@@ -138,7 +138,7 @@ class ChatBotServer(chatbot_pb2_grpc.ChatBotServicer):
         else:
             return chatbot_pb2.ChatbotReply(message='')
 
-# delete user
+    # delete user
     @ primary_only
     def delete_user(self, request, _context):
         username = request.username
@@ -154,6 +154,12 @@ class ChatBotServer(chatbot_pb2_grpc.ChatBotServicer):
     # that has sent a heartbeat in the last 1 second
     def heartbeat(self, request, _context):
         self.heartbeats[request.server_id] = time.time()
+        return chatbot_pb2.Empty()
+    
+
+    # this method is used by the client to check if this server is the primary
+    @ primary_only
+    def check_primary(self, request, context):
         return chatbot_pb2.Empty()
 
     def leader_election(self):

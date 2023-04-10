@@ -16,50 +16,55 @@ class ChatBotStub(object):
             channel: A grpc.Channel.
         """
         self.create_user = channel.unary_unary(
-            '/chatbot.ChatBot/create_user',
-            request_serializer=chatbot__pb2.UserRequest.SerializeToString,
-            response_deserializer=chatbot__pb2.ChatbotReply.FromString,
-        )
+                '/chatbot.ChatBot/create_user',
+                request_serializer=chatbot__pb2.UserRequest.SerializeToString,
+                response_deserializer=chatbot__pb2.ChatbotReply.FromString,
+                )
         self.send_message = channel.unary_unary(
-            '/chatbot.ChatBot/send_message',
-            request_serializer=chatbot__pb2.MessageRequest.SerializeToString,
-            response_deserializer=chatbot__pb2.ChatbotReply.FromString,
-        )
+                '/chatbot.ChatBot/send_message',
+                request_serializer=chatbot__pb2.MessageRequest.SerializeToString,
+                response_deserializer=chatbot__pb2.ChatbotReply.FromString,
+                )
         self.get_message = channel.unary_unary(
-            '/chatbot.ChatBot/get_message',
-            request_serializer=chatbot__pb2.GetRequest.SerializeToString,
-            response_deserializer=chatbot__pb2.ChatbotReply.FromString,
-        )
+                '/chatbot.ChatBot/get_message',
+                request_serializer=chatbot__pb2.GetRequest.SerializeToString,
+                response_deserializer=chatbot__pb2.ChatbotReply.FromString,
+                )
         self.list_users = channel.unary_unary(
-            '/chatbot.ChatBot/list_users',
-            request_serializer=chatbot__pb2.ListRequest.SerializeToString,
-            response_deserializer=chatbot__pb2.ChatbotReply.FromString,
-        )
+                '/chatbot.ChatBot/list_users',
+                request_serializer=chatbot__pb2.ListRequest.SerializeToString,
+                response_deserializer=chatbot__pb2.ChatbotReply.FromString,
+                )
         self.delete_user = channel.unary_unary(
-            '/chatbot.ChatBot/delete_user',
-            request_serializer=chatbot__pb2.UserRequest.SerializeToString,
-            response_deserializer=chatbot__pb2.ChatbotReply.FromString,
-        )
+                '/chatbot.ChatBot/delete_user',
+                request_serializer=chatbot__pb2.UserRequest.SerializeToString,
+                response_deserializer=chatbot__pb2.ChatbotReply.FromString,
+                )
         self.login_user = channel.unary_unary(
-            '/chatbot.ChatBot/login_user',
-            request_serializer=chatbot__pb2.UserRequest.SerializeToString,
-            response_deserializer=chatbot__pb2.ChatbotReply.FromString,
-        )
+                '/chatbot.ChatBot/login_user',
+                request_serializer=chatbot__pb2.UserRequest.SerializeToString,
+                response_deserializer=chatbot__pb2.ChatbotReply.FromString,
+                )
         self.sync_state = channel.unary_unary(
-            '/chatbot.ChatBot/sync_state',
-            request_serializer=chatbot__pb2.SyncRequest.SerializeToString,
-            response_deserializer=chatbot__pb2.Empty.FromString,
-        )
+                '/chatbot.ChatBot/sync_state',
+                request_serializer=chatbot__pb2.SyncRequest.SerializeToString,
+                response_deserializer=chatbot__pb2.Empty.FromString,
+                )
         self.get_full_state = channel.unary_unary(
-            '/chatbot.ChatBot/get_full_state',
-            request_serializer=chatbot__pb2.Empty.SerializeToString,
-            response_deserializer=chatbot__pb2.FullStateReply.FromString,
-        )
+                '/chatbot.ChatBot/get_full_state',
+                request_serializer=chatbot__pb2.Empty.SerializeToString,
+                response_deserializer=chatbot__pb2.FullStateReply.FromString,
+                )
         self.heartbeat = channel.unary_unary(
-            '/chatbot.ChatBot/heartbeat',
-            request_serializer=chatbot__pb2.Heartbeat.SerializeToString,
-            response_deserializer=chatbot__pb2.Empty.FromString,
-        )
+                '/chatbot.ChatBot/heartbeat',
+                request_serializer=chatbot__pb2.Heartbeat.SerializeToString,
+                response_deserializer=chatbot__pb2.Empty.FromString,
+                )
+        self.check_primary = channel.unary_unary(
+                '/chatbot.ChatBot/check_primary',
+                request_serializer=chatbot__pb2.Empty.SerializeToString,
+                response_deserializer=chatbot__pb2.Empty.FromString,
+                )
 
 
 class ChatBotServicer(object):
@@ -120,215 +125,242 @@ class ChatBotServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def check_primary(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_ChatBotServicer_to_server(servicer, server):
     rpc_method_handlers = {
-        'create_user': grpc.unary_unary_rpc_method_handler(
-            servicer.create_user,
-            request_deserializer=chatbot__pb2.UserRequest.FromString,
-            response_serializer=chatbot__pb2.ChatbotReply.SerializeToString,
-        ),
-        'send_message': grpc.unary_unary_rpc_method_handler(
-            servicer.send_message,
-            request_deserializer=chatbot__pb2.MessageRequest.FromString,
-            response_serializer=chatbot__pb2.ChatbotReply.SerializeToString,
-        ),
-        'get_message': grpc.unary_unary_rpc_method_handler(
-            servicer.get_message,
-            request_deserializer=chatbot__pb2.GetRequest.FromString,
-            response_serializer=chatbot__pb2.ChatbotReply.SerializeToString,
-        ),
-        'list_users': grpc.unary_unary_rpc_method_handler(
-            servicer.list_users,
-            request_deserializer=chatbot__pb2.ListRequest.FromString,
-            response_serializer=chatbot__pb2.ChatbotReply.SerializeToString,
-        ),
-        'delete_user': grpc.unary_unary_rpc_method_handler(
-            servicer.delete_user,
-            request_deserializer=chatbot__pb2.UserRequest.FromString,
-            response_serializer=chatbot__pb2.ChatbotReply.SerializeToString,
-        ),
-        'login_user': grpc.unary_unary_rpc_method_handler(
-            servicer.login_user,
-            request_deserializer=chatbot__pb2.UserRequest.FromString,
-            response_serializer=chatbot__pb2.ChatbotReply.SerializeToString,
-        ),
-        'sync_state': grpc.unary_unary_rpc_method_handler(
-            servicer.sync_state,
-            request_deserializer=chatbot__pb2.SyncRequest.FromString,
-            response_serializer=chatbot__pb2.Empty.SerializeToString,
-        ),
-        'get_full_state': grpc.unary_unary_rpc_method_handler(
-            servicer.get_full_state,
-            request_deserializer=chatbot__pb2.Empty.FromString,
-            response_serializer=chatbot__pb2.FullStateReply.SerializeToString,
-        ),
-        'heartbeat': grpc.unary_unary_rpc_method_handler(
-            servicer.heartbeat,
-            request_deserializer=chatbot__pb2.Heartbeat.FromString,
-            response_serializer=chatbot__pb2.Empty.SerializeToString,
-        ),
+            'create_user': grpc.unary_unary_rpc_method_handler(
+                    servicer.create_user,
+                    request_deserializer=chatbot__pb2.UserRequest.FromString,
+                    response_serializer=chatbot__pb2.ChatbotReply.SerializeToString,
+            ),
+            'send_message': grpc.unary_unary_rpc_method_handler(
+                    servicer.send_message,
+                    request_deserializer=chatbot__pb2.MessageRequest.FromString,
+                    response_serializer=chatbot__pb2.ChatbotReply.SerializeToString,
+            ),
+            'get_message': grpc.unary_unary_rpc_method_handler(
+                    servicer.get_message,
+                    request_deserializer=chatbot__pb2.GetRequest.FromString,
+                    response_serializer=chatbot__pb2.ChatbotReply.SerializeToString,
+            ),
+            'list_users': grpc.unary_unary_rpc_method_handler(
+                    servicer.list_users,
+                    request_deserializer=chatbot__pb2.ListRequest.FromString,
+                    response_serializer=chatbot__pb2.ChatbotReply.SerializeToString,
+            ),
+            'delete_user': grpc.unary_unary_rpc_method_handler(
+                    servicer.delete_user,
+                    request_deserializer=chatbot__pb2.UserRequest.FromString,
+                    response_serializer=chatbot__pb2.ChatbotReply.SerializeToString,
+            ),
+            'login_user': grpc.unary_unary_rpc_method_handler(
+                    servicer.login_user,
+                    request_deserializer=chatbot__pb2.UserRequest.FromString,
+                    response_serializer=chatbot__pb2.ChatbotReply.SerializeToString,
+            ),
+            'sync_state': grpc.unary_unary_rpc_method_handler(
+                    servicer.sync_state,
+                    request_deserializer=chatbot__pb2.SyncRequest.FromString,
+                    response_serializer=chatbot__pb2.Empty.SerializeToString,
+            ),
+            'get_full_state': grpc.unary_unary_rpc_method_handler(
+                    servicer.get_full_state,
+                    request_deserializer=chatbot__pb2.Empty.FromString,
+                    response_serializer=chatbot__pb2.FullStateReply.SerializeToString,
+            ),
+            'heartbeat': grpc.unary_unary_rpc_method_handler(
+                    servicer.heartbeat,
+                    request_deserializer=chatbot__pb2.Heartbeat.FromString,
+                    response_serializer=chatbot__pb2.Empty.SerializeToString,
+            ),
+            'check_primary': grpc.unary_unary_rpc_method_handler(
+                    servicer.check_primary,
+                    request_deserializer=chatbot__pb2.Empty.FromString,
+                    response_serializer=chatbot__pb2.Empty.SerializeToString,
+            ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-        'chatbot.ChatBot', rpc_method_handlers)
+            'chatbot.ChatBot', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
+
  # This class is part of an EXPERIMENTAL API.
-
-
 class ChatBot(object):
     """The Chatbot service definition.
     """
 
     @staticmethod
     def create_user(request,
-                    target,
-                    options=(),
-                    channel_credentials=None,
-                    call_credentials=None,
-                    insecure=False,
-                    compression=None,
-                    wait_for_ready=None,
-                    timeout=None,
-                    metadata=None):
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
         return grpc.experimental.unary_unary(request, target, '/chatbot.ChatBot/create_user',
-                                             chatbot__pb2.UserRequest.SerializeToString,
-                                             chatbot__pb2.ChatbotReply.FromString,
-                                             options, channel_credentials,
-                                             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+            chatbot__pb2.UserRequest.SerializeToString,
+            chatbot__pb2.ChatbotReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
     def send_message(request,
-                     target,
-                     options=(),
-                     channel_credentials=None,
-                     call_credentials=None,
-                     insecure=False,
-                     compression=None,
-                     wait_for_ready=None,
-                     timeout=None,
-                     metadata=None):
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
         return grpc.experimental.unary_unary(request, target, '/chatbot.ChatBot/send_message',
-                                             chatbot__pb2.MessageRequest.SerializeToString,
-                                             chatbot__pb2.ChatbotReply.FromString,
-                                             options, channel_credentials,
-                                             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+            chatbot__pb2.MessageRequest.SerializeToString,
+            chatbot__pb2.ChatbotReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
     def get_message(request,
-                    target,
-                    options=(),
-                    channel_credentials=None,
-                    call_credentials=None,
-                    insecure=False,
-                    compression=None,
-                    wait_for_ready=None,
-                    timeout=None,
-                    metadata=None):
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
         return grpc.experimental.unary_unary(request, target, '/chatbot.ChatBot/get_message',
-                                             chatbot__pb2.GetRequest.SerializeToString,
-                                             chatbot__pb2.ChatbotReply.FromString,
-                                             options, channel_credentials,
-                                             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+            chatbot__pb2.GetRequest.SerializeToString,
+            chatbot__pb2.ChatbotReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
     def list_users(request,
-                   target,
-                   options=(),
-                   channel_credentials=None,
-                   call_credentials=None,
-                   insecure=False,
-                   compression=None,
-                   wait_for_ready=None,
-                   timeout=None,
-                   metadata=None):
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
         return grpc.experimental.unary_unary(request, target, '/chatbot.ChatBot/list_users',
-                                             chatbot__pb2.ListRequest.SerializeToString,
-                                             chatbot__pb2.ChatbotReply.FromString,
-                                             options, channel_credentials,
-                                             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+            chatbot__pb2.ListRequest.SerializeToString,
+            chatbot__pb2.ChatbotReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
     def delete_user(request,
-                    target,
-                    options=(),
-                    channel_credentials=None,
-                    call_credentials=None,
-                    insecure=False,
-                    compression=None,
-                    wait_for_ready=None,
-                    timeout=None,
-                    metadata=None):
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
         return grpc.experimental.unary_unary(request, target, '/chatbot.ChatBot/delete_user',
-                                             chatbot__pb2.UserRequest.SerializeToString,
-                                             chatbot__pb2.ChatbotReply.FromString,
-                                             options, channel_credentials,
-                                             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+            chatbot__pb2.UserRequest.SerializeToString,
+            chatbot__pb2.ChatbotReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
     def login_user(request,
-                   target,
-                   options=(),
-                   channel_credentials=None,
-                   call_credentials=None,
-                   insecure=False,
-                   compression=None,
-                   wait_for_ready=None,
-                   timeout=None,
-                   metadata=None):
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
         return grpc.experimental.unary_unary(request, target, '/chatbot.ChatBot/login_user',
-                                             chatbot__pb2.UserRequest.SerializeToString,
-                                             chatbot__pb2.ChatbotReply.FromString,
-                                             options, channel_credentials,
-                                             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+            chatbot__pb2.UserRequest.SerializeToString,
+            chatbot__pb2.ChatbotReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
     def sync_state(request,
-                   target,
-                   options=(),
-                   channel_credentials=None,
-                   call_credentials=None,
-                   insecure=False,
-                   compression=None,
-                   wait_for_ready=None,
-                   timeout=None,
-                   metadata=None):
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
         return grpc.experimental.unary_unary(request, target, '/chatbot.ChatBot/sync_state',
-                                             chatbot__pb2.SyncRequest.SerializeToString,
-                                             chatbot__pb2.Empty.FromString,
-                                             options, channel_credentials,
-                                             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+            chatbot__pb2.SyncRequest.SerializeToString,
+            chatbot__pb2.Empty.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
     def get_full_state(request,
-                       target,
-                       options=(),
-                       channel_credentials=None,
-                       call_credentials=None,
-                       insecure=False,
-                       compression=None,
-                       wait_for_ready=None,
-                       timeout=None,
-                       metadata=None):
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
         return grpc.experimental.unary_unary(request, target, '/chatbot.ChatBot/get_full_state',
-                                             chatbot__pb2.Empty.SerializeToString,
-                                             chatbot__pb2.FullStateReply.FromString,
-                                             options, channel_credentials,
-                                             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+            chatbot__pb2.Empty.SerializeToString,
+            chatbot__pb2.FullStateReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
     def heartbeat(request,
-                  target,
-                  options=(),
-                  channel_credentials=None,
-                  call_credentials=None,
-                  insecure=False,
-                  compression=None,
-                  wait_for_ready=None,
-                  timeout=None,
-                  metadata=None):
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
         return grpc.experimental.unary_unary(request, target, '/chatbot.ChatBot/heartbeat',
-                                             chatbot__pb2.Heartbeat.SerializeToString,
-                                             chatbot__pb2.Empty.FromString,
-                                             options, channel_credentials,
-                                             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+            chatbot__pb2.Heartbeat.SerializeToString,
+            chatbot__pb2.Empty.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def check_primary(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/chatbot.ChatBot/check_primary',
+            chatbot__pb2.Empty.SerializeToString,
+            chatbot__pb2.Empty.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

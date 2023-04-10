@@ -37,13 +37,12 @@ class ChatbotClient:
             except grpc.RpcError as e:
                 #if we get a permission denied error, we know we are not talking to the primary server
                 # so we can try the next server in the list
-                if e.code() == grpc.StatusCode.PERMISSION_DENIED:
-                    print(f"Attempted to contact non-primary server")
+                if e.code() == grpc.StatusCode.PERMISSION_DENIED or e.code() == grpc.StatusCode.UNAVAILABLE:
+                    print(f"\nAttempted to contact non-primary server")
                 else:
                     print(e.code())
                 #increment the current server and try again
                 self.current_server = (self.current_server + 1) % len(self.servers)
-                print("new server", self.current_server)
                 self.receiver_errors = queue.Queue()
                     
 
@@ -51,7 +50,7 @@ class ChatbotClient:
         # create RPC channel and establish connection with the appropriate server
         host = self.servers[self.current_server]['host']
         port = self.servers[self.current_server]['port']
-        print(f"Attempting to establish a connection with {host}:{port}...")
+        print(f"Attempting to establish a connection with {host}:{port}...\n")
         with grpc.insecure_channel(f'{host}:{port}') as channel:
 
             chatbot_stub = chatbot_pb2_grpc.ChatBotStub(channel)
@@ -67,6 +66,8 @@ class ChatbotClient:
                 #check if error queue has anything in it if so raise it
                 if not self.receiver_errors.empty():
                     raise self.receiver_errors.get()
+                
+                chatbot_stub.check_primary(chatbot_pb2.Empty())
 
                 command = input(
                     "Select a Command \n CREATE, LOGIN, LIST, SEND, DELETE:  ").upper()
@@ -74,6 +75,8 @@ class ChatbotClient:
                 # check again here for a more interactive experience
                 if not self.receiver_errors.empty():
                     raise self.receiver_errors.get()
+                
+                chatbot_stub.check_primary(chatbot_pb2.Empty())
 
                 if command == "CREATE":
 

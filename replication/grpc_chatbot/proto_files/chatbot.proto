@@ -12,6 +12,7 @@ service ChatBot {
   rpc sync_state(SyncRequest) returns (Empty) {}
   rpc get_full_state(Empty) returns (FullStateReply) {}
   rpc heartbeat(Heartbeat) returns (Empty) {}
+  rpc check_primary(Empty) returns (Empty) {}
 }
 
 message UserRequest { string username = 1; }
