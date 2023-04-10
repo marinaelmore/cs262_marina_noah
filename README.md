@@ -3,6 +3,14 @@ Marina Elmore + Noah Zweben for CS 262
 
 # Assignment 3: Replication
 ## Implementation
+ 9 April
+* Replication:
+   * utilize a diff approach in which we the primary server only publishes the diffs between states (represented as JSON). Follower servers are able to apply the diffs. To ensure that servers do not get out of sync, the primary also hashes the json state and publishes the hash along with the diff. This way, the followers only apply the diff if the hashes match. Otherwise the follower requests a full copy of the state.
+* Leader election:
+   * We elect leader with a simple heartbeat algorithm. Leaders are determined by the server id with the lowest global id that ALSO has sent a heartbeat within the last 0.5 seconds. There is possibility of a network bifurcation here, but given the nature of the assignment we determined this to be acceptable.
+   * The chat client will only communicate with the primary server. If the client receives an error that it is not interfacing with a leader, it will switch the server it is pointing at.
+* Added unit tests but code coverage leaves a lot to be desired - we have so many "while true" loops that it is difficult to fully test implementation without completely restructuring existing code.
+
 4 April
 * Decided to implement replication using the backup-server approach from the reading/lecture. We agreed on an architecture diagram and stages for implementation: (1) persistance, (2) replication on one machine, (3) networking of replication across two machines.
 * #1: Persistance
@@ -10,13 +18,7 @@ Marina Elmore + Noah Zweben for CS 262
     * Replicate JSON blob across all machines - how are we going to do this? How are we going to name the file?
 * #3: Networking for Replication
    * Implementation TBD
-   
- 9 April
-* Replication:
-   * utilize a diff approach in which we the primary server only publishes the diffs between states (represented as JSON). Follower servers are able to apply the diffs. To ensure that servers do not get out of sync, the primary also hashes the json state and publishes the hash along with the diff. This way, the followers only apply the diff if the hashes match. Otherwise the follower requests a full copy of the state.
-* Leader election:
-   * We elect leader with a simple heartbeat algorithm. Leaders are determined by the server id with the lowest global id that ALSO has sent a heartbeat within the last 0.5 seconds. There is possibility of a network bifurcation here, but given the nature of the assignment we determined this to be acceptable.
-   * The chat client will only communicate with the primary server. If the client receives an error that it is not interfacing with a leader, it will switch the server it is pointing at.
+
 
 # Assignment 2: Logical Clocks
 ## Logical Clock Observations:
