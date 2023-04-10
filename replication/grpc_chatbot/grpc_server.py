@@ -5,12 +5,17 @@ from .proto_files import chatbot_pb2
 from .proto_files import chatbot_pb2_grpc
 from .helpers.memory_manager import MemoryManager
 from .helpers.heartbeat_thread import HeartbeatThread
+import time
+import threading
 
 
 class ChatBotServer(chatbot_pb2_grpc.ChatBotServicer):
-    def __init__(self, primary, filename, server_id):
-        self.primary = primary
+    def __init__(self, filename, server_id):
         self.filename = filename
+        self.heartbeats = {}
+        self.leader = None
+        self.primary = False
+        self.server_id = server_id
 
         # connect to other servers as clients
         self.backup_servers = []
@@ -30,11 +35,23 @@ class ChatBotServer(chatbot_pb2_grpc.ChatBotServicer):
         # Start shared memory manager for server
         self.ServerMemory = MemoryManager(
             self.primary, self.backup_servers, self.filename)
-        if self.primary:
-            self.ServerMemory.initialize_memory()
-
         HeartbeatThread(self.backup_servers, server_id)
+        threading.Thread(target=self.leader_election).start()
 
+    # function decorator to check if self.primary is true
+    def primary_only(func):
+        def wrapper(self, request, context):
+            if self.primary:
+                return func(self, request, context)
+            else:
+                #return context error message "Not primary"
+                error_message = "Not Primary Server"
+                context.abort(grpc.StatusCode.PERMISSION_DENIED, error_message)
+
+                
+        return wrapper
+
+    @ primary_only
     def create_user(self, request, _context):
         username = request.username
         print("CREATING USER", username)
@@ -44,6 +61,7 @@ class ChatBotServer(chatbot_pb2_grpc.ChatBotServicer):
         return chatbot_pb2.ChatbotReply(message=response)
 
     # helper method to login a new user by setting the SET_LOGIN_USER header
+    @ primary_only
     def login_user(self, request, _context):
         username = request.username
         print("LOGGING IN USER", username)
@@ -53,6 +71,7 @@ class ChatBotServer(chatbot_pb2_grpc.ChatBotServicer):
             return chatbot_pb2.ChatbotReply(message='Failed to login user: {}'.format(username))
 
     # send message from one logged in user to another
+    @ primary_only
     def send_message(self, request, _context):
         logged_in_user = request.logged_in_user
         to = request.username
@@ -68,10 +87,15 @@ class ChatBotServer(chatbot_pb2_grpc.ChatBotServicer):
 
     def sync_state(self, request, _context):
         print("SYNCING STATE")
+        # ignore sync requests from other servers if you are the primary
+        if self.primary:
+            return chatbot_pb2.Empty()
+
         self.ServerMemory.sync_state(
             request.from_hash, request.to_hash, request.diff)
         return chatbot_pb2.Empty()
 
+    @ primary_only
     def get_full_state(self, _request, _context):
         print("GET FULL STATE")
         state = json.dumps(self.ServerMemory.memory_to_dict(), sort_keys=True)
@@ -81,6 +105,7 @@ class ChatBotServer(chatbot_pb2_grpc.ChatBotServicer):
 
 # list users matching with a wildcard
 
+    @ primary_only
     def list_users(self, request, _context):
         wildcard = request.wildcard
         print("LISTING USERS", wildcard)
@@ -89,6 +114,7 @@ class ChatBotServer(chatbot_pb2_grpc.ChatBotServicer):
         return chatbot_pb2.ChatbotReply(message=return_msg)
 
 # read a message that has been sent to the logged in user
+    @ primary_only
     def get_message(self, request, _context):
         logged_in_user = request.logged_in_user
         if logged_in_user == "":
@@ -100,6 +126,7 @@ class ChatBotServer(chatbot_pb2_grpc.ChatBotServicer):
             return chatbot_pb2.ChatbotReply(message='')
 
 # delete user
+    @ primary_only
     def delete_user(self, request, _context):
         username = request.username
         print("DELETING USER", username)
@@ -110,18 +137,54 @@ class ChatBotServer(chatbot_pb2_grpc.ChatBotServicer):
             return chatbot_pb2.ChatbotReply(message=response)
 
     def heartbeat(self, request, _context):
-        print("HEARTBEAT")
-        print(request)
+        self.heartbeats[request.server_id] = time.time()
         return chatbot_pb2.Empty()
+
+    def leader_election(self):
+        while True:
+            # return the server with the lowest id that has sent a heartbeat in the last 1 second
+            old_leader = self.leader
+            leader = self.server_id
+            for server_id, timestamp in self.heartbeats.items():
+                if time.time() - timestamp < 1:
+                    if leader is None or server_id < leader:
+                        leader = server_id
+
+            if old_leader != leader:
+                print("Leader changed to server", leader)
+                print("Heartbeats", self.heartbeats)
+            self.leader = leader
+            if leader == self.server_id:
+                self.primary = True
+                self.ServerMemory.set_primary(True)
+            else:
+                self.primary = False
+                self.ServerMemory.set_primary(False)
+            time.sleep(1)
+
 
 # main server function
 
 
-def run_server(primary, filename, port, server_id):
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=5))
-    chatbot_pb2_grpc.add_ChatBotServicer_to_server(
-        ChatBotServer(primary, filename, server_id), server)
-    server.add_insecure_port(f"[::]:{port}")
-    server.start()
-    print("GRPC Server started, listening on ",  port)
-    server.wait_for_termination()
+def run_server(filename, server_id):
+    try:
+        server = grpc.server(futures.ThreadPoolExecutor(max_workers=5))
+        port = None
+        with open('servers.json', 'r') as servers_file:
+            # load json
+            server_json = json.loads(servers_file.read())
+            #get port form server_json.servers where server_id = global_id
+            ports = [s["port"] for s in server_json['servers'] if s["global_id"] == server_id]
+            if len(ports) != 1:
+                raise Exception("Server ID not found")
+            port = ports[0]
+
+        chatbot_pb2_grpc.add_ChatBotServicer_to_server(
+            ChatBotServer(filename, server_id), server)
+        server.add_insecure_port(f"[::]:{port}")
+        server.start()
+        print("GRPC Server started, listening on ",  port)
+        server.wait_for_termination()
+    except KeyboardInterrupt:
+        server.stop(0)
+        print("Stopping server")

@@ -4,6 +4,7 @@ import jsonpatch
 import hashlib
 from ..proto_files import chatbot_pb2
 import threading
+import grpc
 
 # A User class which stores a username and a list of messages sent to them
 
@@ -31,26 +32,38 @@ class MemoryManager:
         self.state_hash = hashlib.sha256(
             json.dumps(self.state, sort_keys=True).encode('utf-8')).hexdigest()
 
-    def set_primary(self, primary):
-        self.primary = primary
+        self.initialize_memory()
 
-    # filename passed from server ->
+    def set_primary(self, primary):
+        old_primary = self.primary
+        self.primary = primary
+        if primary and not old_primary:
+            self.initialize_memory()
+
+
     # this func called in server file to initialize memory
     def initialize_memory(self):
+        #list through all the backup servers and get the full state
+        for backup_server in self.backup_servers:
+            result = self.get_state_from_primary(backup_server)
+            if result:
+                print("received result from primary server")
+                return
         # try to open the file, if it does not exist, create it
+        
         try:
+            print("opening file", self.filename)
             with open(self.filename, 'r') as message_store:
-                print("Initializing memory from data store....")
                 message_blob = json.loads(message_store.read())
                 for username, msgs in message_blob.items():
                     self.create_user(username)
                     self.users[username].messages = msgs
-                self.persist_and_replicate()
-        except FileNotFoundError:
+        #if FIleNotFoundError or JSONDecodeError, create the file
+        except (FileNotFoundError, json.decoder.JSONDecodeError):
+            print("creating file", self.filename)
             with open(self.filename, 'w') as message_store:
-                self.persist_and_replicate()
-
-        print("Initialization Complete...")
+                pass
+        self.persist_and_replicate()
 
     def sync_state(self, from_hash, to_hash, diff):
         # check if the hashes match
@@ -67,22 +80,27 @@ class MemoryManager:
         else:
             print("Hashes do not match, cannot sync state, refetching all memory")
             # get the full state from the primary server, in a new thread
-            t = threading.Thread(
-                target=self.get_state_from_primary)
-            t.start()
+            for backup in self.backup_servers:
+                t = threading.Thread(
+                    target=self.get_state_from_primary,args=([backup]))
+                t.start()
 
-    def get_state_from_primary(self):
-        print("Getting full state from primary server...")
-        backup_server = self.backup_servers[0]
-        full_state = backup_server.get_full_state(
-            chatbot_pb2.Empty())
-        # load state into memory
-        self.state = json.loads(full_state.state)
-        self.state_hash = hashlib.sha256(
-            full_state.state.encode('utf-8')).hexdigest()
-        # write state to file
-        with open(self.filename, 'w') as message_store:
-            message_store.write(full_state.state)
+    def get_state_from_primary(self, backup_server):
+        try:
+            print("Getting full state from primary server...")
+            full_state = backup_server.get_full_state(
+                chatbot_pb2.Empty())
+            # load state into memory
+            self.state = json.loads(full_state.state)
+            #load all users
+            for username, msgs in self.state.items():
+                self.create_user(username)
+                self.users[username].messages = msgs
+            self.persist_and_replicate()
+            return True
+        except grpc.RpcError as e:
+            return False
+
 
     def memory_to_dict(self):
         users_dict = {}
@@ -152,11 +170,7 @@ class MemoryManager:
 
     # Lists all users that match a wildcard
     def list_users(self, wildcard):
-
         matches = []
-        print(self.users)
-        print(wildcard)
-
         try:
             matches = [user for user in self.users if re.match(wildcard, user)]
 

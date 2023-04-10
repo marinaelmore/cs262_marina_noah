@@ -34,7 +34,7 @@ message SyncRequest {
 
 message FullStateReply { string state = 1; }
 
-message Heartbeat { string server_id = 1; }
+message Heartbeat { int32 server_id = 1; }
 
 message Empty {}
 

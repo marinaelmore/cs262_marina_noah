@@ -14,11 +14,16 @@ class HeartbeatThread(Thread):
 
     def run(self):
         while True:
-            # every 0.5 seconds set heartbeat message to all backup servers
-            for backup_server in self.backup_servers:
-                try:
-                    backup_server.heartbeat(
-                        chatbot_pb2.Heartbeat(server_id=self.server_id))
-                except:
-                    pass
-            sleep(0.5)
+            # check if KeyboardInterrupt
+            try:
+                # every 0.1 seconds set heartbeat message to all backup servers
+                for backup_server in self.backup_servers:
+                    try:
+                        backup_server.heartbeat(
+                            chatbot_pb2.Heartbeat(server_id=self.server_id))
+                    except Exception as e:
+                        pass
+                sleep(0.1)
+            except KeyboardInterrupt:
+                print("Exiting: Keyboard Interrupt")
+                break
