@@ -1,1 +1,1 @@
-./grpc_chatbot/datastore/message_store.*.json
+grpc_chatbot/datastore/message_store.*.json
