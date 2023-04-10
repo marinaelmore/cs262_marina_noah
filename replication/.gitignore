@@ -1,2 +1,3 @@
 grpc_chatbot/datastore/message_store.*.json
 test.json
+.coverage
