@@ -5,6 +5,7 @@ Our chatbot program is a Python application organized with the following directo
 * `grpc_client/server.py` - server/client functionality for chatbot
 * `datastore/` - directory where memory is persisted in json format
 * `chatbot.proto`- protobuf specification
+* `test/` - directory for unittests
 ```
 .
 ├── README.md
