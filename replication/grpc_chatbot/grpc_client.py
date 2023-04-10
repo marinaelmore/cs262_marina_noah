@@ -3,6 +3,8 @@ from .proto_files import chatbot_pb2
 from .proto_files import chatbot_pb2_grpc
 from .helpers import receiver_thread
 import re
+import json
+import queue
 
 # A helper method to ensure we get alphanumeric input from the user
 def get_alphanumeric_input(prompt):
@@ -13,29 +15,65 @@ def get_alphanumeric_input(prompt):
             return user_input
         else:
             print("Please only use letters and numbers")
-    
+
+
 class ChatbotClient:
-    def __init__(self, host):
-        self.host = host
+    def __init__(self):
+        # load config file to get list of potential servers
+        with open('servers.json', 'r') as servers_file:
+            # load json
+            server_json = json.loads(servers_file.read())
+            self.servers = server_json['servers']
+        
+        #start with the first server in the list
+        self.current_server = 0
+        # create a queue to store errors from the receiver thread
+        self.receiver_errors = queue.Queue()
 
     def run_client(self):
+        while True:
+            try:
+                self.run_client_attempt()
+            except grpc.RpcError as e:
+                #if we get a permission denied error, we know we are not talking to the primary server
+                # so we can try the next server in the list
+                if e.code() == grpc.StatusCode.PERMISSION_DENIED:
+                    print(f"Attempted to contact non-primary server")
+                else:
+                    print(e.code())
+                #increment the current server and try again
+                self.current_server = (self.current_server + 1) % len(self.servers)
+                print("new server", self.current_server)
+                self.receiver_errors = queue.Queue()
+                    
 
-        print("Attempting to establish a connection...")
-        # create RPC channel and establish connection with the server
-
-        with grpc.insecure_channel(f'{self.host}:50051') as channel:
+    def run_client_attempt(self):
+        # create RPC channel and establish connection with the appropriate server
+        host = self.servers[self.current_server]['host']
+        port = self.servers[self.current_server]['port']
+        print(f"Attempting to establish a connection with {host}:{port}...")
+        with grpc.insecure_channel(f'{host}:{port}') as channel:
 
             chatbot_stub = chatbot_pb2_grpc.ChatBotStub(channel)
             response = None
-            receiver = receiver_thread.ReceiverThread(chatbot_stub)
+
+            receiver = receiver_thread.ReceiverThread(chatbot_stub, self.receiver_errors)
+            
             # the main difference from the non-grpc client is that we need to keep track of thread specific state
             # on the client (server is stateless). This is akin to how HTTP operates.
             logged_in_user = ""
 
             while True:
+                #check if error queue has anything in it if so raise it
+                if not self.receiver_errors.empty():
+                    raise self.receiver_errors.get()
 
                 command = input(
                     "Select a Command \n CREATE, LOGIN, LIST, SEND, DELETE:  ").upper()
+                
+                # check again here for a more interactive experience
+                if not self.receiver_errors.empty():
+                    raise self.receiver_errors.get()
 
                 if command == "CREATE":
 
@@ -89,6 +127,7 @@ class ChatbotClient:
                         logged_in_user = response.SET_LOGIN_USER
                         # login the receiver thread to start reading messages
                         receiver.login(logged_in_user)
+            
                     print("\n---------------------------------------------------------")
                     print(response.message)
                     print("---------------------------------------------------------\n")

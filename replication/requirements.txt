@@ -1,2 +1,6 @@
-grpcio==1.51.1
+grpcio==1.53.0
+grpcio-tools==1.53.0
+jsonpatch==1.32
+jsonpointer==2.3
 protobuf==4.21.12
+uuid==1.30

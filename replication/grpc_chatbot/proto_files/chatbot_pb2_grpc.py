@@ -6,7 +6,7 @@ from . import chatbot_pb2 as chatbot__pb2
 
 
 class ChatBotStub(object):
-    """The greeting service definition.
+    """The Chatbot service definition.
     """
 
     def __init__(self, channel):
@@ -15,11 +15,6 @@ class ChatBotStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.SayHello = channel.unary_unary(
-            '/chatbot.ChatBot/SayHello',
-            request_serializer=chatbot__pb2.HelloRequest.SerializeToString,
-            response_deserializer=chatbot__pb2.HelloReply.FromString,
-        )
         self.create_user = channel.unary_unary(
             '/chatbot.ChatBot/create_user',
             request_serializer=chatbot__pb2.UserRequest.SerializeToString,
@@ -50,18 +45,26 @@ class ChatBotStub(object):
             request_serializer=chatbot__pb2.UserRequest.SerializeToString,
             response_deserializer=chatbot__pb2.ChatbotReply.FromString,
         )
+        self.sync_state = channel.unary_unary(
+            '/chatbot.ChatBot/sync_state',
+            request_serializer=chatbot__pb2.SyncRequest.SerializeToString,
+            response_deserializer=chatbot__pb2.Empty.FromString,
+        )
+        self.get_full_state = channel.unary_unary(
+            '/chatbot.ChatBot/get_full_state',
+            request_serializer=chatbot__pb2.Empty.SerializeToString,
+            response_deserializer=chatbot__pb2.FullStateReply.FromString,
+        )
+        self.heartbeat = channel.unary_unary(
+            '/chatbot.ChatBot/heartbeat',
+            request_serializer=chatbot__pb2.Heartbeat.SerializeToString,
+            response_deserializer=chatbot__pb2.Empty.FromString,
+        )
 
 
 class ChatBotServicer(object):
-    """The greeting service definition.
+    """The Chatbot service definition.
     """
-
-    def SayHello(self, request, context):
-        """Sends a greeting
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
 
     def create_user(self, request, context):
         """Missing associated documentation comment in .proto file."""
@@ -99,14 +102,27 @@ class ChatBotServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def sync_state(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def get_full_state(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def heartbeat(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_ChatBotServicer_to_server(servicer, server):
     rpc_method_handlers = {
-        'SayHello': grpc.unary_unary_rpc_method_handler(
-            servicer.SayHello,
-            request_deserializer=chatbot__pb2.HelloRequest.FromString,
-            response_serializer=chatbot__pb2.HelloReply.SerializeToString,
-        ),
         'create_user': grpc.unary_unary_rpc_method_handler(
             servicer.create_user,
             request_deserializer=chatbot__pb2.UserRequest.FromString,
@@ -137,6 +153,21 @@ def add_ChatBotServicer_to_server(servicer, server):
             request_deserializer=chatbot__pb2.UserRequest.FromString,
             response_serializer=chatbot__pb2.ChatbotReply.SerializeToString,
         ),
+        'sync_state': grpc.unary_unary_rpc_method_handler(
+            servicer.sync_state,
+            request_deserializer=chatbot__pb2.SyncRequest.FromString,
+            response_serializer=chatbot__pb2.Empty.SerializeToString,
+        ),
+        'get_full_state': grpc.unary_unary_rpc_method_handler(
+            servicer.get_full_state,
+            request_deserializer=chatbot__pb2.Empty.FromString,
+            response_serializer=chatbot__pb2.FullStateReply.SerializeToString,
+        ),
+        'heartbeat': grpc.unary_unary_rpc_method_handler(
+            servicer.heartbeat,
+            request_deserializer=chatbot__pb2.Heartbeat.FromString,
+            response_serializer=chatbot__pb2.Empty.SerializeToString,
+        ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
         'chatbot.ChatBot', rpc_method_handlers)
@@ -146,25 +177,8 @@ def add_ChatBotServicer_to_server(servicer, server):
 
 
 class ChatBot(object):
-    """The greeting service definition.
+    """The Chatbot service definition.
     """
-
-    @staticmethod
-    def SayHello(request,
-                 target,
-                 options=(),
-                 channel_credentials=None,
-                 call_credentials=None,
-                 insecure=False,
-                 compression=None,
-                 wait_for_ready=None,
-                 timeout=None,
-                 metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/chatbot.ChatBot/SayHello',
-                                             chatbot__pb2.HelloRequest.SerializeToString,
-                                             chatbot__pb2.HelloReply.FromString,
-                                             options, channel_credentials,
-                                             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
     def create_user(request,
@@ -265,5 +279,56 @@ class ChatBot(object):
         return grpc.experimental.unary_unary(request, target, '/chatbot.ChatBot/login_user',
                                              chatbot__pb2.UserRequest.SerializeToString,
                                              chatbot__pb2.ChatbotReply.FromString,
+                                             options, channel_credentials,
+                                             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def sync_state(request,
+                   target,
+                   options=(),
+                   channel_credentials=None,
+                   call_credentials=None,
+                   insecure=False,
+                   compression=None,
+                   wait_for_ready=None,
+                   timeout=None,
+                   metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/chatbot.ChatBot/sync_state',
+                                             chatbot__pb2.SyncRequest.SerializeToString,
+                                             chatbot__pb2.Empty.FromString,
+                                             options, channel_credentials,
+                                             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def get_full_state(request,
+                       target,
+                       options=(),
+                       channel_credentials=None,
+                       call_credentials=None,
+                       insecure=False,
+                       compression=None,
+                       wait_for_ready=None,
+                       timeout=None,
+                       metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/chatbot.ChatBot/get_full_state',
+                                             chatbot__pb2.Empty.SerializeToString,
+                                             chatbot__pb2.FullStateReply.FromString,
+                                             options, channel_credentials,
+                                             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def heartbeat(request,
+                  target,
+                  options=(),
+                  channel_credentials=None,
+                  call_credentials=None,
+                  insecure=False,
+                  compression=None,
+                  wait_for_ready=None,
+                  timeout=None,
+                  metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/chatbot.ChatBot/heartbeat',
+                                             chatbot__pb2.Heartbeat.SerializeToString,
+                                             chatbot__pb2.Empty.FromString,
                                              options, channel_credentials,
                                              insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

@@ -1,10 +1,7 @@
 import argparse
 from grpc_chatbot import grpc_server, grpc_client
+import uuid
 
-
-def initialize_file(filename):
-    fp = open(filename)
-    fp.close()
 
 # start program when run on command line
 if __name__ == '__main__':
@@ -12,33 +9,25 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     # add argument
     parser.add_argument("--mode", help="Client or Server mode",
-                        type=str, choices=["client", "backup_server", "primary_server"], required=True)
-    parser.add_argument("--host", help="host IP address",
-                        type=str, default="0.0.0.0")
-    parser.add_argument("--port", help="port to run server on",
-                        type=int, default=8000)
-
+                        type=str, choices=["client", "server"], required=True)
+    
+    #only require --server_id argument if mode == "server'"
+    parser.add_argument("--server_id", help="Server ID",
+                        type=int, required=False, )
+    
     # parse arguments
     args = parser.parse_args()
-
-
-    if args.mode == "primary_server":
-        #Ensure memory file exists
-        filename = "grpc_chatbot/datastore/message_store.json"
-        initialize_file(filename) 
-
-        # Start primary server
-        grpc_server.run_server(primary=True, filename=filename)
-
-    elif args.mode == "backup_server":
-        #Ensure memory file exists
-        filename = "grpc_chatbot/datastore/message_store.json"
-        initialize_file(filename) 
-
-        # Start backup server
-        grpc_server.run_server(primary=False, filename=filename)
-    
-    elif args.mode == "client":
-        # Start client
-        chatbot_client = grpc_client.ChatbotClient(args.host)
+    if args.mode == "client":
+        chatbot_client = grpc_client.ChatbotClient()
         chatbot_client.run_client()
+
+
+    elif args.mode == "server":
+        # if no server_id is provided,raise an error
+        if args.server_id is None:
+            raise ValueError("server_id is required when mode is server. Please check server.json for a list of server ids.")
+        
+        # prepend grpc_chatbot/datastore/ to filename
+        filename = f"grpc_chatbot/datastore/message_store.{args.server_id}.json"
+        print("persiting messages to", filename)
+        grpc_server.run_server(filename=filename, server_id=args.server_id)
