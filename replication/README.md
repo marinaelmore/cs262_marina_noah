@@ -138,7 +138,7 @@ DELETE:SUCCESS:EOM
 ```
 
 
-## To Test The Chatbot
+# Testing
 
 1. In the terminal, run the unit tests from the home directory:
 
@@ -150,5 +150,11 @@ DELETE:SUCCESS:EOM
 
 ``./generate_coverage_report.sh``
 
+
+# Engineering Notebook
+
+You can find our engineering notebook at:
+
+[EngineeringNotebook.md](https://github.com/marinaelmore/cs262_marina_noah/blob/main/README.md)
 
 
