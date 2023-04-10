@@ -22,8 +22,8 @@ Our chatbot program is a Python application organized with the following directo
 │       ├── build_protos.sh
 │       ├── chatbot.proto
 ├── requirements.txt
-├── servers.json
-└── unit_test.py
+├── server.json
+└── tests/
 ```
 
 Our chatbot is run via a python app in the parent directory:
@@ -141,28 +141,13 @@ DELETE:SUCCESS:EOM
 
 1. In the terminal, run the unit tests from the home directory:
 
-``pytest -v unit_test.py``
+``pytest -v test``
 
 ## To Generate Code Coverage Report
 
 1. In the terminal, generate the coverage report:
 
-``coverage run --rcfile=setup.cfg  unit_test.py``
+``./generate_coverage_report.sh``
 
-1. Output the coverage report:
-
-``coverage report``
-
-```
-Name                          Stmts   Miss  Cover
--------------------------------------------------
-chatbot/receiver_thread.py       18      5    72%
-chatbot/server_thread.py         72     27    62%
-chatbot/wire_protocol.py         37     25    32%
-grpc_chatbot/grpc_server.py      59     14    76%
-helpers/memory_manager.py        45      5    89%
--------------------------------------------------
-TOTAL                           231     76    67%
-```
 
 
