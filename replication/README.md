@@ -150,6 +150,16 @@ DELETE:SUCCESS:EOM
 
 ``./generate_coverage_report.sh``
 
+Name                                       Stmts   Miss  Cover
+--------------------------------------------------------------
+grpc_chatbot/grpc_client.py                   69     48    30%
+grpc_chatbot/grpc_server.py                  137     46    66%
+grpc_chatbot/helpers/heartbeat_thread.py      20      3    85%
+grpc_chatbot/helpers/memory_manager.py       133     28    79%
+grpc_chatbot/helpers/receiver_thread.py       26     18    31%
+--------------------------------------------------------------
+TOTAL                                        385    143    63%
+
 
 # Engineering Notebook
 
