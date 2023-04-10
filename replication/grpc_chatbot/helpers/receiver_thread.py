@@ -30,6 +30,9 @@ class ReceiverThread(Thread):
                     print("---------------------------------------------------------")
                     print("\n")
                 sleep(0.2)
+
+            # if we get an error from the server, we need to stop the receiver thread and 
+            # raise the error to the main thread via the error queue
             except grpc.RpcError as e:
                 self.error_queue.put(e)
                 break

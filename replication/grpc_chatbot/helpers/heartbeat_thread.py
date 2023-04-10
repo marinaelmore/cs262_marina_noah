@@ -9,12 +9,10 @@ class HeartbeatThread(Thread):
         Thread.__init__(self)
         self.backup_servers = backup_servers
         self.server_id = server_id
-        # keep track of the logged in user at the client thread level
         self.start()
 
     def run(self):
         while True:
-            # check if KeyboardInterrupt
             try:
                 # every 0.1 seconds set heartbeat message to all backup servers
                 for backup_server in self.backup_servers:

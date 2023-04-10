@@ -7,8 +7,6 @@ import threading
 import grpc
 
 # A User class which stores a username and a list of messages sent to them
-
-
 class User:
     def __init__(self, username):
         self.username = username
@@ -28,29 +26,32 @@ class MemoryManager:
         self.primary = primary
         self.backup_servers = backup_servers
         self.filename = filename
+
+
+        # initalize a json representation of the state which is used for hashing
+        # tihs is used to check if the state has changed, and allows us to send
+        # diffs of the state to the backup servers instead of the full state
+        # which is much more efficient
         self.state = {}
         self.state_hash = hashlib.sha256(
             json.dumps(self.state, sort_keys=True).encode('utf-8')).hexdigest()
 
         self.initialize_memory()
 
-    def set_primary(self, primary):
-        old_primary = self.primary
-        self.primary = primary
-        if primary and not old_primary:
-            self.initialize_memory()
-
+    
 
     # this func called in server file to initialize memory
+    # we first check if any other servers are online and have the most up to date state (are the primary)
+    # if not, we check if our persisted file exists, if it does, we load the state from the file
     def initialize_memory(self):
         #list through all the backup servers and get the full state
         for backup_server in self.backup_servers:
+            # if we were able to contact a primary server, we can finish initializing
             result = self.get_state_from_primary(backup_server)
             if result:
                 print("received result from primary server")
                 return
-        # try to open the file, if it does not exist, create it
-        
+        # otherwise we try and load our state from the file
         try:
             print("opening file", self.filename)
             with open(self.filename, 'r') as message_store:
@@ -65,6 +66,20 @@ class MemoryManager:
                 pass
         self.persist_and_replicate()
 
+
+    # when we become primary, we make sure we are operating on the most up to date state
+    # we do this by getting the full state from the primary server
+    # this enables us to handle the case where the primary server goes down and comes back up
+    def set_primary(self, primary):
+        old_primary = self.primary
+        self.primary = primary
+        if primary and not old_primary:
+            self.initialize_memory()
+
+    # applies the json diff patch to the state if the hashes match
+    # this allows us to transfer only the changes to the state instead of the full state
+    # this is much more efficient
+    # if the hashes do not match, we get the full state from the primary server
     def sync_state(self, from_hash, to_hash, diff):
         # check if the hashes match
         if from_hash == self.state_hash:
@@ -85,6 +100,7 @@ class MemoryManager:
                     target=self.get_state_from_primary,args=([backup]))
                 t.start()
 
+    # contacts a server, and if it is the primary server, loads the full state from it
     def get_state_from_primary(self, backup_server):
         try:
             print("Getting full state from primary server...")
@@ -101,13 +117,16 @@ class MemoryManager:
         except grpc.RpcError as e:
             return False
 
-
+    # helper method for persisting and replicating the state
     def memory_to_dict(self):
         users_dict = {}
         for username, user_obj in self.users.items():
             users_dict[username] = user_obj.messages.copy()
         return users_dict
 
+    # persists the state to a file, and replicates the state to the backup servers
+    # we do this by calculating the diff of the previous state to the current state
+    # and sending the diff to the backup servers along with the hashes of the previous and current state
     def persist_and_replicate(self):
         if self.primary:
             users_dict = self.memory_to_dict()
@@ -137,7 +156,6 @@ class MemoryManager:
                     pass
 
     # Adds a new user to the memory manager
-
     def create_user(self, username):
         if username not in self.users:
             self.users[username] = User(username)

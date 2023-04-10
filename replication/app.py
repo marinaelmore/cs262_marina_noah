@@ -20,10 +20,13 @@ if __name__ == '__main__':
     if args.mode == "client":
         chatbot_client = grpc_client.ChatbotClient()
         chatbot_client.run_client()
+
+
     elif args.mode == "server":
         # if no server_id is provided,raise an error
         if args.server_id is None:
-            raise ValueError("server_id is required when mode is server")
+            raise ValueError("server_id is required when mode is server. Please check server.json for a list of server ids.")
+        
         # prepend grpc_chatbot/datastore/ to filename
         filename = f"grpc_chatbot/datastore/message_store.{args.server_id}.json"
         print("persiting messages to", filename)

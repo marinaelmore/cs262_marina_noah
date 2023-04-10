@@ -5,9 +5,8 @@ from .helpers import receiver_thread
 import re
 import json
 import queue
+
 # A helper method to ensure we get alphanumeric input from the user
-
-
 def get_alphanumeric_input(prompt):
     alphanumeric = re.compile("[a-zA-Z0-9]+")
     while True:
@@ -20,30 +19,36 @@ def get_alphanumeric_input(prompt):
 
 class ChatbotClient:
     def __init__(self):
-        self.current_server = 0
-        self.receiver_errors = queue.Queue()
+        # load config file to get list of potential servers
         with open('servers.json', 'r') as servers_file:
             # load json
             server_json = json.loads(servers_file.read())
             self.servers = server_json['servers']
-            
+        
+        #start with the first server in the list
+        self.current_server = 0
+        # create a queue to store errors from the receiver thread
+        self.receiver_errors = queue.Queue()
 
     def run_client(self):
         while True:
             try:
                 self.run_client_attempt()
             except grpc.RpcError as e:
+                #if we get a permission denied error, we know we are not talking to the primary server
+                # so we can try the next server in the list
                 if e.code() == grpc.StatusCode.PERMISSION_DENIED:
                     print(f"Attempted to contact non-primary server")
                 else:
                     print(e.code())
+                #increment the current server and try again
                 self.current_server = (self.current_server + 1) % len(self.servers)
                 print("new server", self.current_server)
                 self.receiver_errors = queue.Queue()
                     
 
     def run_client_attempt(self):
-        # create RPC channel and establish connection with the server
+        # create RPC channel and establish connection with the appropriate server
         host = self.servers[self.current_server]['host']
         port = self.servers[self.current_server]['port']
         print(f"Attempting to establish a connection with {host}:{port}...")
@@ -51,7 +56,6 @@ class ChatbotClient:
 
             chatbot_stub = chatbot_pb2_grpc.ChatBotStub(channel)
             response = None
-
 
             receiver = receiver_thread.ReceiverThread(chatbot_stub, self.receiver_errors)
             
@@ -67,6 +71,7 @@ class ChatbotClient:
                 command = input(
                     "Select a Command \n CREATE, LOGIN, LIST, SEND, DELETE:  ").upper()
                 
+                # check again here for a more interactive experience
                 if not self.receiver_errors.empty():
                     raise self.receiver_errors.get()
 

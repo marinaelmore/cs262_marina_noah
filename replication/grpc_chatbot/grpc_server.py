@@ -9,6 +9,9 @@ import time
 import threading
 
 
+# This is the server class which implements the ChatBotServicer
+# It is responsible for handling all the requests from the client
+# and ensuring replication across the servers
 class ChatBotServer(chatbot_pb2_grpc.ChatBotServicer):
     def __init__(self, filename, server_id):
         self.filename = filename
@@ -23,7 +26,7 @@ class ChatBotServer(chatbot_pb2_grpc.ChatBotServicer):
         with open('servers.json', 'r') as servers_file:
             # load json
             server_json = json.loads(servers_file.read())
-            # iterate through servers and add them to the backup_servers list
+            # iterate through servers and add the other servers them to the backup_servers list
             for server in server_json['servers']:
                 if server['global_id'] == server_id:
                     continue
@@ -35,10 +38,14 @@ class ChatBotServer(chatbot_pb2_grpc.ChatBotServicer):
         # Start shared memory manager for server
         self.ServerMemory = MemoryManager(
             self.primary, self.backup_servers, self.filename)
+        
+        #additonal thread sends a pulse every 0.1 seconds to other servers for leader election
         HeartbeatThread(self.backup_servers, server_id)
+        # check if this server is the leader every 0.1 seconds
         threading.Thread(target=self.leader_election).start()
 
     # function decorator to check if self.primary is true
+    # this decorator will be used to ensure that only the primary server can handle requests
     def primary_only(func):
         def wrapper(self, request, context):
             if self.primary:
@@ -51,6 +58,7 @@ class ChatBotServer(chatbot_pb2_grpc.ChatBotServicer):
                 
         return wrapper
 
+    # create a new user 
     @ primary_only
     def create_user(self, request, _context):
         username = request.username
@@ -85,6 +93,9 @@ class ChatBotServer(chatbot_pb2_grpc.ChatBotServicer):
         else:
             return chatbot_pb2.ChatbotReply(message='Failure - please login to send a message.'.format(request.username))
 
+
+    # this method handles diffs sent from the primary server
+    # it will update the state of the server with the diff
     def sync_state(self, request, _context):
         print("SYNCING STATE")
         # ignore sync requests from other servers if you are the primary
@@ -95,6 +106,9 @@ class ChatBotServer(chatbot_pb2_grpc.ChatBotServicer):
             request.from_hash, request.to_hash, request.diff)
         return chatbot_pb2.Empty()
 
+    # will send a full dump of its memory to a new server that is starting up
+    # only primary servers can handle this request since we want 
+    # to ensure that the new server has the most up to date state
     @ primary_only
     def get_full_state(self, _request, _context):
         print("GET FULL STATE")
@@ -104,7 +118,6 @@ class ChatBotServer(chatbot_pb2_grpc.ChatBotServicer):
 
 
 # list users matching with a wildcard
-
     @ primary_only
     def list_users(self, request, _context):
         wildcard = request.wildcard
@@ -136,6 +149,9 @@ class ChatBotServer(chatbot_pb2_grpc.ChatBotServicer):
                 username) if result else "Failed to delete user {}".format(username)
             return chatbot_pb2.ChatbotReply(message=response)
 
+    # when we receive a heartbeat from another server, update the timestamp
+    # in self.heartbeats, this is used by leader election to pick the lowest id server
+    # that has sent a heartbeat in the last 1 second
     def heartbeat(self, request, _context):
         self.heartbeats[request.server_id] = time.time()
         return chatbot_pb2.Empty()
@@ -146,7 +162,7 @@ class ChatBotServer(chatbot_pb2_grpc.ChatBotServicer):
             old_leader = self.leader
             leader = self.server_id
             for server_id, timestamp in self.heartbeats.items():
-                if time.time() - timestamp < 1:
+                if time.time() - timestamp < 0.5:
                     if leader is None or server_id < leader:
                         leader = server_id
 
@@ -160,16 +176,16 @@ class ChatBotServer(chatbot_pb2_grpc.ChatBotServicer):
             else:
                 self.primary = False
                 self.ServerMemory.set_primary(False)
-            time.sleep(1)
+            time.sleep(0.5)
 
 
 # main server function
-
 
 def run_server(filename, server_id):
     try:
         server = grpc.server(futures.ThreadPoolExecutor(max_workers=5))
         port = None
+        # gets the port for this server from the servers.json file
         with open('servers.json', 'r') as servers_file:
             # load json
             server_json = json.loads(servers_file.read())
