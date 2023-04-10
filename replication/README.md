@@ -1,10 +1,9 @@
-Our chatbot program is a Python application organized with the following directory strucutre
-Notable files include:
+Our chatbot program is a Python application organized with the following directory structure. Notable files include:
 * `app.py` - entrypoint
 * `servers.json` - config file for setting host and ports of servers
 * `memory_manager.py` - responsible for syncing and managing memory
 * `grpc_client/server.py` - server/client functionality for chatbot
-* `datastore/*` - directory where memory is persisted in json format
+* `datastore/` - directory where memory is persisted in json format
 * `chatbot.proto`- protobuf specification
 ```
 .
@@ -12,7 +11,7 @@ Notable files include:
 ├── app.py
 ├── clean_datastore.py
 ├── grpc_chatbot
-│   ├── datastore
+│   ├── datastore/
 │   ├── grpc_client.py
 │   ├── grpc_server.py
 │   ├── helpers
