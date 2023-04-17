@@ -1,6 +1,9 @@
 # Engineering Notebook
 Marina Elmore + Noah Zweben for CS 262
 
+# Final Assignment : Distributed Pong
+## Implementation
+
 # Assignment 3: Replication
 ## Implementation
  9 April
