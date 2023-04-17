@@ -1,0 +1,7 @@
+[run]
+branch = False
+omit =
+    test/*
+    grpc_chatbot/proto_files/*
+    grpc_chatbot/__init__.py
+    grpc_chatbot/helpers/__init__.py
