@@ -3,6 +3,13 @@ Marina Elmore + Noah Zweben for CS 262
 
 # Final Assignment : Distributed Pong
 ## Implementation
+17 April
+* Have working undistributed Pong set up using the Pygame library. Open questions are now all regarding distribution:
+   * How to assign players to the correct paddles
+   * How to keep track of ball for both players - do we have an asyncio server controlling the movement of ball?
+   * We could then have the clients send the coordinates of their paddles and recieve the coordinates of ball.
+   * Scoring will have to happen in client process - then be sent back to server which will update the screen.
+   # We have to move the screen update functionality into the client processes
 
 # Assignment 3: Replication
 ## Implementation
