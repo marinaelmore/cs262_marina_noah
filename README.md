@@ -10,6 +10,7 @@ Marina Elmore + Noah Zweben for CS 262
    * We could then have the clients send the coordinates of their paddles and recieve the coordinates of ball.
    * Scoring will have to happen in client process - then be sent back to server which will update the screen.
    * We have to move the screen update functionality into the client processes
+   
 ![Screen Shot 2023-04-18 at 12 07 15 PM](https://user-images.githubusercontent.com/6632380/232837300-6dc265aa-fdcf-4cbd-bbd2-9097c62b4279.png)
 
 # Assignment 3: Replication
