@@ -7,16 +7,16 @@ import asyncio
 
 class Ball():
 
-    def __init__(self, paddle, window):
+    def __init__(self, player, window):
         # Pass paddle and window attributes
-        self.paddle = paddle
+        self.paddle = player.paddle
         self.window = window
 
         # Initialize Ball
         self.x = WINDOW_WIDTH/2
         self.y = WINDOW_HEIGHT/2
         self.radius = BALL_RADIUS
-        self.xspeed = BALL_SPEED
+        self.xspeed = -BALL_SPEED
         self.yspeed = BALL_SPEED
         self.color = BLUE
 
@@ -32,60 +32,41 @@ class Ball():
         self.x = self.x + self.xspeed
         self.y = self.y + self.yspeed
 
-        self.horizontal_movement()
+        self.collisions()
     
     def update_ball(self):
         self.ball = pg.draw.circle(self.window, self.color, (self.x, self.y), self.radius)
        
-        #if self.rect.left < self.field.rect.left:
-        #    self.speed[0] = abs(self.speed[0])
-        #if self.rect.right > self.field.rect.right:
-        #    self.speed[0] = -abs(self.speed[0])
+    def collisions(self):
 
-        #if self.rect.top < self.field.rect.top:
-        #    self.speed[1] = abs(self.speed[1])
-        #if self.rect.bottom > self.field.rect.bottom:
-        #    self.speed[1] = -abs(self.speed[1])
-
-        #if self.rect.colliderect(self.pad.rect):
-        #    self.speed[0] = abs(self.speed[0]) 
-
-    def horizontal_movement(self):
-        print("Checking")
         # Ball moving right
         if self.xspeed > 0:
             # Hit Paddle - TODO
 
             # Hit Right Wall
             if self.x >= WINDOW_WIDTH:
-                print("Hit Right")
                 self.xspeed = -self.xspeed
 
         # Ball moving left
         if self.xspeed < 0:
-            # Hit Paddle - TODO
+            # Hit Left Paddle
+            if self.paddle.collidepoint(self.x, self.y):
+                self.xspeed = -self.xspeed
 
             # Hit Wall
             if self.x <= 0:
-                print("Hit Left")
                 self.xspeed = -self.xspeed
         
         # Ball Moving Up
         if self.yspeed < 0:
-            # Hit Paddle - TODO
-            
             # Hit Top
             if self.y <= 0:
-                print("Hit Top")
                 self.yspeed = -self.yspeed
 
         # Ball Moving Down
         if self.yspeed > 0:
-            # Hit Paddle - TODO
-            
             # Hit Bottom
             if self.y >= WINDOW_HEIGHT:
-                print("Hit Bottom")
                 self.yspeed = -self.yspeed
 
 

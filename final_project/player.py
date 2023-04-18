@@ -3,7 +3,7 @@ from pygame.locals import *
 from config import *
 
 
-dir = {K_LEFT: (0, 0), K_RIGHT: (0, 0), K_UP: (0, -PADDLE_WIDTH), K_DOWN: (0, PADDLE_WIDTH)}
+dir = {K_LEFT: (0, 0), K_RIGHT: (0, 0), K_UP: (0, -PADDLE_SPEED), K_DOWN: (0, PADDLE_SPEED)}
 
 class Player():
     def __init__(self, window, player_id):
