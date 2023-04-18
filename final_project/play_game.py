@@ -3,6 +3,7 @@ from pygame.locals import *
 from config import *
 from random import randint
 from player import Player
+from ball import Ball
 
 
 dir = {K_LEFT: (0, 0), K_RIGHT: (0, 0), K_UP: (0, -PADDLE_WIDTH), K_DOWN: (0, PADDLE_WIDTH)}
@@ -15,6 +16,8 @@ class PongGame():
         
         self.curr_player = Player(player_id=0)
         self.opponent_player = Player(player_id=1)
+
+        self.ball = Ball(self.curr_player, self.window)
 
         self.font = pg.font.SysFont(None, 24)
 
@@ -34,14 +37,23 @@ class PongGame():
                         v = dir[event.key]
                         self.curr_player.paddle.move_ip(v)
 
+            # Window + Score
             self.window.fill(BLACK)
             self.window.blit(player_1_score_img, (20, 20))
             self.window.blit(player_2_score_img, (WINDOW_WIDTH-100, 20))
+            
+            # Paddles
             pg.draw.rect(self.window, BLUE, self.curr_player.paddle, PADDLE_WIDTH)
             pg.draw.rect(self.window, BLUE, self.opponent_player.paddle, PADDLE_WIDTH)
+
+            # Ball
+            self.ball.move()
+            self.ball.update_ball()
+
             pg.display.flip()                       
     
         pg.quit()
+
 
 def main():
     pong = PongGame(player_id=0)

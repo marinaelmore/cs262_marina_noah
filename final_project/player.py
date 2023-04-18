@@ -15,4 +15,3 @@ class Player():
             paddle = Rect(WINDOW_WIDTH-PADDLE_WIDTH*2, WINDOW_HEIGHT/2, PADDLE_WIDTH, PADDLE_HEIGHT)
 
         return paddle
-
