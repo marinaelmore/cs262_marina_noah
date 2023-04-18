@@ -32,8 +32,6 @@ class PongGame():
                     running = False
 
                 if event.type == KEYDOWN:
-                        #v = dir[event.key]
-                        #self.curr_player.paddle.move_ip(v)
                     self.curr_player.move(event.key)
                     self.curr_player.update()
 
@@ -48,6 +46,7 @@ class PongGame():
 
             # Ball
             self.ball.move()
+            print(self.ball.x, self.ball.y, self.ball.xspeed, self.ball.yspeed)
             self.ball.update_ball()
 
             pg.display.flip()                       
