@@ -2,53 +2,50 @@ import pygame as pg
 from pygame.locals import *
 from config import *
 from random import randint
+from player import Player
 
 
-class PlayPong():
-    def __init__(self) -> None:
-        pass
-
-RED = (255, 0, 0)
-BLUE = (51, 153, 255)
-BLACK = (0, 0, 0)
-
-pg.init()
-
-SIZE = WINDOW_WIDTH, WINDOW_HEIGHT
-screen = pg.display.set_mode(SIZE)
-
-paddle1 = Rect(PADDLE_WIDTH, WINDOW_HEIGHT/2, PADDLE_WIDTH, PADDLE_HEIGHT)
-paddle2 = Rect(WINDOW_WIDTH-PADDLE_WIDTH*2, WINDOW_HEIGHT/2, PADDLE_WIDTH, PADDLE_HEIGHT)
 dir = {K_LEFT: (0, 0), K_RIGHT: (0, 0), K_UP: (0, -PADDLE_WIDTH), K_DOWN: (0, PADDLE_WIDTH)}
 
-font = pg.font.SysFont(None, 24)
+class PongGame():
+    def __init__(self, player_id):
+        pg.init()
 
-running = True
-
-while running:
-    player_1_score = 0
-    player_2_score = 0
-    player_1_score_img = font.render('Player 1: {}'.format(player_1_score), True, BLUE)
-    player_2_score_img = font.render('Player 2: {}'.format(player_2_score), True, BLUE)
-
-    for event in pg.event.get():
-        if event.type == QUIT:
-            running = False
+        self.window = pg.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
         
-        if event.type == KEYDOWN:
-            if event.key in dir:
-                v = dir[event.key]
-                paddle1.move_ip(v)
+        self.curr_player = Player(player_id=0)
+        self.opponent_player = Player(player_id=1)
+
+        self.font = pg.font.SysFont(None, 24)
+
+
+    def run_game(self):
+        running = True
+        while running:
+            player_1_score_img = self.font.render('Player 1: {}'.format(self.curr_player.score), True, BLUE)
+            player_2_score_img = self.font.render('Player 2: {}'.format(self.opponent_player.score), True, BLUE)
+
+            for event in pg.event.get():
+                if event.type == QUIT:
+                    running = False
+
+                if event.type == KEYDOWN:
+                    if event.key in dir:
+                        v = dir[event.key]
+                        self.curr_player.paddle.move_ip(v)
+
+            self.window.fill(BLACK)
+            self.window.blit(player_1_score_img, (20, 20))
+            self.window.blit(player_2_score_img, (WINDOW_WIDTH-100, 20))
+            pg.draw.rect(self.window, BLUE, self.curr_player.paddle, PADDLE_WIDTH)
+            pg.draw.rect(self.window, BLUE, self.opponent_player.paddle, PADDLE_WIDTH)
+            pg.display.flip()                       
     
-    screen.fill(BLACK)
-    screen.blit(player_1_score_img, (20, 20))
-    screen.blit(player_2_score_img, (WINDOW_WIDTH-100, 20))
-    pg.draw.rect(screen, BLUE, paddle1, PADDLE_WIDTH)
-    pg.draw.rect(screen, BLUE, paddle2, PADDLE_WIDTH)
-    pg.display.flip()
+        pg.quit()
 
+def main():
+    pong = PongGame(player_id=0)
+    pong.run_game()
 
-pg.quit()
-
-#if __name__ == "__main__":
-#     main()
+if __name__ == "__main__":
+     main()
