@@ -6,7 +6,6 @@ from player import Player
 from ball import Ball
 
 
-dir = {K_LEFT: (0, 0), K_RIGHT: (0, 0), K_UP: (0, -PADDLE_WIDTH), K_DOWN: (0, PADDLE_WIDTH)}
 
 class PongGame():
     def __init__(self, player_id):
@@ -14,8 +13,8 @@ class PongGame():
 
         self.window = pg.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
         
-        self.curr_player = Player(player_id=0)
-        self.opponent_player = Player(player_id=1)
+        self.curr_player = Player(self.window, player_id=0)
+        self.opponent_player = Player(self.window, player_id=1)
 
         self.ball = Ball(self.curr_player, self.window)
 
@@ -33,9 +32,10 @@ class PongGame():
                     running = False
 
                 if event.type == KEYDOWN:
-                    if event.key in dir:
-                        v = dir[event.key]
-                        self.curr_player.paddle.move_ip(v)
+                        #v = dir[event.key]
+                        #self.curr_player.paddle.move_ip(v)
+                    self.curr_player.move(event.key)
+                    self.curr_player.update()
 
             # Window + Score
             self.window.fill(BLACK)
@@ -43,8 +43,8 @@ class PongGame():
             self.window.blit(player_2_score_img, (WINDOW_WIDTH-100, 20))
             
             # Paddles
-            pg.draw.rect(self.window, BLUE, self.curr_player.paddle, PADDLE_WIDTH)
-            pg.draw.rect(self.window, BLUE, self.opponent_player.paddle, PADDLE_WIDTH)
+            self.curr_player.update()
+            self.opponent_player.update()
 
             # Ball
             self.ball.move()

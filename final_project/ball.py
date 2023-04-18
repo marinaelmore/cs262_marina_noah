@@ -52,9 +52,6 @@ class Ball():
         self.x = WINDOW_WIDTH/2
         self.y = WINDOW_HEIGHT/2
 
-    def get_position(self):
-        print("Ball pos")
-
 
     #def update_position(self):
     #    print("Update position")
