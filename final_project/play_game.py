@@ -9,6 +9,7 @@ from ball import Ball
 
 class PongGame():
     def __init__(self, player_id):
+
         pg.init()
 
         self.window = pg.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
@@ -16,7 +17,7 @@ class PongGame():
         self.curr_player = Player(self.window, player_id=0)
         self.opponent_player = Player(self.window, player_id=1)
 
-        self.ball = Ball(self.curr_player, self.window)
+        self.ball = Ball(self.curr_player, self.opponent_player, self.window)
 
         self.font = pg.font.SysFont(None, 24)
 
@@ -24,8 +25,8 @@ class PongGame():
     def run_game(self):
         running = True
         while running:
-            player_1_score_img = self.font.render('Player 1: {}'.format(self.curr_player.score), True, BLUE)
-            player_2_score_img = self.font.render('Player 2: {}'.format(self.opponent_player.score), True, BLUE)
+            curr_player_score_img = self.font.render('Player 1: {}'.format(self.curr_player.score), True, BLUE)
+            opponent_score_img = self.font.render('Player 2: {}'.format(self.opponent_player.score), True, BLUE)
 
             for event in pg.event.get():
                 if event.type == QUIT:
@@ -37,8 +38,8 @@ class PongGame():
 
             # Window + Score
             self.window.fill(BLACK)
-            self.window.blit(player_1_score_img, (20, 20))
-            self.window.blit(player_2_score_img, (WINDOW_WIDTH-100, 20))
+            self.window.blit(curr_player_score_img, (20, 20))
+            self.window.blit(opponent_score_img, (WINDOW_WIDTH-100, 20))
             
             # Paddles
             self.curr_player.update()
@@ -46,7 +47,6 @@ class PongGame():
 
             # Ball
             self.ball.move()
-            print(self.ball.x, self.ball.y, self.ball.xspeed, self.ball.yspeed)
             self.ball.update_ball()
 
             pg.display.flip()                       

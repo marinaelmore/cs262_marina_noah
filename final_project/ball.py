@@ -7,9 +7,12 @@ import asyncio
 
 class Ball():
 
-    def __init__(self, player, window):
+    def __init__(self, current_player, opponent_player, window):
         # Pass paddle and window attributes
-        self.paddle = player.paddle
+        self.current_player = current_player
+        self.current_paddle = current_player.paddle
+        self.opponent_player = opponent_player
+        self.opponent_paddle = opponent_player.paddle
         self.window = window
 
         # Initialize Ball
@@ -42,20 +45,24 @@ class Ball():
         # Ball moving right
         if self.xspeed > 0:
             # Hit Paddle - TODO
+            if self.opponent_paddle.collidepoint(self.x, self.y):
+                self.xspeed = -self.xspeed
 
             # Hit Right Wall
             if self.x >= WINDOW_WIDTH:
                 self.xspeed = -self.xspeed
+                self.current_player.score = self.current_player.score+1
 
         # Ball moving left
         if self.xspeed < 0:
             # Hit Left Paddle
-            if self.paddle.collidepoint(self.x, self.y):
+            if self.current_paddle.collidepoint(self.x, self.y):
                 self.xspeed = -self.xspeed
 
-            # Hit Wall
+            # Hit Left Wall
             if self.x <= 0:
                 self.xspeed = -self.xspeed
+                self.opponent_player.score = self.opponent_player.score+1
         
         # Ball Moving Up
         if self.yspeed < 0:
@@ -73,23 +80,3 @@ class Ball():
     def reset_position(self):
         self.x = WINDOW_WIDTH/2
         self.y = WINDOW_HEIGHT/2
-
-
-    #def update_position(self):
-    #    print("Update position")
-
-    #def collide_with_paddle(self):
-    #    print("Collide with paddle")
-
-    #def collide_with_top(self):
-    #    print("Collide with top")
-
-    #def collide_with_bottom(self):
-    #    print("Collide with bottom")
-
-    #def collide_with_left_side(self):
-    #    print("Collide with left side - point!")
-
-    #def collide_with_right_side(self):
-    #    print("Collide with right slide - point!")
-
