@@ -9,7 +9,7 @@ Marina Elmore + Noah Zweben for CS 262
    * How to keep track of ball for both players - do we have an asyncio server controlling the movement of ball?
    * We could then have the clients send the coordinates of their paddles and recieve the coordinates of ball.
    * Scoring will have to happen in client process - then be sent back to server which will update the screen.
-   # We have to move the screen update functionality into the client processes
+   * We have to move the screen update functionality into the client processes
 
 # Assignment 3: Replication
 ## Implementation
