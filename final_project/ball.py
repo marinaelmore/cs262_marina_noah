@@ -3,7 +3,9 @@
 
 import pygame as pg
 from config import *
-import asyncio
+import threading
+import time
+
 
 class Ball():
 
@@ -25,21 +27,29 @@ class Ball():
 
         self.ball = self.initialize_ball()
 
-
     def initialize_ball(self):
-        ball = pg.draw.circle(self.window, self.color, (self.x, self.y), self.radius)
+        ball = pg.draw.circle(self.window, self.color,
+                              (self.x, self.y), self.radius)
         return ball
 
-    #async def move(self):
+    # async def move(self):
     def move(self):
         self.x = self.x + self.xspeed
         self.y = self.y + self.yspeed
 
         self.collisions()
-    
+
     def update_ball(self):
-        self.ball = pg.draw.circle(self.window, self.color, (self.x, self.y), self.radius)
-       
+        self.ball = pg.draw.circle(
+            self.window, self.color, (self.x, self.y), self.radius)
+
+    def flash_red(self):
+        self.color = RED
+        self.update_ball()
+        time.sleep(0.5)
+        self.color = BLUE
+        self.update_ball()
+
     def collisions(self):
 
         # Ball moving right
@@ -52,18 +62,21 @@ class Ball():
             if self.x >= WINDOW_WIDTH:
                 self.xspeed = -self.xspeed
                 self.current_player.score = self.current_player.score+1
+                # flash red in a different thread using threading
+                threading.Thread(target=self.flash_red).start()
 
         # Ball moving left
         if self.xspeed < 0:
             # Hit Left Paddle
-            if self.current_paddle.collidepoint(self.x, self.y):
+            if self.current_psaddle.collidepoint(self.x, self.y):
                 self.xspeed = -self.xspeed
 
             # Hit Left Wall
             if self.x <= 0:
                 self.xspeed = -self.xspeed
                 self.opponent_player.score = self.opponent_player.score+1
-        
+                threading.Thread(target=self.flash_red).start()
+
         # Ball Moving Up
         if self.yspeed < 0:
             # Hit Top
@@ -75,7 +88,6 @@ class Ball():
             # Hit Bottom
             if self.y >= WINDOW_HEIGHT:
                 self.yspeed = -self.yspeed
-
 
     def reset_position(self):
         self.x = WINDOW_WIDTH/2
