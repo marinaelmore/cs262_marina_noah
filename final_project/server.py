@@ -8,7 +8,7 @@ import threading
 from random import randint
 import uuid
 import queue
-from game import Game
+from game import ServerGame
 import time
 
 
@@ -36,7 +36,7 @@ class PongServer(pong_grpc.PongServerServicer):
                 player_1 = self.players.get()
                 player_2 = self.players.get()
                 #create a tuple of players with player_1 < player_2
-                game = Game(player_1, player_2)
+                game = ServerGame(player_1, player_2)
                 self.active_games[player_1] = game
                 self.active_games[player_2] = game
                 print("Players paired: ", player_1, player_2)
@@ -56,18 +56,28 @@ class PongServer(pong_grpc.PongServerServicer):
         first_player = True if player_id == game_player_1 else False
         yield pong.GameReady(ready=True, player_1=game_player_1, player_2=game_player_2, first_player = first_player)
 
-    # def get_paddle_position(self, request, context):
-    #     player_id = request.player_id
-    #     game = self.active_games[player_id]
+    def paddle_stream(self, request, context):
+        player_id = request.player_id
+        game = self.active_games[player_id]
+        # wait on condition variable for player
+        condition = game.player_objs[player_id]["push"]
+        player = game.player_objs[player_id]["game"]
+        with condition:
+            while True:
+                condition.wait()
+                yield pong.PaddlePosition(player_id = player_id, y=player.paddle.y)
 
 
     def move(self, request, context):
         player_id = request.player_id
-        movement = request.direction
+        movement = request.key
         game = self.active_games[player_id]
         game.move(player_id, movement)
         return pong.Empty()
         
+
+
+    
 
         
 

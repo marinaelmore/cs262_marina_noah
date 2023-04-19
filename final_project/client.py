@@ -4,7 +4,7 @@ import pong_pb2_grpc
 import queue
 import threading
 from config import PADDLE_SPEED
-from play_game import PongGame
+from client_game import PongGame
 
 class PongClient:
     def __init__(self):

@@ -10,13 +10,11 @@ message GameReady {
   bool first_player = 4;
 }
 
-message Score {
-  string player_id = 1;
-  int32 score = 2;
-}
+message PaddleRequest { string player_id = 1; }
+
 message PaddlePosition {
   string player_id = 1;
-  float x = 2;
+  float y = 2;
 }
 
 message PaddleMovement {
@@ -25,7 +23,7 @@ message PaddleMovement {
 }
 
 service PongServer {
-  // rpc paddle_strea(PaddlePosition) returns (stream PaddlePosition);
+  rpc paddle_stream(PaddleRequest) returns (stream PaddlePosition);
   rpc move(PaddleMovement) returns (Empty);
   rpc initialize_game(Empty) returns (stream GameReady);
 }

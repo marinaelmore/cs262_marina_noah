@@ -5,6 +5,8 @@ from random import randint
 from player import Player
 from ball import Ball
 import threading
+import pong_pb2 as pong
+
 
 class PongGame():
     def __init__(self, first_player, player_1, player_2, pong_stub):
@@ -28,13 +30,16 @@ class PongGame():
         self.font = pg.font.SysFont(None, 24)
 
 
-    # def follow_opponent(self):
-    #     for paddle_update in self.pong_stub.follow(self.other.player_id):
+    def follow_opponent(self):
+        for paddle_update in self.pong_stub.paddle_stream(pong.PaddleRequest(player_id=self.other.player_id)):
+            self.other.paddle.y = paddle_update.y
+            self.other.update()
 
     def send_movement(self, event_key):
-        self.pong_stub.move(self.me.player_id, event_key)
+        self.pong_stub.move(pong.PaddleMovement(player_id = self.me.player_id, key = event_key))
     
     def run_game(self):
+        t = threading.Thread(target=self.follow_opponent).start()
         running = True
         while running:
             player_1_score_img = self.font.render(
@@ -47,7 +52,8 @@ class PongGame():
                     running = False
 
                 if event.type == KEYDOWN:
-
+                    #in another thread send_movemnt
+                    t = threading.Thread(target=self.send_movement, args=([event.key])).start()
                     self.me.move(event.key)
                     self.me.update()
 
