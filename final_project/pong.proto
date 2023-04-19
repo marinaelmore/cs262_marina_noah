@@ -1,0 +1,11 @@
+syntax = "proto3";
+package pong;
+
+// The Pong service definition.
+service Pong {
+  rpc move(MoveRequest) returns (Empty) {}
+}
+
+message MoveRequest { bool up = 1; }
+
+message Emtpy {}
