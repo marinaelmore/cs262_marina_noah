@@ -1,5 +1,5 @@
 import pygame as pg
-from pygame.locals import *
+from pygame.locals import K_LEFT, K_RIGHT, K_UP, K_DOWN, Rect
 from config import *
 
 
@@ -19,7 +19,7 @@ class Player():
             paddle = Rect(WINDOW_WIDTH-PADDLE_WIDTH*2, WINDOW_HEIGHT/2, PADDLE_WIDTH, PADDLE_HEIGHT)
         return paddle
 
-
+    # TODO - need to ensure paddle can't go off screen. Possibly switch from move_ip to move like Ball class
     def move(self, event_key):
         if event_key in dir:
             v = dir[event_key]

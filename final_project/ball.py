@@ -30,21 +30,20 @@ class Ball():
         ball = pg.draw.circle(self.window, self.color, (self.x, self.y), self.radius)
         return ball
 
-    #async def move(self):
-    def move(self):
+    async def move(self):
         self.x = self.x + self.xspeed
         self.y = self.y + self.yspeed
 
-        self.collisions()
+        await self.collisions()
     
     def update_ball(self):
         self.ball = pg.draw.circle(self.window, self.color, (self.x, self.y), self.radius)
        
-    def collisions(self):
+    async def collisions(self):
 
         # Ball moving right
         if self.xspeed > 0:
-            # Hit Paddle - TODO
+            # Hit Right Paddle - TODO
             if self.opponent_paddle.collidepoint(self.x, self.y):
                 self.xspeed = -self.xspeed
 
