@@ -14,9 +14,9 @@ class Player():
         self.paddle = self.initialize_paddle()
 
     def initialize_paddle(self):
-        if self.player_id == 0:
+        if self.player_id == LEFT_PLAYER_ID:
             paddle = Rect(LEFT_X, LEFT_Y, PADDLE_WIDTH, PADDLE_HEIGHT)
-        elif self.player_id == 1:
+        elif self.player_id == RIGHT_PLAYER_ID:
             paddle = Rect(RIGHT_X, RIGHT_Y, PADDLE_WIDTH, PADDLE_HEIGHT)
         return paddle
 
