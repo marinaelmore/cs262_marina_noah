@@ -40,8 +40,8 @@ class pong(object):
         cls.r = radius
 
     @classmethod
-    def raise_score(cls, player1):
-        if player1:
+    def raise_score(cls, player_1):
+        if player_1:
             cls.score[0] += 1
         else:
             cls.score[1] += 1
@@ -161,9 +161,9 @@ class ball(pong):
 
 
 class paddle(pong):
-    def __init__(self, player1):
+    def __init__(self, player_1):
         super().__init__()
-        self.player1 = player1
+        self.player_1 = player_1
 
         self.pad_width = pong.l // 40             # width of paddle
         self.pad_length = pong.w // 5              # length of paddle
@@ -171,7 +171,7 @@ class paddle(pong):
         self.p1_space = pong.l - self.pad_width*3  # space between wall and paddle1
         self.p2_space = self.pad_width*2               # space between wall and paddle2
 
-        if self.player1:
+        if self.player_1:
             self.pos = (self.p1_space, self.center)
         else:
             self.pos = (self.p2_space, self.center)
@@ -193,7 +193,7 @@ class paddle(pong):
         self.pos = [self.pos[0], self.pos[1] + self.dirny]
 
         keys = pygame.key.get_pressed()  # records that a key was pressed
-        if self.player1:
+        if self.player_1:
             if keys[pygame.K_UP]:
                 self.dirny = -self.pad_width
             elif keys[pygame.K_DOWN]:
@@ -218,7 +218,7 @@ class paddle(pong):
         # y-coordinate of top-left corner of rectangle
         y = self.pos[1]
 
-        if self.player1:
+        if self.player_1:
             pygame.draw.rect(surface, self.paddle_color,
                              (x, y, self.pad_width, self.pad_length))
         else:

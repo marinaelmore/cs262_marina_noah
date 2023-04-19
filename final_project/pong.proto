@@ -1,11 +1,31 @@
 syntax = "proto3";
 package pong;
 
-// The Pong service definition.
-service Pong {
-  rpc move(MoveRequest) returns (Empty) {}
+message Empty {}
+
+message GameReady {
+  bool ready = 1;
+  string player_1 = 2;
+  string player_2 = 3;
+  bool first_player = 4;
 }
 
-message MoveRequest { bool up = 1; }
+message Score {
+  string player_id = 1;
+  int32 score = 2;
+}
+message PaddlePosition {
+  string player_id = 1;
+  float x = 2;
+}
 
-message Emtpy {}
+message PaddleMovement {
+  string player_id = 1;
+  int32 key = 2;
+}
+
+service PongServer {
+  // rpc paddle_strea(PaddlePosition) returns (stream PaddlePosition);
+  rpc move(PaddleMovement) returns (Empty);
+  rpc initialize_game(Empty) returns (stream GameReady);
+}
