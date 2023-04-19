@@ -68,7 +68,7 @@ class Ball():
         # Ball moving left
         if self.xspeed < 0:
             # Hit Left Paddle
-            if self.current_psaddle.collidepoint(self.x, self.y):
+            if self.current_paddle.collidepoint(self.x, self.y):
                 self.xspeed = -self.xspeed
 
             # Hit Left Wall
