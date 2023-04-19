@@ -20,14 +20,19 @@ class PongGame():
 
         self.font = pg.font.SysFont(None, 24)
 
+    def update_score(self):
+        curr_player_score_img = self.font.render(
+                'Player 1: {}'.format(self.curr_player.score), True, BLUE)
+        opponent_score_img = self.font.render(
+                'Player 2: {}'.format(self.opponent_player.score), True, BLUE)
+        
+        self.window.blit(curr_player_score_img, (20, 20))
+        self.window.blit(opponent_score_img, (WINDOW_WIDTH-100, 20))
+
     def run_game(self):
         running = True
         while running:
-            curr_player_score_img = self.font.render(
-                'Player 1: {}'.format(self.curr_player.score), True, BLUE)
-            opponent_score_img = self.font.render(
-                'Player 2: {}'.format(self.opponent_player.score), True, BLUE)
-
+            
             for event in pg.event.get():
                 if event.type == QUIT:
                     running = False
@@ -38,8 +43,7 @@ class PongGame():
 
             # Window + Score
             self.window.fill(BLACK)
-            self.window.blit(curr_player_score_img, (20, 20))
-            self.window.blit(opponent_score_img, (WINDOW_WIDTH-100, 20))
+            self.update_score()
 
             # Paddles
             self.curr_player.update()
@@ -57,7 +61,6 @@ class PongGame():
 def main():
     pong = PongGame(player_id=0)
     pong.run_game()
-
 
 if __name__ == "__main__":
     main()
