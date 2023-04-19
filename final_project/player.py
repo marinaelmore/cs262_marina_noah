@@ -15,11 +15,9 @@ class Player():
 
     def initialize_paddle(self):
         if self.player_id == 0:
-            paddle = Rect(PADDLE_WIDTH, WINDOW_HEIGHT /
-                          2, PADDLE_WIDTH, PADDLE_HEIGHT)
+            paddle = Rect(LEFT_X, LEFT_Y, PADDLE_WIDTH, PADDLE_HEIGHT)
         elif self.player_id == 1:
-            paddle = Rect(WINDOW_WIDTH-PADDLE_WIDTH*2,
-                          WINDOW_HEIGHT/2, PADDLE_WIDTH, PADDLE_HEIGHT)
+            paddle = Rect(RIGHT_X, RIGHT_Y, PADDLE_WIDTH, PADDLE_HEIGHT)
         return paddle
 
     def move(self, event_key):
