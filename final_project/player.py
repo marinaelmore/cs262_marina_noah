@@ -1,5 +1,5 @@
 import pygame as pg
-from pygame.locals import *
+from pygame.locals import K_UP, K_DOWN, Rect
 from config import *
 
 
