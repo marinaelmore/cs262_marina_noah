@@ -4,6 +4,12 @@ Marina Elmore + Noah Zweben for CS 262
 # Final Assignment : Distributed Pong
 ## Implementation
 
+## 20 April
+* Have ball state moved to server so it is synced between clients, but the paddle collisions were happening in the client so next step is to move the paddle collision logic into the server functionality. This will require modifying how the Ball class is set up.
+
+![pong3](https://user-images.githubusercontent.com/6632380/233418667-e12c7f7b-8ef2-4343-bd01-97eaf7ce7ccd.gif)
+
+
 ## 19 April
 * Have networking between two paddles with the clients.
 ![pong2](https://user-images.githubusercontent.com/6632380/233381269-0c3706d8-fea7-457e-934e-a9ccc303cc55.gif)
