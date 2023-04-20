@@ -6,6 +6,7 @@ from player import Player
 from ball import Ball
 import threading
 import proto_files.pong_pb2 as pong
+import time
 
 
 class PongGame():
@@ -32,12 +33,17 @@ class PongGame():
 
     def follow_ball(self):
         for ball_update in self.pong_stub.ball_stream(pong.PaddleRequest(player_id=self.me.player_id)):
+            # Update Ball
             self.ball.x = ball_update.x
             self.ball.y = ball_update.y
             self.ball.xspeed = ball_update.xspeed
             self.ball.yspeed = ball_update.yspeed
             self.ball.move()
             self.ball.update_ball(self.window)
+
+            # Update scores
+            self.player_1.score = ball_update.player_1_score
+            self.player_2.score = ball_update.player_2_score
 
     def follow_opponent(self):
         for paddle_update in self.pong_stub.paddle_stream(pong.PaddleRequest(player_id=self.other.player_id)):
@@ -47,12 +53,13 @@ class PongGame():
     def send_movement(self, event_key):
         self.pong_stub.move(pong.PaddleMovement(player_id = self.me.player_id, key = event_key))
     
+    #def update_score(self, player_1_score, player_2_score):
     def update_score(self):
         player1_score_img = self.font.render(
-                'Player 1: {}'.format(self.player_1.score), True, BLUE)
+            'Player 1: {}'.format(self.player_1.score), True, BLUE)
         player2_score_img = self.font.render(
-                'Player 2: {}'.format(self.player_2.score), True, BLUE)
-        
+            'Player 2: {}'.format(self.player_2.score), True, BLUE)
+ 
         self.window.blit(player1_score_img, (20, 20))
         self.window.blit(player2_score_img, (WINDOW_WIDTH-100, 20))
 

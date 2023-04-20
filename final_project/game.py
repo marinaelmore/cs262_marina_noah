@@ -29,4 +29,8 @@ class ServerGame:
 
     def move_ball(self):
         # Update ball position
-        self.ball.move()
+        player_1_score, player_2_score = self.ball.move()
+        self.player_objs[self.player_1]["game"].score = player_1_score
+        self.player_objs[self.player_2]["game"].score = player_2_score
+
+        

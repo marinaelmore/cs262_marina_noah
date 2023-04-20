@@ -27,6 +27,8 @@ message BallPosition {
   float y = 2;
   float xspeed = 3;
   float yspeed = 4;
+  int32 player_1_score = 5;
+  int32 player_2_score = 6;
 }
 
 service PongServer {

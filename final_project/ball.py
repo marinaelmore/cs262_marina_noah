@@ -30,6 +30,8 @@ class Ball():
         self.y = self.y + self.yspeed
 
         self.collisions()
+        
+        return self.player_1.score, self.player_2.score
 
     def update_ball(self, window):
         pg.draw.circle(
