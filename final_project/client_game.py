@@ -25,10 +25,19 @@ class PongGame():
         self.me = self.player_1 if self.first_player  else self.player_2
         self.other = self.player_2 if self.first_player else self.player_1
 
-        self.ball = Ball(self.player_1, self.player_2, self.window)
+        self.ball = Ball(self.player_1, self.player_2)
 
         self.font = pg.font.SysFont(None, 24)
 
+
+    def follow_ball(self):
+        for ball_update in self.pong_stub.ball_stream(pong.PaddleRequest(player_id=self.me.player_id)):
+            self.ball.x = ball_update.x
+            self.ball.y = ball_update.y
+            self.ball.xspeed = ball_update.xspeed
+            self.ball.yspeed = ball_update.yspeed
+            self.ball.move()
+            self.ball.update_ball(self.window)
 
     def follow_opponent(self):
         for paddle_update in self.pong_stub.paddle_stream(pong.PaddleRequest(player_id=self.other.player_id)):
@@ -47,8 +56,11 @@ class PongGame():
         self.window.blit(player1_score_img, (20, 20))
         self.window.blit(player2_score_img, (WINDOW_WIDTH-100, 20))
 
+
     def run_game(self):
-        t = threading.Thread(target=self.follow_opponent).start()
+        opponent_thread = threading.Thread(target=self.follow_opponent).start()
+        ball_thread = threading.Thread(target=self.follow_ball).start()
+
         running = True
 
         while running:
@@ -72,8 +84,8 @@ class PongGame():
             self.player_2.update()
 
             # Ball
-            self.ball.move()
-            self.ball.update_ball()
+            #self.ball.move()
+            self.ball.update_ball(self.window)
 
             pg.display.flip()
 

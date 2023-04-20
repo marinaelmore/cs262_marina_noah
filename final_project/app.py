@@ -13,6 +13,5 @@ def main():
         client = PongClient()
         client.run_client('localhost')
 
-
 if __name__ == "__main__":
     main()

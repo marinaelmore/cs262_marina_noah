@@ -19,6 +19,11 @@ class PongServerStub(object):
                 request_serializer=pong__pb2.PaddleRequest.SerializeToString,
                 response_deserializer=pong__pb2.PaddlePosition.FromString,
                 )
+        self.ball_stream = channel.unary_stream(
+                '/pong.PongServer/ball_stream',
+                request_serializer=pong__pb2.PaddleRequest.SerializeToString,
+                response_deserializer=pong__pb2.BallPosition.FromString,
+                )
         self.move = channel.unary_unary(
                 '/pong.PongServer/move',
                 request_serializer=pong__pb2.PaddleMovement.SerializeToString,
@@ -35,6 +40,12 @@ class PongServerServicer(object):
     """Missing associated documentation comment in .proto file."""
 
     def paddle_stream(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ball_stream(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -59,6 +70,11 @@ def add_PongServerServicer_to_server(servicer, server):
                     servicer.paddle_stream,
                     request_deserializer=pong__pb2.PaddleRequest.FromString,
                     response_serializer=pong__pb2.PaddlePosition.SerializeToString,
+            ),
+            'ball_stream': grpc.unary_stream_rpc_method_handler(
+                    servicer.ball_stream,
+                    request_deserializer=pong__pb2.PaddleRequest.FromString,
+                    response_serializer=pong__pb2.BallPosition.SerializeToString,
             ),
             'move': grpc.unary_unary_rpc_method_handler(
                     servicer.move,
@@ -94,6 +110,23 @@ class PongServer(object):
         return grpc.experimental.unary_stream(request, target, '/pong.PongServer/paddle_stream',
             pong__pb2.PaddleRequest.SerializeToString,
             pong__pb2.PaddlePosition.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def ball_stream(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_stream(request, target, '/pong.PongServer/ball_stream',
+            pong__pb2.PaddleRequest.SerializeToString,
+            pong__pb2.BallPosition.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 

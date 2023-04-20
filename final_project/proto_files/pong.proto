@@ -22,8 +22,16 @@ message PaddleMovement {
   int32 key = 2;
 }
 
+message BallPosition {
+  float x = 1;
+  float y = 2;
+  float xspeed = 3;
+  float yspeed = 4;
+}
+
 service PongServer {
   rpc paddle_stream(PaddleRequest) returns (stream PaddlePosition);
+  rpc ball_stream(PaddleRequest) returns (stream BallPosition);
   rpc move(PaddleMovement) returns (Empty);
   rpc initialize_game(Empty) returns (stream GameReady);
 }

@@ -1,15 +1,14 @@
 from concurrent import futures
-import os
+import threading
+import uuid
+import queue
+import time
 import grpc
 import proto_files.pong_pb2 as pong
 import proto_files.pong_pb2_grpc as pong_grpc
-from config import LEFT_PLAYER_ID, LEFT_X, LEFT_Y, RIGHT_PLAYER_ID, RIGHT_X, RIGHT_Y, PADDLE_SPEED
-import threading
-from random import randint
-import uuid
-import queue
+from config import LEFT_PLAYER_ID, LEFT_X, LEFT_Y, RIGHT_PLAYER_ID, RIGHT_X, RIGHT_Y, PADDLE_SPEED, WINDOW_HEIGHT, WINDOW_WIDTH
 from game import ServerGame
-import time
+from ball import Ball
 
 
 class PongServer(pong_grpc.PongServerServicer): 
@@ -24,7 +23,10 @@ class PongServer(pong_grpc.PongServerServicer):
         # start a thread to pair players
         threading.Thread(target=self.pair_players).start()
 
-        
+        self.game_ready = False
+
+        threading.Thread(target=self.move_ball).start()
+
 
     def pair_players(self):
         # try and pull two players from the queue
@@ -40,6 +42,7 @@ class PongServer(pong_grpc.PongServerServicer):
                 self.active_games[player_1] = game
                 self.active_games[player_2] = game
                 print("Players paired: ", player_1, player_2)
+                self.game_ready = True
             time.sleep(0.1)
 
     def initialize_game(self, request, context):
@@ -54,6 +57,7 @@ class PongServer(pong_grpc.PongServerServicer):
         game_player_1 = game.player_1
         game_player_2 = game.player_2
         first_player = True if player_id == game_player_1 else False
+
         yield pong.GameReady(ready=True, player_1=game_player_1, player_2=game_player_2, first_player = first_player)
 
     def paddle_stream(self, request, context):
@@ -67,20 +71,28 @@ class PongServer(pong_grpc.PongServerServicer):
                 condition.wait()
                 yield pong.PaddlePosition(player_id = player_id, y=player.paddle.y)
 
-
     def move(self, request, context):
         player_id = request.player_id
         movement = request.key
         game = self.active_games[player_id]
         game.move(player_id, movement)
         return pong.Empty()
-        
 
-
+    def move_ball(self):
+        while not self.game_ready:
+            time.sleep(0.5)
+        print("Initializing Ball")
+        while True:
+            time.sleep(0.1)
+            for player_id in self.active_games:
+                game = self.active_games[player_id]
+                game.move_ball()
     
-
-        
-
+    def ball_stream(self, request, context):
+        while True:
+            player_id = request.player_id
+            game = self.active_games[player_id]
+            yield pong.BallPosition(x=game.ball.x, y=game.ball.y, xspeed=game.ball.xspeed, yspeed=game.ball.yspeed)
 
 def run_server():
     port = '50051'

@@ -1,4 +1,5 @@
 from player import Player
+from ball import Ball
 import threading
 
 class ServerGame:
@@ -15,6 +16,7 @@ class ServerGame:
             "push": threading.Condition(),
             }
         }
+        self.ball = Ball(self.player_objs[player_1]["game"], self.player_objs[player_2]["game"])
 
 
     def move(self, player_id, movement):
@@ -25,9 +27,6 @@ class ServerGame:
         with cond:
             cond.notify()
 
-
-    
-
-
-
-    
+    def move_ball(self):
+        # Update ball position
+        self.ball.move()

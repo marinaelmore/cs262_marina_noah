@@ -9,13 +9,13 @@ import time
 
 class Ball():
 
-    def __init__(self, player_1, player_2, window):
+    #def __init__(self, player_1, player_2, window):
+    def __init__(self, player_1, player_2):
         # Pass paddle and window attributes
         self.player_1 = player_1
         self.current_paddle = player_1.paddle
         self.player_2 = player_2
         self.opponent_paddle = player_2.paddle
-        self.window = window
 
         # Initialize Ball
         self.x = WINDOW_WIDTH/2
@@ -25,30 +25,22 @@ class Ball():
         self.yspeed = BALL_SPEED
         self.color = BLUE
 
-        self.ball = self.initialize_ball()
-
-    def initialize_ball(self):
-        ball = pg.draw.circle(self.window, self.color,
-                              (self.x, self.y), self.radius)
-        return ball
-
-    # async def move(self):
     def move(self):
         self.x = self.x + self.xspeed
         self.y = self.y + self.yspeed
 
         self.collisions()
 
-    def update_ball(self):
-        self.ball = pg.draw.circle(
-            self.window, self.color, (self.x, self.y), self.radius)
+    def update_ball(self, window):
+        pg.draw.circle(
+            window, self.color, (self.x, self.y), self.radius)
 
-    def flash_red(self):
+    def flash_red(self, window):
         self.color = RED
-        self.update_ball()
+        self.update_ball(window)
         time.sleep(0.5)
         self.color = BLUE
-        self.update_ball()
+        self.update_ball(window)
 
     def collisions(self):
 
@@ -63,7 +55,7 @@ class Ball():
                 self.xspeed = -self.xspeed
                 self.player_1.score = self.player_1.score+1
                 # flash red in a different thread using threading
-                threading.Thread(target=self.flash_red).start()
+                #threading.Thread(target=self.flash_red).start()
 
         # Ball moving left
         if self.xspeed < 0:
@@ -75,7 +67,7 @@ class Ball():
             if self.x <= 0:
                 self.xspeed = -self.xspeed
                 self.player_2.score = self.player_2.score+1
-                threading.Thread(target=self.flash_red).start()
+                #threading.Thread(target=self.flash_red).start()
 
         # Ball Moving Up
         if self.yspeed < 0:
