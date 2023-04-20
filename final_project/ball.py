@@ -9,12 +9,12 @@ import time
 
 class Ball():
 
-    def __init__(self, current_player, opponent_player, window):
+    def __init__(self, player_1, player_2, window):
         # Pass paddle and window attributes
-        self.current_player = current_player
-        self.current_paddle = current_player.paddle
-        self.opponent_player = opponent_player
-        self.opponent_paddle = opponent_player.paddle
+        self.player_1 = player_1
+        self.current_paddle = player_1.paddle
+        self.player_2 = player_2
+        self.opponent_paddle = player_2.paddle
         self.window = window
 
         # Initialize Ball
@@ -61,7 +61,7 @@ class Ball():
             # Hit Right Wall
             if self.x >= WINDOW_WIDTH:
                 self.xspeed = -self.xspeed
-                self.current_player.score = self.current_player.score+1
+                self.player_1.score = self.player_1.score+1
                 # flash red in a different thread using threading
                 threading.Thread(target=self.flash_red).start()
 
@@ -74,7 +74,7 @@ class Ball():
             # Hit Left Wall
             if self.x <= 0:
                 self.xspeed = -self.xspeed
-                self.opponent_player.score = self.opponent_player.score+1
+                self.player_2.score = self.player_2.score+1
                 threading.Thread(target=self.flash_red).start()
 
         # Ball Moving Up
