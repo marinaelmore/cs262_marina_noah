@@ -84,7 +84,6 @@ class PongGame():
             self.player_2.update()
 
             # Ball
-            #self.ball.move()
             self.ball.update_ball(self.window)
 
             pg.display.flip()

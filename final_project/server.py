@@ -83,7 +83,7 @@ class PongServer(pong_grpc.PongServerServicer):
             time.sleep(0.5)
         print("Initializing Ball")
         while True:
-            time.sleep(0.1)
+            time.sleep(0.05)
             for player_id in self.active_games:
                 game = self.active_games[player_id]
                 game.move_ball()
@@ -93,7 +93,7 @@ class PongServer(pong_grpc.PongServerServicer):
             player_id = request.player_id
             game = self.active_games[player_id]
             yield pong.BallPosition(x=game.ball.x, y=game.ball.y, xspeed=game.ball.xspeed, yspeed=game.ball.yspeed)
-
+    
 def run_server():
     port = '50051'
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=5))
