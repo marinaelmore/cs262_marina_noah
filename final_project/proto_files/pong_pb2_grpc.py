@@ -2,7 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-import pong_pb2 as pong__pb2
+import proto_files.pong_pb2 as pong__pb2
 
 
 class PongServerStub(object):

@@ -5,7 +5,7 @@ from random import randint
 from player import Player
 from ball import Ball
 import threading
-import pong_pb2 as pong
+import proto_files.pong_pb2 as pong
 
 
 class PongGame():
@@ -38,14 +38,20 @@ class PongGame():
     def send_movement(self, event_key):
         self.pong_stub.move(pong.PaddleMovement(player_id = self.me.player_id, key = event_key))
     
+    def update_score(self):
+        player1_score_img = self.font.render(
+                'Player 1: {}'.format(self.player_1.score), True, BLUE)
+        player2_score_img = self.font.render(
+                'Player 2: {}'.format(self.player_2.score), True, BLUE)
+        
+        self.window.blit(player1_score_img, (20, 20))
+        self.window.blit(player2_score_img, (WINDOW_WIDTH-100, 20))
+
     def run_game(self):
         t = threading.Thread(target=self.follow_opponent).start()
         running = True
+
         while running:
-            player_1_score_img = self.font.render(
-                'Player 1: {}'.format(self.player_1.score), True, BLUE)
-            opponent_score_img = self.font.render(
-                'Player 2: {}'.format(self.player_2.score), True, BLUE)
 
             for event in pg.event.get():
                 if event.type == QUIT:
@@ -59,8 +65,7 @@ class PongGame():
 
             # Window + Score
             self.window.fill(BLACK)
-            self.window.blit(player_1_score_img, (20, 20))
-            self.window.blit(opponent_score_img, (WINDOW_WIDTH-100, 20))
+            self.update_score()
 
             # Paddles
             self.player_1.update()

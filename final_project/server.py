@@ -1,8 +1,8 @@
 from concurrent import futures
 import os
 import grpc
-import pong_pb2 as pong
-import pong_pb2_grpc as pong_grpc
+import proto_files.pong_pb2 as pong
+import proto_files.pong_pb2_grpc as pong_grpc
 from config import LEFT_PLAYER_ID, LEFT_X, LEFT_Y, RIGHT_PLAYER_ID, RIGHT_X, RIGHT_Y, PADDLE_SPEED
 import threading
 from random import randint

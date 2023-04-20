@@ -1,6 +1,6 @@
 import grpc
-import pong_pb2 as pong
-import pong_pb2_grpc
+import proto_files.pong_pb2 as pong
+import proto_files.pong_pb2_grpc as pong_pb2_grpc
 import queue
 import threading
 from config import PADDLE_SPEED
