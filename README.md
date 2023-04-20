@@ -3,7 +3,12 @@ Marina Elmore + Noah Zweben for CS 262
 
 # Final Assignment : Distributed Pong
 ## Implementation
-17 April
+
+## 19 April
+* Have networking between two paddles with the clients.
+![pong2](https://user-images.githubusercontent.com/6632380/233381269-0c3706d8-fea7-457e-934e-a9ccc303cc55.gif)
+
+## 17 April
 * Have working undistributed Pong set up using the Pygame library. Open questions are now all regarding distribution:
    * How to assign players to the correct paddles
    * How to keep track of ball for both players - do we have an asyncio server controlling the movement of ball?
