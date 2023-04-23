@@ -1,13 +1,11 @@
 import pygame as pg
 from pygame.locals import *
 from config import *
-from random import randint
 from player import Player
 from ball import Ball
 import threading
 import proto_files.pong_pb2 as pong
 import time
-from textinput import TextInputGame
 
 
 class PongGame():
@@ -48,7 +46,7 @@ class PongGame():
 
     def follow_opponent(self):
         for paddle_update in self.pong_stub.paddle_stream(pong.PaddleRequest(player_id=self.other.player_id)):
-            #print("received paddle update", paddle_update)
+            print("received paddle update", paddle_update)
             self.other.paddle.y = paddle_update.y
             self.other.update()
 
@@ -56,10 +54,8 @@ class PongGame():
         self.pong_stub.move(pong.PaddleMovement(player_id = self.me.player_id, key = event_key))
 
     def get_usernames(self):
-        print("Get usernames")
         time.sleep(0.5)
         username_update = self.pong_stub.get_usernames(pong.PlayerIdRequest(player_1_id=self.player_1.player_id, player_2_id=self.player_2.player_id))
-        print(username_update.player_1_username)
         self.player_1.username = username_update.player_1_username
         self.player_2.username = username_update.player_2_username
     

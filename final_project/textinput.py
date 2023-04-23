@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import sys
 import os
 
@@ -7,8 +6,6 @@ import pygame as pg
 import pygame.freetype as freetype
 from config import *
 
-# This environment variable is important
-# If not added the candidate list will not show
 os.environ["SDL_IME_SHOW_UI"] = "1"
 
 class TextInput:
