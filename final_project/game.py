@@ -18,7 +18,6 @@ class ServerGame:
         }
         self.ball = Ball(self.player_objs[player_1]["game"], self.player_objs[player_2]["game"])
 
-
     def move(self, player_id, movement):
         # Update player position
         player = self.player_objs[player_id]
@@ -33,4 +32,8 @@ class ServerGame:
         self.player_objs[self.player_1]["game"].score = player_1_score
         self.player_objs[self.player_2]["game"].score = player_2_score
 
-        
+    def update_username(self, username, player_id):
+        self.player_objs[player_id]["game"].username = username
+
+    def get_username(self, player_id):
+        return self.player_objs[player_id]["game"].username

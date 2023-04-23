@@ -6,10 +6,8 @@ import time
 import grpc
 import proto_files.pong_pb2 as pong
 import proto_files.pong_pb2_grpc as pong_grpc
-from config import LEFT_PLAYER_ID, LEFT_X, LEFT_Y, RIGHT_PLAYER_ID, RIGHT_X, RIGHT_Y, PADDLE_SPEED, WINDOW_HEIGHT, WINDOW_WIDTH
+from config import LEFT_PLAYER_ID, LEFT_X, LEFT_Y, RIGHT_PLAYER_ID, RIGHT_X, RIGHT_Y, PADDLE_SPEED, WINDOW_HEIGHT, WINDOW_WIDTH, BALL_SPEED
 from game import ServerGame
-from ball import Ball
-
 
 class PongServer(pong_grpc.PongServerServicer): 
 
@@ -27,6 +25,7 @@ class PongServer(pong_grpc.PongServerServicer):
 
         self.game_ready = False
 
+        # Start thread to move the ball
         threading.Thread(target=self.move_ball).start()
 
 
@@ -47,14 +46,31 @@ class PongServer(pong_grpc.PongServerServicer):
                 self.game_ready = True
             time.sleep(0.1)
 
+    
+    def update_player_usernames(self, username, player_id):
+        for player, game in self.active_games.items():
+             game.update_username(username, player_id) 
+
+    def get_usernames(self, request, context):
+        # player_1 = request.player_1_id
+        # player_2 =request.player_2_id
+        # player_1_username = self.active_games[player_1].get_username()
+        # player_2_username = self.active_games[player_2].get_username()
+        # yield pong.UserNameMessage(player_1_username=player_1_username, player_2_username=player_2_username)
+         print("called")
+         yield pong.UserNameMessage(player_1_username="marina", player_2_username="noah")
+
     def initialize_game(self, request, context):
         print("Initializing Player...")
         player_id = str(uuid.uuid4())
-        print(player_id, type(player_id))
+        player_username = request.username
+        print(player_id, player_username)
         self.players.put(player_id)
+
         while player_id not in self.active_games:
             yield  pong.GameReady(ready=False, player_1="", player_2="", first_player = False)
             time.sleep(0.5)
+
         game = self.active_games[player_id]
         self.game_player_1 = game.player_1
         self.game_player_2 = game.player_2
@@ -83,14 +99,15 @@ class PongServer(pong_grpc.PongServerServicer):
     def move_ball(self):
         while not self.game_ready:
             time.sleep(0.5)
-        print("Initializing Ball")
+        print("Initializing Ball...")
         while True:
-            time.sleep(0.05)
+            time.sleep(BALL_SPEED/100)
             for player_id in self.active_games:
                 game = self.active_games[player_id]
                 game.move_ball()
     
     def ball_stream(self, request, context):
+        print("Starting ball stream...")
         while True:
             player_id = request.player_id
             game = self.active_games[player_id]

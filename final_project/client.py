@@ -5,6 +5,7 @@ import queue
 import threading
 from config import PADDLE_SPEED
 from client_game import PongGame
+from textinput import TextInputGame
 
 class PongClient:
     def __init__(self):
@@ -12,6 +13,10 @@ class PongClient:
         self.receiver_errors = queue.Queue()
         self.player_id = None
 
+    def get_player_name(self):
+        text_input = TextInputGame("Enter your username: ")
+        username = text_input.main_loop()
+        return username
 
     def run_client(self, host):
 
@@ -22,8 +27,11 @@ class PongClient:
 
             pong_stub = pong_pb2_grpc.PongServerStub(channel)
 
+            my_username = self.get_player_name()
+
             print("Waiting for another player", end="")
-            for game_ready in pong_stub.initialize_game(pong.Empty()):
+
+            for game_ready in pong_stub.initialize_game(pong.UserName(username=my_username)):
                 if not game_ready.ready:
                     print(".", end="",flush=True)
                 else:

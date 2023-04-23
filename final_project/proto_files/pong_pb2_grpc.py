@@ -31,8 +31,13 @@ class PongServerStub(object):
                 )
         self.initialize_game = channel.unary_stream(
                 '/pong.PongServer/initialize_game',
-                request_serializer=pong__pb2.Empty.SerializeToString,
+                request_serializer=pong__pb2.UserName.SerializeToString,
                 response_deserializer=pong__pb2.GameReady.FromString,
+                )
+        self.get_usernames = channel.unary_unary(
+                '/pong.PongServer/get_usernames',
+                request_serializer=pong__pb2.PlayerIdRequest.SerializeToString,
+                response_deserializer=pong__pb2.UserNameMessage.FromString,
                 )
 
 
@@ -63,6 +68,12 @@ class PongServerServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def get_usernames(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_PongServerServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -83,8 +94,13 @@ def add_PongServerServicer_to_server(servicer, server):
             ),
             'initialize_game': grpc.unary_stream_rpc_method_handler(
                     servicer.initialize_game,
-                    request_deserializer=pong__pb2.Empty.FromString,
+                    request_deserializer=pong__pb2.UserName.FromString,
                     response_serializer=pong__pb2.GameReady.SerializeToString,
+            ),
+            'get_usernames': grpc.unary_unary_rpc_method_handler(
+                    servicer.get_usernames,
+                    request_deserializer=pong__pb2.PlayerIdRequest.FromString,
+                    response_serializer=pong__pb2.UserNameMessage.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -159,7 +175,24 @@ class PongServer(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_stream(request, target, '/pong.PongServer/initialize_game',
-            pong__pb2.Empty.SerializeToString,
+            pong__pb2.UserName.SerializeToString,
             pong__pb2.GameReady.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def get_usernames(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/pong.PongServer/get_usernames',
+            pong__pb2.PlayerIdRequest.SerializeToString,
+            pong__pb2.UserNameMessage.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

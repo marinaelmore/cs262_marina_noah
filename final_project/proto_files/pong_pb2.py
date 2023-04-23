@@ -13,7 +13,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\npong.proto\x12\x04pong\"\x07\n\x05\x45mpty\"T\n\tGameReady\x12\r\n\x05ready\x18\x01 \x01(\x08\x12\x10\n\x08player_1\x18\x02 \x01(\t\x12\x10\n\x08player_2\x18\x03 \x01(\t\x12\x14\n\x0c\x66irst_player\x18\x04 \x01(\x08\"\"\n\rPaddleRequest\x12\x11\n\tplayer_id\x18\x01 \x01(\t\".\n\x0ePaddlePosition\x12\x11\n\tplayer_id\x18\x01 \x01(\t\x12\t\n\x01y\x18\x02 \x01(\x02\"0\n\x0ePaddleMovement\x12\x11\n\tplayer_id\x18\x01 \x01(\t\x12\x0b\n\x03key\x18\x02 \x01(\x05\"t\n\x0c\x42\x61llPosition\x12\t\n\x01x\x18\x01 \x01(\x02\x12\t\n\x01y\x18\x02 \x01(\x02\x12\x0e\n\x06xspeed\x18\x03 \x01(\x02\x12\x0e\n\x06yspeed\x18\x04 \x01(\x02\x12\x16\n\x0eplayer_1_score\x18\x05 \x01(\x05\x12\x16\n\x0eplayer_2_score\x18\x06 \x01(\x05\x32\xe2\x01\n\nPongServer\x12<\n\rpaddle_stream\x12\x13.pong.PaddleRequest\x1a\x14.pong.PaddlePosition0\x01\x12\x38\n\x0b\x62\x61ll_stream\x12\x13.pong.PaddleRequest\x1a\x12.pong.BallPosition0\x01\x12)\n\x04move\x12\x14.pong.PaddleMovement\x1a\x0b.pong.Empty\x12\x31\n\x0finitialize_game\x12\x0b.pong.Empty\x1a\x0f.pong.GameReady0\x01\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\npong.proto\x12\x04pong\"\x07\n\x05\x45mpty\"\x1c\n\x08UserName\x12\x10\n\x08username\x18\x01 \x01(\t\"G\n\x0fUserNameMessage\x12\x19\n\x11player_1_username\x18\x01 \x01(\t\x12\x19\n\x11player_2_username\x18\x02 \x01(\t\";\n\x0fPlayerIdRequest\x12\x13\n\x0bplayer_1_id\x18\x01 \x01(\t\x12\x13\n\x0bplayer_2_id\x18\x02 \x01(\t\"T\n\tGameReady\x12\r\n\x05ready\x18\x01 \x01(\x08\x12\x10\n\x08player_1\x18\x02 \x01(\t\x12\x10\n\x08player_2\x18\x03 \x01(\t\x12\x14\n\x0c\x66irst_player\x18\x04 \x01(\x08\"\"\n\rPaddleRequest\x12\x11\n\tplayer_id\x18\x01 \x01(\t\".\n\x0ePaddlePosition\x12\x11\n\tplayer_id\x18\x01 \x01(\t\x12\t\n\x01y\x18\x02 \x01(\x02\"0\n\x0ePaddleMovement\x12\x11\n\tplayer_id\x18\x01 \x01(\t\x12\x0b\n\x03key\x18\x02 \x01(\x05\"t\n\x0c\x42\x61llPosition\x12\t\n\x01x\x18\x01 \x01(\x02\x12\t\n\x01y\x18\x02 \x01(\x02\x12\x0e\n\x06xspeed\x18\x03 \x01(\x02\x12\x0e\n\x06yspeed\x18\x04 \x01(\x02\x12\x16\n\x0eplayer_1_score\x18\x05 \x01(\x05\x12\x16\n\x0eplayer_2_score\x18\x06 \x01(\x05\x32\xa4\x02\n\nPongServer\x12<\n\rpaddle_stream\x12\x13.pong.PaddleRequest\x1a\x14.pong.PaddlePosition0\x01\x12\x38\n\x0b\x62\x61ll_stream\x12\x13.pong.PaddleRequest\x1a\x12.pong.BallPosition0\x01\x12)\n\x04move\x12\x14.pong.PaddleMovement\x1a\x0b.pong.Empty\x12\x34\n\x0finitialize_game\x12\x0e.pong.UserName\x1a\x0f.pong.GameReady0\x01\x12=\n\rget_usernames\x12\x15.pong.PlayerIdRequest\x1a\x15.pong.UserNameMessageb\x06proto3')
 
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, globals())
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'pong_pb2', globals())
@@ -22,16 +22,22 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   DESCRIPTOR._options = None
   _EMPTY._serialized_start=20
   _EMPTY._serialized_end=27
-  _GAMEREADY._serialized_start=29
-  _GAMEREADY._serialized_end=113
-  _PADDLEREQUEST._serialized_start=115
-  _PADDLEREQUEST._serialized_end=149
-  _PADDLEPOSITION._serialized_start=151
-  _PADDLEPOSITION._serialized_end=197
-  _PADDLEMOVEMENT._serialized_start=199
-  _PADDLEMOVEMENT._serialized_end=247
-  _BALLPOSITION._serialized_start=249
-  _BALLPOSITION._serialized_end=365
-  _PONGSERVER._serialized_start=368
-  _PONGSERVER._serialized_end=594
+  _USERNAME._serialized_start=29
+  _USERNAME._serialized_end=57
+  _USERNAMEMESSAGE._serialized_start=59
+  _USERNAMEMESSAGE._serialized_end=130
+  _PLAYERIDREQUEST._serialized_start=132
+  _PLAYERIDREQUEST._serialized_end=191
+  _GAMEREADY._serialized_start=193
+  _GAMEREADY._serialized_end=277
+  _PADDLEREQUEST._serialized_start=279
+  _PADDLEREQUEST._serialized_end=313
+  _PADDLEPOSITION._serialized_start=315
+  _PADDLEPOSITION._serialized_end=361
+  _PADDLEMOVEMENT._serialized_start=363
+  _PADDLEMOVEMENT._serialized_end=411
+  _BALLPOSITION._serialized_start=413
+  _BALLPOSITION._serialized_end=529
+  _PONGSERVER._serialized_start=532
+  _PONGSERVER._serialized_end=824
 # @@protoc_insertion_point(module_scope)

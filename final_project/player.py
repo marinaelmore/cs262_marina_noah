@@ -13,6 +13,7 @@ class Player():
         self.position = position
         self.window = window
         self.paddle = self.initialize_paddle()
+        self.username = None
 
     def initialize_paddle(self):
         if self.position == 0:
