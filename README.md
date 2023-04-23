@@ -4,6 +4,10 @@ Marina Elmore + Noah Zweben for CS 262
 # Final Assignment : Distributed Pong
 ## Implementation
 
+## 23 April
+* Surprisingly hard to get usernames and wait screen. Required writing a new library to get input from the console and then sending those responses to the server where they were saved in the server memory construct for each game. Finally, the client queries the server after initialization for the usernames. This does not feel like good design, next time I would have built this in early to avoid the back-and-forth.
+![pong6](https://user-images.githubusercontent.com/6632380/233871602-98cc7ef1-f4de-45cb-8af8-b6c8b1969bc3.gif)
+
 ## 20 April
 * Distributed scoring working! Distributed pong is complete, now need to add fault tolerance and fund touches like usernames.
 ![pong4](https://user-images.githubusercontent.com/6632380/233462868-a9d4e22f-f608-44c1-a371-0e974d037616.gif)
