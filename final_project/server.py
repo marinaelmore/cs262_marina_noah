@@ -24,9 +24,6 @@ class PongServer(pong_grpc.PongServerServicer):
 
         # start a thread to pair players
         threading.Thread(target=self.pair_players).start()
-
-        self.game_ready = False
-
         threading.Thread(target=self.move_ball).start()
 
 
@@ -44,7 +41,6 @@ class PongServer(pong_grpc.PongServerServicer):
                 self.active_games[player_1] = game
                 self.active_games[player_2] = game
                 print("Players paired: ", player_1, player_2)
-                self.game_ready = True
             time.sleep(0.1)
 
     def initialize_game(self, request, context):
@@ -63,6 +59,8 @@ class PongServer(pong_grpc.PongServerServicer):
         yield pong.GameReady(ready=True, player_1=self.game_player_1, player_2=self.game_player_2, first_player = first_player)
 
     def paddle_stream(self, request, context):
+        #print thread id
+        print("Paddle Stream Thread ID: ", threading.get_ident())
         player_id = request.player_id
         game = self.active_games[player_id]
         # wait on condition variable for player
@@ -81,9 +79,6 @@ class PongServer(pong_grpc.PongServerServicer):
         return pong.Empty()
 
     def move_ball(self):
-        while not self.game_ready:
-            time.sleep(0.5)
-        print("Initializing Ball")
         while True:
             time.sleep(0.05)
             for player_id in self.active_games:
@@ -91,16 +86,22 @@ class PongServer(pong_grpc.PongServerServicer):
                 game.move_ball()
     
     def ball_stream(self, request, context):
+        player_id = request.player_id
+        game = self.active_games[player_id]
         while True:
-            player_id = request.player_id
-            game = self.active_games[player_id]
-            player_1_score = game.player_objs[self.game_player_1]["game"].score
-            player_2_score = game.player_objs[self.game_player_2]["game"].score
-            yield pong.BallPosition(x=game.ball.x, y=game.ball.y, xspeed=game.ball.xspeed, yspeed=game.ball.yspeed, player_1_score=player_1_score, player_2_score=player_2_score)
+            try:
+                player_1_score = game.player_objs[self.game_player_1]["game"].score
+                player_2_score = game.player_objs[self.game_player_2]["game"].score
+                time.sleep(0.05)
+                yield pong.BallPosition(x=game.ball.x, y=game.ball.y, xspeed=game.ball.xspeed, yspeed=game.ball.yspeed, player_1_score=player_1_score, player_2_score=player_2_score)
+            #catch all errors as e and print
+            except Exception as e:
+                print("test",e)
+                break
     
 def run_server():
     port = '50051'
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=5))
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=20))
     pong_grpc.add_PongServerServicer_to_server(PongServer(), server)
     server.add_insecure_port('[::]:' + port)
     server.start()
