@@ -53,7 +53,6 @@ class PongGame():
     def send_movement(self, event_key):
         self.pong_stub.move(pong.PaddleMovement(player_id = self.me.player_id, key = event_key))
     
-    #def update_score(self, player_1_score, player_2_score):
     def update_score(self):
         player1_score_img = self.font.render(
             'Player 1: {}'.format(self.player_1.score), True, BLUE)
