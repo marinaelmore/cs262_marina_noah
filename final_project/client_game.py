@@ -49,6 +49,7 @@ class PongGame():
 
     def follow_opponent(self):
         for paddle_update in self.pong_stub.paddle_stream(pong.PaddleRequest(player_id=self.other.player_id)):
+            print("received paddle update", paddle_update)
             self.other.paddle.y = paddle_update.y
             self.other.update()
 
