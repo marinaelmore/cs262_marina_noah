@@ -15,7 +15,6 @@ from config import *
 # If not added the candidate list will not show
 os.environ["SDL_IME_SHOW_UI"] = "1"
 
-
 class TextInput:
     """
     A simple TextInput class that allows you to receive inputs in pygame.
@@ -27,20 +26,17 @@ class TextInput:
         self.prompt = prompt
         self.print_event = print_event
         # position of chatlist and chatbox
-        self.CHAT_LIST_POS = pg.Rect((pos[0], pos[1] + 50), (screen_dimensions[0], 400))
         self.CHAT_BOX_POS = pg.Rect(pos, (screen_dimensions[1], 40))
-        self.CHAT_LIST_MAXSIZE = 20
 
         self._ime_editing = False
         self._ime_text = ""
         self._ime_text_pos = 0
         self._ime_editing_text = ""
         self._ime_editing_pos = 0
-        self.chat_list = []
 
         # Freetype
         self.text_color = BLUE
-        self.font = freetype.SysFont(None, 24)
+        self.font = freetype.SysFont(None, 20)
 
     def update(self, events) -> None:
         """
@@ -135,6 +131,12 @@ class TextInput:
         self.font.render_to(screen, start_pos, ime_text_r, self.text_color)
 
 
+    def draw_text(self, screen, pos, text):
+        """
+        Draws the text input widget onto the provided surface
+        """
+        self.font.render_to(screen, pos, text, self.text_color)
+
 class TextInputGame:
     """
     A class that handles the game's events, mainloop etc.
@@ -176,7 +178,12 @@ class TextInputGame:
                     return
                 elif event.type == pygame.locals.KEYDOWN:
                     if event.key in [pg.K_RETURN, pg.K_KP_ENTER]:
-                        return self.text_input.update(events)
+                        username = self.text_input.update(events)
+                        self.screen.fill(BLACK)
+                        self.text_input.draw_text(self.screen, (0,20), "Welcome {}!".format(username))
+                        self.text_input.draw_text(self.screen, (0,WINDOW_HEIGHT/2), "Waiting for another player to join")
+                        pg.display.update()
+                        return username
 
             self.text_input.update(events)
 
@@ -185,14 +192,3 @@ class TextInputGame:
             self.text_input.draw(self.screen)
 
             pg.display.update()
-
-
-# Main loop process
-def main():
-    game = TextInputGame("Text Input Example")
-    username = game.main_loop()
-    return username
-
-
-if __name__ == "__main__":
-    main()

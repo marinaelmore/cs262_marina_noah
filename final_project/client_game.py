@@ -56,11 +56,12 @@ class PongGame():
         self.pong_stub.move(pong.PaddleMovement(player_id = self.me.player_id, key = event_key))
 
     def get_usernames(self):
-        for username_update in self.pong_stub.get_usernames(pong.PlayerIdRequest(player_1_id = self.player_1.player_id, player_2_id = self.player_2.player_id)):
-            print(username_update.player_1_username)
-            print(username_update.player_2_username)
-            self.player_1.username = username_update.player_1_username
-            self.player_2.username = username_update.player_2_username
+        time.sleep(0.5)
+        username_update = self.pong_stub.get_usernames(pong.PlayerIdRequest(player_1_id=self.player_1.player_id, player_2_id=self.player_2.player_id))
+        print(username_update.player_1_username)
+        print(username_update.player_2_username)
+        self.player_1.username = username_update.player_1_username
+        self.player_2.username = username_update.player_2_username
 
     def update_score(self):
         player1_score_img = self.font.render(
@@ -72,16 +73,15 @@ class PongGame():
         self.window.blit(player2_score_img, (WINDOW_WIDTH-100, 20))
 
     def run_game(self):
-
-        self.get_usernames()
-
         opponent_thread = threading.Thread(target=self.follow_opponent).start()
         ball_thread = threading.Thread(target=self.follow_ball).start()
 
         running = True
 
+        self.get_usernames()
+        
         while running:
-
+            
             for event in pg.event.get():
                 if event.type == QUIT:
                     running = False

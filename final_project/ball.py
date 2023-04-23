@@ -1,6 +1,3 @@
-# Control the ball and movement
-# https://gamedev.stackexchange.com/questions/4253/in-pong-how-do-you-calculate-the-balls-direction-when-it-bounces-off-the-paddl
-
 import pygame as pg
 from config import *
 import threading

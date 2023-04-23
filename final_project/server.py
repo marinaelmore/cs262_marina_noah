@@ -48,17 +48,16 @@ class PongServer(pong_grpc.PongServerServicer):
 
     
     def update_player_usernames(self, username, player_id):
+        print("Updating games with username: {}".format(username))
         for player, game in self.active_games.items():
              game.update_username(username, player_id) 
 
     def get_usernames(self, request, context):
-        # player_1 = request.player_1_id
-        # player_2 =request.player_2_id
-        # player_1_username = self.active_games[player_1].get_username()
-        # player_2_username = self.active_games[player_2].get_username()
-        # yield pong.UserNameMessage(player_1_username=player_1_username, player_2_username=player_2_username)
-         print("called")
-         yield pong.UserNameMessage(player_1_username="marina", player_2_username="noah")
+        player_1 = request.player_1_id
+        player_2 =request.player_2_id
+        player_1_username = self.active_games[player_1].get_username(player_1)
+        player_2_username = self.active_games[player_2].get_username(player_2)
+        return pong.UserNameMessage(player_1_username=player_1_username, player_2_username=player_2_username)
 
     def initialize_game(self, request, context):
         print("Initializing Player...")
@@ -75,6 +74,8 @@ class PongServer(pong_grpc.PongServerServicer):
         self.game_player_1 = game.player_1
         self.game_player_2 = game.player_2
         first_player = True if player_id == self.game_player_1 else False
+
+        self.update_player_usernames(player_username, player_id)
 
         yield pong.GameReady(ready=True, player_1=self.game_player_1, player_2=self.game_player_2, first_player = first_player)
 
