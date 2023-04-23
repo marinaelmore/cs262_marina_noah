@@ -32,5 +32,11 @@ class ServerGame:
         player_1_score, player_2_score = self.ball.move()
         self.player_objs[self.player_1]["game"].score = player_1_score
         self.player_objs[self.player_2]["game"].score = player_2_score
+    
+    def update_username(self, username, player_id):
+        self.player_objs[player_id]["game"].username = username
+
+    def get_username(self, player_id):
+        return self.player_objs[player_id]["game"].username
 
         
