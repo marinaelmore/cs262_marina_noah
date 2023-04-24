@@ -11,9 +11,23 @@ Our motivation for this project was the performance and usability that cloud com
 
 Mulitplayer-distributed pong with distributed server-client architecture using GRPC streaming wire protocol with 2 fault tolerant replication via primary-backup server design.
 
+TODO: Add demo
+
+## Architecture
+
 <img width="921" alt="Screen Shot 2023-04-24 at 2 38 05 PM" src="https://user-images.githubusercontent.com/6632380/234086251-0f7147e0-b779-4fcf-9dc5-faef3c141b80.png">
 
+### Client-Server Architecture
 
+To Do
+
+### GRPC Streaming Wire Protocol
+
+To Do
+
+### Two-Fault Tolerant Replication
+
+To Do
 
 
 ## Implementation
