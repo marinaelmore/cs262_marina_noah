@@ -1,7 +1,6 @@
 import pygame as pg
 from pygame.locals import *
 from config import *
-from random import randint
 from player import Player
 from ball import Ball
 import threading
@@ -53,13 +52,18 @@ class PongGame():
 
     def send_movement(self, event_key):
         self.pong_stub.move(pong.PaddleMovement(player_id = self.me.player_id, key = event_key))
+
+    def get_usernames(self):
+        time.sleep(0.5)
+        username_update = self.pong_stub.get_usernames(pong.PlayerIdRequest(player_1_id=self.player_1.player_id, player_2_id=self.player_2.player_id))
+        self.player_1.username = username_update.player_1_username
+        self.player_2.username = username_update.player_2_username
     
-    #def update_score(self, player_1_score, player_2_score):
     def update_score(self):
         player1_score_img = self.font.render(
-            'Player 1: {}'.format(self.player_1.score), True, BLUE)
+            '{}: {}'.format(self.player_1.username, self.player_1.score), True, BLUE)
         player2_score_img = self.font.render(
-            'Player 2: {}'.format(self.player_2.score), True, BLUE)
+            '{}: {}'.format(self.player_2.username, self.player_2.score), True, BLUE)
  
         self.window.blit(player1_score_img, (20, 20))
         self.window.blit(player2_score_img, (WINDOW_WIDTH-100, 20))
@@ -70,6 +74,8 @@ class PongGame():
         ball_thread = threading.Thread(target=self.follow_ball).start()
 
         running = True
+
+        self.get_usernames()
 
         while running:
 

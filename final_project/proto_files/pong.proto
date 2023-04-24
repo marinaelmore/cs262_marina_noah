@@ -10,6 +10,20 @@ message GameReady {
   bool first_player = 4;
 }
 
+message UserName{
+  string username = 1;
+}
+
+message UserNameMessage {
+  string player_1_username = 1;
+  string player_2_username = 2;
+}
+
+message PlayerIdRequest {
+  string player_1_id = 1;
+  string player_2_id = 2;
+}
+
 message PaddleRequest { string player_id = 1; }
 
 message PaddlePosition {
@@ -35,5 +49,6 @@ service PongServer {
   rpc paddle_stream(PaddleRequest) returns (stream PaddlePosition);
   rpc ball_stream(PaddleRequest) returns (stream BallPosition);
   rpc move(PaddleMovement) returns (Empty);
-  rpc initialize_game(Empty) returns (stream GameReady);
+  rpc initialize_game(UserName) returns (stream GameReady);
+  rpc get_usernames(PlayerIdRequest) returns (UserNameMessage);
 }
