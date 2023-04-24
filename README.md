@@ -2,6 +2,20 @@
 Marina Elmore + Noah Zweben for CS 262
 
 # Final Assignment : Distributed Pong
+
+## Motivation
+
+Our motivation for this project was the performance and usability that cloud computing brings to gaming. Cloud gaming allows for streaming high-quality video games over the internet, empowering gamers to enjoy their favorite titles on virtually any device without the need for expensive hardware or lengthy installations. Using concepts that we learned in CS262, we wanted to ask the question - **what strategies can we employ to create a consistent, reliable, and low-latency experience for players**?
+
+## Our Project
+
+Mulitplayer-distributed pong with distributed server-client architecture using GRPC streaming wire protocol with 2 fault tolerant replication via primary-backup server design.
+
+<img width="921" alt="Screen Shot 2023-04-24 at 2 38 05 PM" src="https://user-images.githubusercontent.com/6632380/234086251-0f7147e0-b779-4fcf-9dc5-faef3c141b80.png">
+
+
+
+
 ## Implementation
 
 ## 23 April
