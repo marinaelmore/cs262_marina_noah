@@ -19,8 +19,6 @@ class PongServer(pong_grpc.PongServerServicer):
         # create group of players as a queue
         self.players = queue.Queue()
         self.active_games = {}
-        self.game_player_1 = None
-        self.game_player_2 = None
 
         # start a thread to pair players
         threading.Thread(target=self.pair_players).start()
@@ -31,16 +29,16 @@ class PongServer(pong_grpc.PongServerServicer):
         # try and pull two players from the queue
         # if there are not two players, wait for two players
         # if there are two players, pair them up and start the game
-        print("Pairing Players...")
         while True:
             if self.players.qsize() % 2 == 0:
+                print("Pairing Players...")
                 player_1 = self.players.get()
                 player_2 = self.players.get()
                 #create a tuple of players with player_1 < player_2
                 game = ServerGame(player_1, player_2)
                 self.active_games[player_1] = game
                 self.active_games[player_2] = game
-                print("Players paired: ", player_1, player_2)
+                # print("Players paired: ", player_1, player_2)
             time.sleep(0.1)
 
     def initialize_game(self, request, context):
@@ -52,11 +50,9 @@ class PongServer(pong_grpc.PongServerServicer):
             yield  pong.GameReady(ready=False, player_1="", player_2="", first_player = False)
             time.sleep(0.5)
         game = self.active_games[player_id]
-        self.game_player_1 = game.player_1
-        self.game_player_2 = game.player_2
-        first_player = True if player_id == self.game_player_1 else False
+        first_player = True if player_id == game.player_1 else False
 
-        yield pong.GameReady(ready=True, player_1=self.game_player_1, player_2=self.game_player_2, first_player = first_player)
+        yield pong.GameReady(ready=True, player_1=game.player_1, player_2=game.player_2, first_player = first_player)
 
     def paddle_stream(self, request, context):
         #print thread id
@@ -85,19 +81,25 @@ class PongServer(pong_grpc.PongServerServicer):
                 game = self.active_games[player_id]
                 game.move_ball()
     
+
     def ball_stream(self, request, context):
+        #print thread id
         player_id = request.player_id
         game = self.active_games[player_id]
+        print("Ball Stream Thread ID: ", player_id, threading.get_ident())
+
         while True:
+            player_1_score = game.player_objs[game.player_1]["game"].score
+            player_2_score = game.player_objs[game.player_2]["game"].score
+            time.sleep(0.1)
+            x = pong.BallPosition(x=game.ball.x, y=game.ball.y, xspeed=game.ball.xspeed, yspeed=game.ball.yspeed, player_1_score=player_1_score, player_2_score=player_2_score)
             try:
-                player_1_score = game.player_objs[self.game_player_1]["game"].score
-                player_2_score = game.player_objs[self.game_player_2]["game"].score
-                time.sleep(0.05)
-                yield pong.BallPosition(x=game.ball.x, y=game.ball.y, xspeed=game.ball.xspeed, yspeed=game.ball.yspeed, player_1_score=player_1_score, player_2_score=player_2_score)
-            #catch all errors as e and print
+                yield x
             except Exception as e:
-                print("test",e)
-                break
+                print("E", x)
+                print("error", e)
+            
+        
     
 def run_server():
     port = '50051'
