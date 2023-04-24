@@ -34,6 +34,7 @@ class ServerGame:
         self.player_objs[self.player_2]["game"].score = player_2_score
     
     def update_username(self, username, player_id):
+        print("updating username", username, player_id)
         self.player_objs[player_id]["game"].username = username
 
     def get_username(self, player_id):

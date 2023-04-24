@@ -2,7 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-import proto_files.pong_pb2 as pong__pb2
+from . import pong_pb2 as pong__pb2
 
 
 class PongServerStub(object):
@@ -21,7 +21,7 @@ class PongServerStub(object):
                 )
         self.ball_stream = channel.unary_stream(
                 '/pong.PongServer/ball_stream',
-                request_serializer=pong__pb2.PaddleRequest.SerializeToString,
+                request_serializer=pong__pb2.GameRequest.SerializeToString,
                 response_deserializer=pong__pb2.BallPosition.FromString,
                 )
         self.move = channel.unary_unary(
@@ -84,7 +84,7 @@ def add_PongServerServicer_to_server(servicer, server):
             ),
             'ball_stream': grpc.unary_stream_rpc_method_handler(
                     servicer.ball_stream,
-                    request_deserializer=pong__pb2.PaddleRequest.FromString,
+                    request_deserializer=pong__pb2.GameRequest.FromString,
                     response_serializer=pong__pb2.BallPosition.SerializeToString,
             ),
             'move': grpc.unary_unary_rpc_method_handler(
@@ -141,7 +141,7 @@ class PongServer(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_stream(request, target, '/pong.PongServer/ball_stream',
-            pong__pb2.PaddleRequest.SerializeToString,
+            pong__pb2.GameRequest.SerializeToString,
             pong__pb2.BallPosition.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

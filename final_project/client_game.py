@@ -31,7 +31,7 @@ class PongGame():
 
 
     def follow_ball(self):
-        for ball_update in self.pong_stub.ball_stream(pong.PaddleRequest(player_id=self.me.player_id)):
+        for ball_update in self.pong_stub.ball_stream(pong.GameRequest(player_id=self.me.player_id)):
             # Update Ball
             self.ball.x = ball_update.x
             self.ball.y = ball_update.y

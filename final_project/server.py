@@ -34,7 +34,6 @@ class PongServer(pong_grpc.PongServerServicer):
                 print("Pairing Players...")
                 player_1 = self.players.get()
                 player_2 = self.players.get()
-                #create a tuple of players with player_1 < player_2
                 game = ServerGame(player_1, player_2)
                 self.active_games[player_1] = game
                 self.active_games[player_2] = game
@@ -42,10 +41,9 @@ class PongServer(pong_grpc.PongServerServicer):
             time.sleep(0.1)
 
     def initialize_game(self, request, context):
-        print("Initializing Player...")
+        print("Initializing Player...", request)
         player_id = str(uuid.uuid4())
         player_username = request.username
-        print(player_id, player_username)
         self.players.put(player_id)
         while player_id not in self.active_games:
             yield  pong.GameReady(ready=False, player_1="", player_2="", first_player = False)
@@ -53,11 +51,14 @@ class PongServer(pong_grpc.PongServerServicer):
         game = self.active_games[player_id]
         first_player = True if player_id == game.player_1 else False
         self.update_player_usernames(player_username, player_id)
-        yield pong.GameReady(ready=True, player_1=game.player_1, player_2=game.player_2, first_player = first_player)
+        print("Player Initialized: ", player_id, player_username, first_player)
+        x =  pong.GameReady(ready=True, player_1=game.player_1, player_2=game.player_2, first_player = first_player)
+        yield x
 
     def update_player_usernames(self, username, player_id):
         for player, game in self.active_games.items():
-             game.update_username(username, player_id) 
+             if player == player_id:
+                game.update_username(username, player_id) 
 
     def get_usernames(self, request, context):
         player_1 = request.player_1_id
@@ -88,7 +89,7 @@ class PongServer(pong_grpc.PongServerServicer):
 
     def move_ball(self):
         while True:
-            time.sleep(0.05)
+            time.sleep(0.1)
             for player_id in self.active_games:
                 game = self.active_games[player_id]
                 game.move_ball()
@@ -111,7 +112,7 @@ class PongServer(pong_grpc.PongServerServicer):
                 print("E", x)
                 print("error", e)
             
-        
+
     
 def run_server():
     port = '50051'
